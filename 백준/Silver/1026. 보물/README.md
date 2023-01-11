@@ -30,3 +30,16 @@
 
  <p>첫째 줄에 S의 최솟값을 출력한다.</p>
 
+### 내 풀이
+* int 배열-> list 변환  
+List<int[]> list = Arrays.asList(b);
+
+* list에서 최댓값 찾기  
+int max = Collections.max(list);
+
+* list에서 값 삭제하기  
+인덱스로 삭제 : list.remove(int index)  
+특정값으로 삭제 : list.remove(Object obj) -> list.remove(Integer.valueOf(값))
+
+
+
