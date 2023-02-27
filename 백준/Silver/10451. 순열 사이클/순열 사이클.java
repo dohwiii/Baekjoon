@@ -14,6 +14,7 @@ public class Main
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int T = Integer.parseInt(br.readLine());
+        int count = 0;
 
         for (int i = 0; i < T; i++)
         {
@@ -21,7 +22,7 @@ public class Main
             StringTokenizer st = new StringTokenizer(br.readLine());
             list = new ArrayList[N + 1];
             visited = new boolean[N + 1];
-            int count = 0;
+            count = 0;
 
             for (int j = 1; j <= N; j++)
             {
@@ -37,10 +38,8 @@ public class Main
             {
                 if (!visited[j])
                 {
-                    if (j == DFS(j))
-                    {
-                        count++;
-                    }
+                    DFS(j);
+                    count++;
 
                 }
             }
@@ -48,27 +47,23 @@ public class Main
 
         }
     }
-    public static int DFS(int num)
+    public static void DFS(int num)
     {
+        if (visited[num])
+        {
+            return;
+        }
         visited[num] = true;
 
         for (int i : list[num])
         {
-            if (i == num)
-            {
-                return i;
-            }
             if(!visited[i])
             {
-                visited[i] = true;
                 DFS(i);
             }
-            else
-                return i;
 
 
         }
-        return num;
 
     }
 }
