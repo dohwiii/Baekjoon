@@ -41,12 +41,14 @@ public class Main {
             }
         });
         queue.offer(new Node(start, 0));
-        visited[start] = true;
 
         while (!queue.isEmpty())
         {
             Node now = queue.poll();
             int now_node = now.node;
+            if (visited[now_node]) {
+                continue;
+            }
             visited[now_node] = true;
 
             for (Node j : list[now_node])
@@ -54,31 +56,23 @@ public class Main {
                 int node = j.node;
                 int weight = j.value;
 
-                if (!visited[node])
-                {
-                    if (shortArray[node] > shortArray[now_node] + weight) {
+                if (shortArray[node] > shortArray[now_node] + weight) {
 
-                        shortArray[node] = shortArray[now_node] + weight;
-                        queue.add(new Node(node, shortArray[node]));
-
-                    }
+                    shortArray[node] = shortArray[now_node] + weight;
+                    queue.add(new Node(node, shortArray[node]));
 
                 }
             }
         }
 
-        String[] result = new String[N + 1];
-
         for (int i = 1; i <= N; i++) {
-
-            result[i] = String.valueOf(shortArray[i]);
-            if (result[i].equals(String.valueOf(Integer.MAX_VALUE))) {
-                result[i] = "INF";
+            if(visited[i])
+            {
+                System.out.println(shortArray[i]);
             }
-        }
-        for (int i = 1; i <= N; i++) {
+            else
+                System.out.println("INF");
 
-            System.out.print(result[i] + " ");
         }
 
 
