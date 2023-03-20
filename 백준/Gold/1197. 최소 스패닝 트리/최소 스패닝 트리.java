@@ -3,19 +3,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static ArrayList<Edge> edges;
     static int[] dist;
+    static PriorityQueue<Edge> queue;
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int V = Integer.parseInt(st.nextToken());
         int E = Integer.parseInt(st.nextToken());
-        edges = new ArrayList<>();
         dist = new int[V + 1];
+        queue = new PriorityQueue<>();
 
         for (int i = 1; i <= V; i++) {
             dist[i] = i;
@@ -26,21 +27,21 @@ public class Main {
             int b = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
 
-            edges.add(new Edge(a, b, c));
+            queue.add(new Edge(a, b, c));
         }
-        Collections.sort(edges); //가중치 오름차순(낮은->높은)
-        int sum = 0;
-        for (int i = 0; i < edges.size(); i++)
+        int useEdge = 0;
+        int result = 0;
+        while (useEdge < V - 1)
         {
-            Edge edge = edges.get(i);
-            if (find(dist[edge.start]) != find(dist[edge.end]))
-            {
-                union(find(dist[edge.start]), find(dist[edge.end]));
-                sum = sum + edge.value;
+            Edge now = queue.poll();
+            if (find(now.start) != find(now.end)) {
+                union(now.start, now.end);
+                result += now.value;
+                useEdge++;
             }
 
         }
-        System.out.println(sum);
+        System.out.println(result);
     }
 
     public static void union(int a, int b)
@@ -59,7 +60,7 @@ public class Main {
             return x;
         }
         else
-            return find(dist[x]);
+            return dist[x] = find(dist[x]);
 
     }
 }
