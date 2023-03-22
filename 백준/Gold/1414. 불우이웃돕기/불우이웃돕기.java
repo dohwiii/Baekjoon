@@ -27,8 +27,6 @@ public class Main {
                 } else if ((int) str.charAt(j) >= 97 && (int) str.charAt(j) <= 122) {
                     queue.add(new Edge(i, j, (int) str.charAt(j) - 96));
                 }
-                else
-                    queue.add(new Edge(i, j, 0));
             }
         }
         int useEdge = 0;
