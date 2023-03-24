@@ -19,16 +19,16 @@ public class Main {
         while (Math.pow(2, k) < N) {
             k++;
         }
-        tree = new long[(int) Math.pow(2, k) * 2];
+        int treeSize = (int) Math.pow(2, k) * 2;
+        tree = new long[treeSize];
         int startIndex = (int) Math.pow(2, k);
 
         for (int i = startIndex; i < N + startIndex; i++) {
 
             tree[i] = Long.parseLong(br.readLine());
         }
-        for (int i = startIndex - 1; i > 0; i--) {
-            tree[i] = tree[2 * i] + tree[2 * i + 1];
-        }
+        setTree(treeSize - 1);
+
         for (int i = 0; i < M + K; i++) {
             st = new StringTokenizer(br.readLine());
             long a = Long.parseLong(st.nextToken());
@@ -50,6 +50,13 @@ public class Main {
 
 
 
+    }
+
+    public static void setTree(int index) {
+        while (index != 1) {
+            tree[index / 2] = tree[index / 2] + tree[index];
+            index--;
+        }
     }
 
     public static void changeVal(int index, long val) {
