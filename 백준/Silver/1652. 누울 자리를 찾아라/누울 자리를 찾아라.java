@@ -21,8 +21,6 @@ public class Main
         N = Integer.parseInt(br.readLine());
         room = new char[N][N];
         visited = new boolean[N][N];
-        rowCount = 0;
-        colCount = 0;
 
         for (int i = 0; i < N; i++)
         {
@@ -38,7 +36,7 @@ public class Main
             {
                 if (!visited[i][j] && room[i][j] == '.')
                 {
-                    row(i, j);
+                    checkPath(i, j, dx[0], dy[0], true);
                 }
             }
         }
@@ -49,91 +47,54 @@ public class Main
             {
                 if (!visited[i][j] && room[i][j] == '.')
                 {
-                    column(i, j);
+                    checkPath(i, j, dx[1], dy[1], false);
                 }
             }
         }
         System.out.println(rowCount);
         System.out.println(colCount);
     }
-    public static void row(int x, int y)
+
+    public static void checkPath(int x, int y, int dx, int dy, boolean isRow)
     {
         visited[x][y] = true;
-        int r = x;
-        int c = y;
-        int tempR = dx[0]; //0
-        int tempC = dy[0]; //1
         int count = 1;
-        while (r + tempR >= 0 && r + tempR < N && c + tempC >= 0 && c + tempC < N)
+
+        while (x + dx >= 0 && x + dx < N && y + dy >= 0 && y + dy < N)
         {
-            if (room[r + tempR][c + tempC] == 'X')
+            if (room[x + dx][y + dy] == 'X')
             {
                 break;
-            }
-            else if (room[r + tempR][c + tempC] == '.')
+            } else if (room[x + dx][y + dy] == '.')
             {
-                visited[r + tempR][c + tempC] = true;
+                visited[x + dx][y + dy] = true;
                 count++;
             }
-
-            if (tempR > 0)
+            dx = isRow ? 0 : dx;
+            dy = isRow ? dy : 0;
+            if (dx > 0)
             {
-                tempR++;
-            } else if (tempR < 0)
+                dx++;
+            } else if (dx < 0)
             {
-                tempR--;
+                dx--;
             }
-            if (tempC > 0)
+            else if (dy > 0)
             {
-                tempC++;
-            } else if (tempC < 0)
+                dy++;
+            } else if (dy < 0)
             {
-                tempC--;
+                dy--;
             }
         }
         if (count >= 2)
         {
-            rowCount++;
-        }
-    }
-    public static void column(int x, int y)
-    {
-        visited[x][y] = true;
-        int r = x;
-        int c = y;
-        int tempR = dx[1]; //0
-        int tempC = dy[1]; //1
-        int count = 1;
-        while (r + tempR >= 0 && r + tempR < N && c + tempC >= 0 && c + tempC < N)
-        {
-            if (room[r + tempR][c + tempC] == 'X')
+            if (isRow)
             {
-                break;
+                rowCount++;
             }
-            else if (room[r + tempR][c + tempC] == '.')
-            {
-                visited[r + tempR][c + tempC] = true;
-                count++;
-            }
-
-            if (tempR > 0)
-            {
-                tempR++;
-            } else if (tempR < 0)
-            {
-                tempR--;
-            }
-            if (tempC > 0)
-            {
-                tempC++;
-            } else if (tempC < 0)
-            {
-                tempC--;
-            }
-        }
-        if (count >= 2)
-        {
-            colCount++;
+            else
+                colCount++;
         }
     }
 }
