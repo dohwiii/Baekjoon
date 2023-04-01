@@ -56,11 +56,11 @@ public class Main {
                 if (nx >= 0 && nx < N && ny >= 0 && ny < M)
                 {
                     if (map[nx][ny] == 0) {
-                        if (now.gone && !visited[nx][ny][0]) {
+                        if (!now.gone && !visited[nx][ny][0]) { //벽 부신적 없음
                             queue.add(new Coordinate(nx, ny, now.count + 1, now.gone));
                             visited[nx][ny][0] = true;
                         }
-                        else if (!now.gone && !visited[nx][ny][1])
+                        else if (now.gone && !visited[nx][ny][1]) //벽 부신적 있음
                         {
                             queue.add(new Coordinate(nx, ny, now.count + 1, now.gone));
                             visited[nx][ny][1] = true;
