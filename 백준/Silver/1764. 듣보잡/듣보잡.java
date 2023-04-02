@@ -12,6 +12,7 @@ public class Main
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         Map<String, Integer> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
 
         for (int i = 0; i < N; i++)
         {
@@ -21,25 +22,17 @@ public class Main
         for (int i = 0; i < M; i++)
         {
             String str = br.readLine();
-            map.put(str, map.getOrDefault(str, 0) + 1);
-        }
-        int count = 0;
-        List<String> list = new ArrayList<>();
-        for (String key : map.keySet())
-        {
-            if (map.get(key) > 1)
+            if (map.containsKey(str))
             {
-                count++;
-                list.add(key);
+                list.add(str);
             }
         }
-        System.out.println(count);
         Collections.sort(list);
+        System.out.println(list.size());
         for (String str : list)
         {
             System.out.println(str);
         }
-
         br.close();
     }
 }
