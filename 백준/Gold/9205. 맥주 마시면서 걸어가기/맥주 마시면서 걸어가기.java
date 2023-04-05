@@ -45,8 +45,10 @@ public class Main {
                     int diffX = Math.abs(end[0] - start[0]);
                     int diffY = Math.abs(end[1] - start[1]);
                     int sum = diffX + diffY;
-                    list2[j].add(new Pos(k, sum));
-                    list2[k].add(new Pos(j, sum));
+                    if (sum <= 1000) {
+                        list2[j].add(new Pos(k, sum));
+                        list2[k].add(new Pos(j, sum));
+                    }
                 }
             }
             queue.add(0);
@@ -60,9 +62,8 @@ public class Main {
                     arrive = true;
                     break;
                 }
-
                 for (Pos next : list2[now]) {
-                    if (!visited[next.e] && next.v <= 1000) {
+                    if (!visited[next.e]) {
                         queue.add(next.e);
                         visited[next.e] = true;
                     }
