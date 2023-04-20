@@ -10,14 +10,7 @@ class Solution {
         
         while(s <= e)
         {
-            if (sequence[s] == k) {
-                list.add(new int[]{s, s});
-                break;
-            } else if (sequence[e] == k) {
-                list.add(new int[]{e, e});
-                break;
-            }
-            
+        
             if(sum == k)
             {
                 list.add(new int[]{s, e});
