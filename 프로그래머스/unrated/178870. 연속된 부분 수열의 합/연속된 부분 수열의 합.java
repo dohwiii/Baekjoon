@@ -7,18 +7,19 @@ class Solution {
         int sum = sequence[0];
         int[] answer = new int[2];
         ArrayList<int[]> list = new ArrayList<>();
+        int min = sequence.length + 1;
         
         while(s <= e)
         {
         
-            if(sum == k)
-            {
+            if (sum == k) {
                 list.add(new int[]{s, e});
-                e++;
-                if (e >= sequence.length) {
+                min = Math.min(min, e - s);
+                if (++e >= sequence.length) {
                     break;
                 }
                 sum += sequence[e];
+
             }
             else if(sum < k)
             {
@@ -35,11 +36,6 @@ class Solution {
                 
             }
             
-        }
-        int min = Integer.MAX_VALUE;
-        for (int[] arr : list) {
-            int diff = arr[1] - arr[0];
-            min = Math.min(min, diff);
         }
         for (int[] arr : list) 
         {
