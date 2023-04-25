@@ -35,14 +35,13 @@ class Solution {
     }
     public void dfs(int node)
     {
-        if(visited[node])
-            return;
-        
-        visited[node]=true;
+        visited[node] = true;
         
         for(int next : list[node])
         {
-            dfs(next);
+            if(!visited[next])
+                dfs(next);
+
         }
     }
 }
