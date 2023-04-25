@@ -1,11 +1,7 @@
 class Solution {
     static int count;
-    static boolean[] visited;
     public int solution(int[] numbers, int target) {
-        
-        visited= new boolean[numbers.length];
         count = 0;
-        visited[0] = true;
         dfs(numbers, 0, 0, target);
         return count;
     }
