@@ -10,13 +10,13 @@ class Solution {
         }
         Pos first = queue.poll();
         int s = first.s;
-        int e = first.e;
+        int e = first.e - 1;
         int count = 1;
         
         while(!queue.isEmpty())
         {
             Pos now = queue.poll();
-            if(e < now.s)
+            if(e < now.s && e < now.e)
             {
                 e = now.e - 1;
                 count++;
@@ -38,11 +38,7 @@ class Pos implements Comparable<Pos>
     @Override
     public int compareTo(Pos p)
     {
-        if(this.s == p.s)
-        {
-            return this.e-p.e;
-        }
-        return this.s - p.s;
+        return this.e - p.e;
     }
 
 }
