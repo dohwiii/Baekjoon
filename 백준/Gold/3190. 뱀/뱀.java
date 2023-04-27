@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static long[][] board;
+    static int[][] board;
     static int[] dx = {1, -1, 0, 0}; //남, 북, 동, 서
     static int[] dy = {0, 0, 1, -1};
     static Dir[] snake;
@@ -12,7 +12,7 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine()); //보드 크기
         int K = Integer.parseInt(br.readLine()); //사과 개수
-        board = new long[N + 1][N + 1];
+        board = new int[N + 1][N + 1];
 
         for (int i = 0; i < K; i++) { //사과 위치
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -117,9 +117,9 @@ class Pos {
     }
 }
 class Dir {
-    long time;
+    int time;
     char dir;
-    public Dir(long time, char dir) {
+    public Dir(int time, char dir) {
         this.time = time;
         this.dir = dir;
     }
