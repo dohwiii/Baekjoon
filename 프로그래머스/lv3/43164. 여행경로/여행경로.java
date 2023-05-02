@@ -20,15 +20,16 @@ class Solution {
         if(cnt == tickets.length)
         {
             allRoute.add(route);
-            return;
         }
+        
         for(int i=0; i<tickets.length; i++)
         {
-            if(!visited[i] && tickets[i][0].equals(start))
+            if(start.equals(tickets[i][0]) && !visited[i])
             {
                 visited[i] = true;
-                dfs(tickets[i][1], route+" "+tickets[i][1], tickets, cnt+1);
+                dfs(tickets[i][1], route + " " + tickets[i][1], tickets, cnt+1);
                 visited[i] = false;
+                
             }
         }
     }
