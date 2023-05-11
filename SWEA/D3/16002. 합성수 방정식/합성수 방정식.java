@@ -54,10 +54,9 @@ class Solution
 		/*
 		   여러 개의 테스트 케이스가 주어지므로, 각각을 처리합니다.
 		*/
-
-		for (int i = 0; i < T; i++) {
+for (int i = 0; i < T; i++) {
             long N = sc.nextLong();
-            int cnt = 3;
+            int cnt = 1;
             while(true)
             {
                 if (!isPrime(cnt) && !isPrime(N + cnt)) {
@@ -71,7 +70,7 @@ class Solution
     }
     public static boolean isPrime(long N) {
 
-        for (int i = 2; i < N; i++) {
+        for (int i = 2; i < Math.sqrt(N); i++) {
             if (N % i == 0) { //나뉘면 소수가 아님
                 return false;
             }
