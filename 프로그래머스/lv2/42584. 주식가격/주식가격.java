@@ -4,18 +4,13 @@ class Solution {
         for(int i=0; i<prices.length - 1; i++)
         {
             int fix = prices[i];
-            int count = 1;
             for(int j=i+1; j<prices.length; j++)
             {
+                time[i]++;
+                
                 if(fix > prices[j])
                 {
-                    time[i] = count;
                     break;
-                }
-                else if(fix <= prices[j])
-                {
-                    time[i]++;
-                    count++;
                 }
             }
         }
