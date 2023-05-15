@@ -7,9 +7,8 @@ public class Main {
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static boolean[][] visitedNation;
-    static ArrayList<ArrayList<Pos>> totalList;
-    static ArrayList<Pos> nationList;
-    static int sum;
+    static ArrayList<ArrayList<Pos>> totalList; //모든 연합국
+    static ArrayList<Pos> nationList; //하나의 연합국
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -71,7 +70,7 @@ public class Main {
     public static void bfs(int x, int y) {
         Queue<Pos> queue = new LinkedList<Pos>();
         nationList = new ArrayList<>();
-        queue.add(new Pos(x, y, 0, 0));
+        queue.add(new Pos(x, y));
         nationList.add(new Pos(x, y));
         visitedNation[x][y] = true;
 
@@ -96,19 +95,10 @@ public class Main {
         }
     }
 }
-
 class Pos {
-    int x, y, count, sum;
-
+    int x, y;
     public Pos(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public Pos(int x, int y, int count, int sum) {
-        this.x = x;
-        this.y = y;
-        this.count = count;
-        this.sum = sum;
     }
 }
