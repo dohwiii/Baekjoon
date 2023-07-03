@@ -1,89 +1,88 @@
-import org.w3c.dom.Node;
-
-import java.io.*;
-import java.sql.Time;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+class Main
+{
     static ArrayList<Integer>[] list;
-    static int[] visited;
-
-    public static void main(String[] args) throws IOException {
-
+    static int X, K;
+    static boolean[] visited;
+    static ArrayList<Integer> resultList;
+    public static void main(String args[]) throws Exception
+    {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(st.nextToken()); //도시 개수
-        int M = Integer.parseInt(st.nextToken()); //도로의 개수
-        int K = Integer.parseInt(st.nextToken()); //거리정보
-        int X = Integer.parseInt(st.nextToken()); //출발도시의 번호
-        list = new ArrayList[N + 1];
-        visited = new int[N + 1];
-        ArrayList<Integer> success = new ArrayList<>();
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
 
-        for (int i = 1; i <= N; i++) {
+        list = new ArrayList[N + 1];
+        visited = new boolean[N + 1];
+        resultList = new ArrayList<>();
+
+        for (int i = 0; i <= N; i++)
+        {
             list[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < M; i++)
         {
             st = new StringTokenizer(br.readLine());
-            int A = Integer.parseInt(st.nextToken());
-            int B = Integer.parseInt(st.nextToken());
-
-            list[A].add(B);
-        }
-
-        for (int i = 1; i <= N; i++) {
-            visited[i] = -1;
+            int s = Integer.parseInt(st.nextToken());
+            int e = Integer.parseInt(st.nextToken());
+            list[s].add(e);
 
         }
-        bfs(X);
-
-        for (int i = 1; i <= N; i++)
+        bfs();
+        Collections.sort(resultList);
+        for (int n : resultList)
         {
-            if (visited[i] == K)
-            {
-                success.add(i);
-            }
+            System.out.println(n);
         }
-        Collections.sort(success); //정렬
-
-        if (success.isEmpty()) {
-            System.out.println("-1");
-        }
-        else
+        if (resultList.isEmpty())
         {
-            for (Integer i : success) {
-                System.out.println(i);
-            }
+            System.out.println(-1);
         }
 
 
     }
-
-    public static void bfs(int node)
+    public static void bfs()
     {
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(node);
-        visited[node]++;
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(X, 0));
+        visited[X] = true;
 
         while (!queue.isEmpty())
         {
-            int next = queue.remove();
-            for (int i : list[next])
+            Node now = queue.poll();
+            if (now.cnt == K)
             {
-                if (visited[i] == -1)
+                resultList.add(now.node);
+                continue;
+            }
+            for (int next : list[now.node])
+            {
+                if (!visited[next])
                 {
-                    queue.add(i);
-                    visited[i] = visited[next] + 1;
-
+                    queue.add(new Node(next, now.cnt + 1));
+                    visited[next] = true;
                 }
-
-
             }
 
         }
-    }
 
+    }
+}
+class Node
+{
+    int node;
+    int cnt;
+
+    public Node(int node, int cnt)
+    {
+        this.node = node;
+        this.cnt = cnt;
+    }
 }
