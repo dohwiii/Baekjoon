@@ -1,103 +1,98 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+class Main
+{
     static int N, M;
-    static int[][] tomato;
-    static boolean[][] visited;
-    static int[] dx = {-1, 1, 0, 0};
+    static int[][] map;
+    static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static ArrayList<Coordinate> list;
-    public static void main(String[] args) throws IOException {
+    static boolean[][] visited;
+    static Queue<Coordinate> tomatoQueue = new LinkedList<>();
 
+    public static void main(String args[]) throws Exception
+    {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
         M = Integer.parseInt(st.nextToken());
         N = Integer.parseInt(st.nextToken());
-        tomato = new int[N][M];
         visited = new boolean[N][M];
-        list = new ArrayList<>();
+        map = new int[N][M];
 
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
-                tomato[i][j] = Integer.parseInt(st.nextToken());
-                if (tomato[i][j] == 1) {
-                    list.add(new Coordinate(i, j));
-                }
-            }
-        }
-        int result = BFS();
-        System.out.println(result);
-    }
-    public static int BFS()
-    {
-        Queue<Node> queue = new LinkedList<>();
-        for (int i = 0; i < list.size(); i++) {
-            queue.add(new Node(list.get(i).x, list.get(i).y, 0));
-        }
-        while (!queue.isEmpty())
+        for (int i = 0; i < N; i++)
         {
-            Node now = queue.poll();
-
-            for (int i = 0; i < 4; i++)
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < M; j++)
             {
-                int x1 = now.x + dx[i];
-                int y1 = now.y + dy[i];
-
-                if (x1 >= 0 && y1 >= 0 && x1 < N && y1 < M)
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 1)
                 {
-                    if (!visited[x1][y1] && tomato[x1][y1] == 0)
-                    {
-                        tomato[x1][y1] = tomato[now.x][now.y] + 1;
-                        visited[x1][y1] = true;
-                        queue.add(new Node(x1, y1, now.count + 1));
-                    }
-
+                    tomatoQueue.add(new Coordinate(i, j));
                 }
             }
         }
-        int max = Integer.MIN_VALUE;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (tomato[i][j] == 0) {
-                    return -1;
+        bfs();
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < M; j++)
+            {
+                if (map[i][j] == 0)
+                {
+                    System.out.println(-1);
+                    return;
                 }
-                max = Math.max(max, tomato[i][j]);
+                
             }
         }
-        if (max == 1) {
-            return 0;
+        int max = Arrays.stream(map).flatMapToInt(s->Arrays.stream(s)).max().getAsInt();
+        if (max == 1)
+        {
+            System.out.println(0);
         }
         else
-            return max - 1;
-
+        {
+            System.out.println(max - 1);
+        }
+        return;
 
     }
 
+    public static void bfs()
+    {
+
+        while (!tomatoQueue.isEmpty())
+        {
+            Coordinate now = tomatoQueue.poll();
+
+            for(int i=0;i<4;i++)
+            {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M)
+                {
+                    if (map[nx][ny] == 0)
+                    {
+                        tomatoQueue.add(new Coordinate(nx, ny));
+                        map[nx][ny] = map[now.x][now.y] + 1;
+                    }
+                }
+            }
+        }
+
+    }
 }
+
 class Coordinate
 {
     int x;
     int y;
 
-    public Coordinate(int x, int y) {
+    public Coordinate(int x, int y)
+    {
         this.x = x;
         this.y = y;
-    }
-}
-class Node
-{
-    int x;
-    int y;
-    int count;
-
-    public Node(int x, int y, int count) {
-        this.x = x;
-        this.y = y;
-        this.count = count;
     }
 }
