@@ -1,69 +1,97 @@
-import java.io.*;
-import java.text.ParseException;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
-public class Main {
+public class Main
+{
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static boolean[][] visited;
-    static int[][] map;
     static int N, M, K;
+    static int[][] map;
+    static int result;
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws IOException
+    {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int T = Integer.parseInt(br.readLine());
-
-        for (int i = 0; i < T; i++) {
+        while (T-- > 0)
+        {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            N = Integer.parseInt(st.nextToken());
-            M = Integer.parseInt(st.nextToken());
-            K = Integer.parseInt(st.nextToken());
-            map = new int[N][M];
-            visited = new boolean[N][M];
+            M = Integer.parseInt(st.nextToken()); //가로
+            N = Integer.parseInt(st.nextToken()); //세로
+            K = Integer.parseInt(st.nextToken()); //배추 위치의 개수
 
-            for (int j = 0; j < K; j++) {
+            map = new int[M][N];
+            visited = new boolean[M][N];
+
+            for (int i = 0; i < K; i++)
+            {
                 st = new StringTokenizer(br.readLine());
-                //배추가 심어져 있는 위치
                 int x = Integer.parseInt(st.nextToken());
                 int y = Integer.parseInt(st.nextToken());
                 map[x][y] = 1;
-
-
             }
-            int cnt = 0;
-            for (int j = 0; j < N; j++) {
-                for (int k = 0; k < M; k++) {
-                    if (!visited[j][k] && map[j][k] == 1) {
-                        bfs(j, k);
-                        cnt++;
+            int ans = 0;
+            for (int i = 0; i < M; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    if (!visited[i][j] && map[i][j] == 1)
+                    {
+                        bfs(i, j);
+                        ans++;
                     }
                 }
             }
-            System.out.println(cnt);
-
+            System.out.println(ans);
         }
+
 
     }
 
-    public static void bfs(int x, int y) {
-        Queue<int[]> queue = new LinkedList<>();
+    public static void bfs(int x, int y)
+    {
+        Queue<Pos> queue = new LinkedList<>();
+        queue.add(new Pos(x, y, 1));
         visited[x][y] = true;
-        queue.add(new int[]{x, y});
 
-        while (!queue.isEmpty()) {
-            int[] now = queue.poll();
+        while (!queue.isEmpty())
+        {
+            Pos now = queue.poll();
 
-            for (int i = 0; i < 4; i++) {
-                int nx = now[0] + dx[i];
-                int ny = now[1] + dy[i];
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
 
-                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                    if (!visited[nx][ny] && map[nx][ny] == 1) {
-                        queue.add(new int[]{nx, ny});
+                if (nx >= 0 && nx < M && ny >= 0 && ny < N)
+                {
+                    //아직 방문하지 않았고, 1의 칸이라면
+                    if (!visited[nx][ny] && map[nx][ny] == 1)
+                    {
+                        queue.add(new Pos(nx, ny, now.cnt + 1));
                         visited[nx][ny] = true;
                     }
                 }
             }
         }
+
+
+    }
+}
+
+class Pos
+{
+    int x, y, cnt;
+
+    public Pos(int x, int y, int cnt)
+    {
+        this.x = x;
+        this.y = y;
+        this.cnt = cnt;
     }
 }
