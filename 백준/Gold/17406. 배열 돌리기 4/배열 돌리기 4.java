@@ -78,7 +78,7 @@ public class Main
                 int rightX = rotation[result[i]][0] + rotation[result[i]][2] - 1;
                 int rightY = rotation[result[i]][1] + rotation[result[i]][2] - 1;
 
-                rotate(leftX, leftY, rightX, rightY, copyArr);
+                rotate(new Pos(leftX, leftY), new Pos(rightX, rightY), copyArr);
             }
             calcMin(copyArr);
             return;
@@ -94,35 +94,47 @@ public class Main
             }
         }
     }
-    public static void rotate(int lx, int ly, int rx, int ry, int[][] copy) {
-        if(lx == rx && ly == ry) {
-            return;
-        }
 
-        int[] temp = new int[3]; //방향별로 값을 옮기다 보면 지워질 수 있는 좌표값을 저장.
-        temp[0] = copy[lx][ry];
-        temp[1] = copy[rx][ry];
-        temp[2] = copy[rx][ly];
+    public static void rotate(Pos start, Pos end, int[][] copy)
+    {
+        int row = end.x - start.x + 1; //가로
+        int col = end.y - start.y + 1; //세로
 
-        //오른쪽으로 회전
-        for(int i = ry; i > ly; i--) {
-            copy[lx][i] = copy[lx][i - 1];
+        for (int i = 0; i < Math.min(row, col) / 2; i++) //0,1
+        {
+            int x = start.x + i;
+            int y = start.y + i;
+            int temp = copy[x][y];
+            int index = 0;
+
+            while (index < 4)
+            {
+                int nx = x + dx[index];
+                int ny = y + dy[index];
+
+                if (nx >= (start.x + i) && nx <= (end.x - i) && ny >= (start.y + i) && ny <= (end.y - i))
+                {
+                    copy[x][y] = copy[nx][ny];
+                    x = nx;
+                    y = ny;
+
+                } else
+                {
+                    index++;
+                }
+            }
+            copy[start.x + i][start.y + i + 1] = temp;
         }
-        //아래로 회전
-        for(int i = rx; i > lx; i--) {
-            if(i == lx + 1) copy[i][ry] = temp[0];
-            else copy[i][ry] = copy[i - 1][ry];
-        }
-        //왼쪽으로 회전
-        for(int i = ly; i < ry; i++) {
-            if(i == ry - 1) copy[rx][i] = temp[1];
-            else copy[rx][i] = copy[rx][i + 1];
-        }
-        //위로 회전
-        for(int i = lx; i < rx; i++) {
-            if(i == rx - 1) copy[i][ly] = temp[2];
-            else copy[i][ly] = copy[i + 1][ly];
-        }
-        rotate(lx + 1, ly + 1, rx - 1, ry - 1, copy);
+    }
+}
+
+class Pos
+{
+    int x, y;
+
+    public Pos(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
     }
 }
