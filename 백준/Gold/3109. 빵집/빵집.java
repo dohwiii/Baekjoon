@@ -38,9 +38,7 @@ public class Main {
             }
 
         }
-
         System.out.println(ans);
-
 
     }
 
@@ -58,6 +56,7 @@ public class Main {
                 if (map[nx][ny] != 'x') {
                     map[nx][ny] = 'x';
                     makePipe(nx, ny);
+                    //마지막 열에 도착하면 다음 행 시작
                     if (isPossible) {
                         return;
                     }
