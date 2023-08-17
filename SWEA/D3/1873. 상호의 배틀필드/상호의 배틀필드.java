@@ -24,6 +24,8 @@ public class Solution {
                 String str = br.readLine();
                 for (int j = 0; j < W; j++) {
                     map[i][j] = str.charAt(j);
+                    
+                    //탱크 현재 위치 저장
                     if (map[i][j] == 'v') {
                         tank = new Pos(i, j, 0);
                     } else if (map[i][j] == '^') {
@@ -37,7 +39,9 @@ public class Solution {
             }
             int N = Integer.parseInt(br.readLine()); //명령어 개수
             String command = br.readLine();
-            game(command);
+            for (int i = 0; i < command.length(); i++) {
+                commandExecute(command, i);
+            }
             sb.append("#" + (t + 1) + " ");
             for (int i = 0; i < H; i++) {
                 for (int j = 0; j < W; j++) {
@@ -49,12 +53,6 @@ public class Solution {
         System.out.println(sb.toString());
 
 
-    }
-
-    public static void game(String command) {
-        for (int i = 0; i < command.length(); i++) {
-            commandExecute(command, i);
-        }
     }
 
     private static void commandExecute(String command, int i) {
@@ -86,7 +84,7 @@ public class Solution {
             int ny = tank.y + dy[1];
             int nDir = 1;
             map[tank.x][tank.y] = '^'; //방향 전환
-            
+
             if (nx >= 0 && nx < H && ny >= 0 && ny < W) {
                 if (map[nx][ny] == '.') { //평지
                     map[nx][ny] = '^'; //모양 복제
@@ -121,7 +119,7 @@ public class Solution {
             int ny = tank.y + dy[3];
             int nDir = 3;
             map[tank.x][tank.y] = '<'; //방향 전환
-            
+
             if (nx >= 0 && nx < H && ny >= 0 && ny < W) {
                 if (map[nx][ny] == '.') { //평지
                     map[nx][ny] = '<'; //모양 복제
@@ -139,7 +137,7 @@ public class Solution {
             int ny = tank.y + dy[2];
             int nDir = 2;
             map[tank.x][tank.y] = '>'; //방향 전환
-            
+
             if (nx >= 0 && nx < H && ny >= 0 && ny < W) {
                 if (map[nx][ny] == '.') { //평지
                     map[nx][ny] = '>'; //모양 복제
