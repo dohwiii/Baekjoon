@@ -1,96 +1,71 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static ArrayList<Integer>[] list;
     static boolean[] visited;
-    static BufferedWriter bw;
+    static ArrayList<Integer>[] list;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        int N = Integer.parseInt(st.nextToken()); //자리수
-        int M = Integer.parseInt(st.nextToken());
-        int V = Integer.parseInt(st.nextToken());
-        list = new ArrayList[N + 1];
+        int N = Integer.parseInt(st.nextToken()); //정점 개수
+        int M = Integer.parseInt(st.nextToken()); //간선 개수
+        int V = Integer.parseInt(st.nextToken()); //시작 정점 번호
         visited = new boolean[N + 1];
-
-        for (int i = 1; i <= N; i++)
-        {
+        list = new ArrayList[N + 1];
+        for (int i = 0; i <= N; i++) {
             list[i] = new ArrayList<>();
-
         }
-        for (int i = 0; i < M; i++)
-        {
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int E1 = Integer.parseInt(st.nextToken());
-            int E2 = Integer.parseInt(st.nextToken());
+            int v1 = Integer.parseInt(st.nextToken());
+            int v2 = Integer.parseInt(st.nextToken());
 
-            list[E1].add(E2);
-            list[E2].add(E1);
-
+            list[v1].add(v2);
+            list[v2].add(v1);
         }
-        for (int i = 1; i <= N; i++)
-        {
+        for (int i = 0; i <= N; i++) {
             Collections.sort(list[i]);
         }
-        bw.write(V + " ");
-        DFS(V);
 
-        bw.write("\n");
-
+        dfs(V);
+        System.out.println();
         visited = new boolean[N + 1];
-        BFS(V);
-
-        bw.flush();
-        bw.close();
-
+        bfs(V);
     }
-    public static void DFS(int num) throws IOException {
-        if (visited[num]) {
+
+    public static void dfs(int v) {
+        if (visited[v]) {
             return;
         }
-        visited[num] = true;
-        for (int i : list[num])
-        {
-            if (!visited[i])
-            {
-                bw.write(i + " ");
-                DFS(i);
+        visited[v] = true;
+        System.out.print(v + " ");
+        for (Integer node : list[v]) {
+            if (!visited[node]) {
+                dfs(node);
             }
         }
-
-
     }
 
-    public static void BFS(int num) throws IOException {
-        if (visited[num]) {
-            return;
-        }
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(num);
-        visited[num] = true;
+    public static void bfs(int v) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.add(v);
+        visited[v] = true;
 
-        while (!queue.isEmpty())
-        {
-            int next = queue.poll();
-            bw.write(next + " ");
+        while (!queue.isEmpty()) {
+            int now = queue.poll();
+            System.out.print(now + " ");
 
-            for (int i : list[next])
-            {
-                if (!visited[i])
-                {
-                    queue.add(i);
-                    visited[i] = true;
-
+            for (Integer node : list[now]) {
+                if (!visited[node]) {
+                    queue.offer(node);
+                    visited[node] = true;
                 }
             }
-
         }
 
-
     }
+
 }
