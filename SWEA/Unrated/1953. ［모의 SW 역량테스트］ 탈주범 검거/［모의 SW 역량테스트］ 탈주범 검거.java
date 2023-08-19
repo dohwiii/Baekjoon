@@ -47,11 +47,11 @@ public class Solution {
         Queue<Pos> queue = new ArrayDeque<>();
         queue.add(new Pos(x, y));
         visited[x][y] = true;
-        int time = 0;
+        int time = 1;
 
         while (!queue.isEmpty()) {
             int size = queue.size(); //한시간에 이동하는 좌표를 알기 위해 시간마다 갈 수 있는 좌표들을 같이 체킹해야함 모두 다 도는 단위로 시간추가
-            if (++time >= L) {
+            if (time == L) {
                 return;
             }
             while (size-- > 0) {
@@ -111,6 +111,7 @@ public class Solution {
                     }
                 }
             }
+            time++;
         }
     }
 }
