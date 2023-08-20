@@ -39,20 +39,3 @@ public class Main {
 
     }
 }
-
-class Time implements Comparable<Time> {
-    int start, end;
-
-    public Time(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
-
-    @Override
-    public int compareTo(Time o) {
-        if (this.end == o.end) {
-            return this.start - o.start;
-        }
-        return this.end - o.end;
-    }
-}
