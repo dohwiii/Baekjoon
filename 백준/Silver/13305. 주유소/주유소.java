@@ -28,12 +28,11 @@ public class Main {
             int dis = distances[i]; //현재 도로 거리
 
             //현재 오일가격 * 거리 < 다음 오일 가격 * 거리
-            if (nowOilMoney * dis > oilMoney[i] * dis) {
+            if (nowOilMoney > oilMoney[i]) {
                 nowOilMoney = oilMoney[i];
-                money += oilMoney[i] * dis;
-            } else {
-                money += nowOilMoney * dis;
             }
+            money += nowOilMoney * dis;
+
         }
         System.out.println(money);
 
