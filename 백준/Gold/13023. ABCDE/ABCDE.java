@@ -1,78 +1,69 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
     static ArrayList<Integer>[] list;
     static boolean[] visited;
-    static boolean check;
+    static boolean isPossible;
+    static int N;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int N = Integer.parseInt(st.nextToken()); //자리수
+        N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
         list = new ArrayList[N];
-        check = false;
 
-        for (int i = 0; i < N; i++)
-        {
+        for (int i = 0; i < N; i++) {
             list[i] = new ArrayList<>();
-
         }
-        for (int i = 0; i < M; i++)
-        {
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int E1 = Integer.parseInt(st.nextToken());
-            int E2 = Integer.parseInt(st.nextToken());
-
-            list[E1].add(E2);
-            list[E2].add(E1);
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            list[a].add(b);
+            list[b].add(a);
         }
-        for (int i = 0; i < N; i++)
-        {
+        isPossible = false;
+        for (int i = 0; i < N; i++) {
             visited = new boolean[N];
-            if (!visited[i])
-            {
-                DFS(i, 1);
-
+            if (!visited[i]) {
+                dfs(i, 1);
             }
-            if(check)
-            {
-                System.out.println("1");
+
+            if (isPossible) {
+                System.out.println(1);
                 break;
             }
 
-
+        }
+        if (!isPossible) {
+            System.out.println(0);
         }
 
-        if(!check)
-            System.out.println("0");
     }
 
-    public static void DFS(int num, int depth)
-    {
-        if (visited[num]) //방문한적있다면 돌아가
-         {
+    public static void dfs(int index, int depth) {
+        if (visited[index]) {
             return;
         }
-        if (depth == 5) {
-            check = true;
+        if (depth == 5) { //친구 관계 도달
+            isPossible = true;
             return;
         }
-        visited[num] = true;
-        for (int i : list[num])
-        {
-            if (visited[i] == false)
-            {
-                DFS(i, depth + 1);
+        visited[index] = true;
+        for (int p : list[index]) {
+            if (!visited[p]) {
+                dfs(p, depth + 1);
             }
         }
-        visited[num] = false;
+        visited[index] = false;
 
     }
 }
