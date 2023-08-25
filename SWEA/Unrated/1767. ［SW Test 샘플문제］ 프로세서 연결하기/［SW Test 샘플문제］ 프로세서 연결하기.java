@@ -38,11 +38,10 @@ public class Solution {
                     }
                 }
             }
-            makeWire(map, 0, 0, 0, 0);
-            Collections.sort(coreWireList);
+            makeWire(map, 0, 0,  0);
             int minWireCnt = Integer.MAX_VALUE;
             for (Core c : coreWireList) {
-                if (c.coreCnt == maxCoreCnt) {
+                if (c.coreCnt == maxCoreCnt) { //최대 코어 수와 같다면
                     minWireCnt = Math.min(minWireCnt, c.wireCnt);
                 }
             }
@@ -54,14 +53,14 @@ public class Solution {
 
     }
 
-    public static void makeWire(int[][] map, int coreCnt, int wireCnt, int checkedCore, int depth) { //현재 코어 위치
+    public static void makeWire(int[][] map, int coreCnt, int wireCnt, int depth) { //현재 코어 위치
         if (depth == coreList.size()) {
             maxCoreCnt = Math.max(maxCoreCnt, coreCnt); //코어 최대개수
             coreWireList.add(new Core(coreCnt, wireCnt)); //코어 개수와 전선 개수 리스트 저장
             return;
         }
-        int remainCore = coreList.size() - depth + coreCnt; //남은 코어수
-        if (remainCore < maxCoreCnt) {
+        int remainCore = coreList.size() - depth + coreCnt; //검사해야할 남은 코어 수 + 연결시킨 코어수
+        if (remainCore < maxCoreCnt) { //(앞으로의 모든 코어 연결되더라도 < 이제껏 최대로 연결시킨 코어 수) 보다 작다면 이후 탐색할 필요 없음
             return;
         }
         int x = coreList.get(depth).x;
@@ -91,12 +90,12 @@ public class Solution {
                     }
                 } else { //범위 밖이라면 전선 다 만들어진 것
                     isConnected = true;
-                    makeWire(copy, coreCnt + 1, wireCnt + wCnt, checkedCore + 1, depth + 1); //해당 코어 선택
+                    makeWire(copy, coreCnt + 1, wireCnt + wCnt, depth + 1); //해당 코어 선택
                     break;
                 }
             }
             if (!isConnected) { //이 코어를 선택하지 않았을 때
-                makeWire(map, coreCnt, wireCnt, checkedCore + 1, depth + 1);
+                makeWire(map, coreCnt, wireCnt, depth + 1);
             }
         }
     }
@@ -111,19 +110,11 @@ class Pos {
     }
 }
 
-class Core implements Comparable<Core> {
+class Core {
     int coreCnt, wireCnt;
 
     public Core(int coreCnt, int wireCnt) {
         this.coreCnt = coreCnt;
         this.wireCnt = wireCnt;
-    }
-
-    @Override
-    public int compareTo(Core o) {
-        if (o.coreCnt == this.coreCnt) {
-            return this.wireCnt - o.wireCnt;
-        }
-        return o.coreCnt - this.coreCnt;
     }
 }
