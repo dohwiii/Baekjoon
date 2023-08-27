@@ -25,7 +25,6 @@ public class Solution
                 cards[i] = st.nextToken();
             }
             int halfN = cards.length / 2;
-            Queue<String> queue = new ArrayDeque<>();
 
             //포인터
             int p1 = 0;
