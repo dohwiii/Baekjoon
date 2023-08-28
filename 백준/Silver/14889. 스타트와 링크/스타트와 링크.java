@@ -1,68 +1,81 @@
-import java.awt.geom.Dimension2D;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
     static int N;
     static int[][] map;
     static boolean[] visited;
-    static long min = 101;
+    static int minDiff;
 
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        map = new int[N + 1][N + 1];
-        visited = new boolean[N + 1];
+        map = new int[N][N];
+        visited = new boolean[N];
+        minDiff = Integer.MAX_VALUE;
 
-        for (int i = 1; i <= N; i++) {
+        for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int j = 1; j <= N; j++) {
+            for (int j = 0; j < N; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        dfs(0, new ArrayList<>(), 1);
-        System.out.println(min);
+        combi(0, 0);
+        System.out.println(minDiff);
+
+
     }
-    public static void dfs(int depth, List<Integer> start, int index) {
+
+    public static void combi(int index, int depth) {
         if (depth == N / 2) {
-            List<Integer> link = new ArrayList<>();
-            for (int i = 1; i <= N; i++) {
-                if (!start.contains(i)) {
-                    link.add(i);
+            int[] arr = new int[N / 2];
+            int[] arr2 = new int[N / 2];
+            int cnt = 0;
+            int cnt2 = 0;
+
+            for (int i = 0; i < N; i++) {
+                if (visited[i]) {
+                    arr[cnt] = i;
+                    cnt++;
+                } else {
+                    arr2[cnt2] = i;
+                    cnt2++;
                 }
             }
-            solve(start, link);
+            minDiff = Math.min(minDiff, calc(arr, arr2));
             return;
-        }
 
-        for (int i = index; i <= N; i++) {
+        }
+        for (int i = index; i < N; i++) {
             if (!visited[i]) {
                 visited[i] = true;
-                start.add(i);
-                dfs(depth + 1, start, i + 1);
-                start.remove(start.size() - 1);
+                combi(i + 1, depth + 1);
                 visited[i] = false;
             }
         }
     }
-    public static void solve(List<Integer> start, List<Integer> link) {
-        int sumS = 0;
-        int sumL = 0;
-        int middle = N / 2;
 
-        for (int i = 0; i < middle - 1; i++) {
-            int indexS1 = start.get(i);
-            int indexL1 = link.get(i);
-
-            for (int j = i + 1; j < middle; j++) {
-                int indexS2 = start.get(j);
-                int indexL2 = link.get(j);
-
-                sumS = sumS + map[indexS1][indexS2] + map[indexS2][indexS1];
-                sumL = sumL + map[indexL1][indexL2] + map[indexL2][indexL1];
+    public static int calc(int[] arr, int[] arr2) {
+        int sum = 0;
+        int sum2 = 0;
+        for (int i = 0; i < arr.length - 1; i++) { //0
+            int fix = arr[i];
+            for (int j = i + 1; j < arr.length; j++) { //1
+                int value = arr[j];
+                sum += map[fix][value] + map[value][fix];
             }
         }
-        int diff = Math.abs(sumS - sumL);
-        min = Math.min(min, diff);
+        for (int i = 0; i < arr2.length - 1; i++) { //0
+            int fix = arr2[i];
+            for (int j = i + 1; j < arr2.length; j++) { //1
+                int value = arr2[j];
+                sum2 += map[fix][value] + map[value][fix];
+            }
+        }
+        return Math.abs(sum - sum2);
     }
 }
