@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -67,6 +66,7 @@ public class Main {
                 }
                 for (int num : Bgroup) {
                     bSum += people[num];
+
                 }
                 min = Math.min(min, Math.abs(aSum - bSum));
                 isPossible = true;
@@ -91,25 +91,27 @@ public class Main {
         Queue<Integer> queue = new ArrayDeque<>();
         queue.add(areaList.get(0));
         visitedArea[areaList.get(0)] = true;
+        int cnt = 0;
 
         while (!queue.isEmpty()) {
             int now = queue.poll();
 
             for (int n : list[now]) { //첫번째 구역과 인접한 구역들
-                for (int areaNum : areaList) { //조합한 A 선거구안의 구역들
-                    if (!visitedArea[areaNum]) {
-                        if (n == areaNum) {
-                            visitedArea[areaNum] = true;
-                            queue.add(areaNum);
+                if (!visitedArea[n]) {
+                    for (int i = 1; i < areaList.size(); i++) {
+                        if (n == areaList.get(i)) {
+                            visitedArea[n] = true;
+                            queue.add(n);
+                            cnt++;
+                            break;
                         }
                     }
                 }
+
             }
         }
-        for (int num : areaList) {
-            if (!visitedArea[num]) { //인접한 구역이 아니라면
-                return false;
-            }
+        if (cnt != areaList.size() - 1) {
+            return false;
         }
         return true;
     }
