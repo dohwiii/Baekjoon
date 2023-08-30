@@ -26,6 +26,11 @@ public class Main {
 
     }
 
+    /**
+     * 
+     * @param input : SCV
+     * @param depth : 공격 횟수
+     */
     public static void dfs(int[] input, int depth) {
         boolean isAllZero = true;
         for (int i = 0; i < N; i++) {
@@ -37,6 +42,7 @@ public class Main {
             min = Math.min(min, depth);
             return;
         }
+        //한번도 공격을 안한 값이 아니고(0), 지금 공격 횟수보다 작다면 최소 공격 횟수 변경 X
         if (dp[input[0]][input[1]][input[2]] <= depth && dp[input[0]][input[1]][input[2]] != 0) {
             return;
         }
@@ -44,17 +50,17 @@ public class Main {
             dp[input[0]][input[1]][input[2]] = depth;
         }
 
-        int[] tempArr = input.clone();
+        int[] tempArr = input.clone(); //배열 복사
         for (int i = 0; i < 6; i++) { //공격 유형
             for (int j = 0; j < N; j++) {
-                if (input[j] - attack[i][j] < 0) {
+                if (input[j] - attack[i][j] < 0) { //음수라면 0 설정
                     tempArr[j] = 0;
                 }
                 else {
                     tempArr[j] = input[j] - attack[i][j];
                 }
             }
-            dfs(tempArr, depth + 1);
+            dfs(tempArr, depth + 1); //재귀 호출
         }
     }
 }
