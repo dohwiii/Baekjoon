@@ -5,99 +5,114 @@ import java.util.*;
 
 public class Solution {
     static int N;
+    static int coreMax;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static List<Pos> coreList;
-    static int maxCoreCnt;
-    static List<Core> coreWireList;
+    static List<Pos> coreWireList;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
         int T = Integer.parseInt(br.readLine());
 
         for (int t = 0; t < T; t++) {
-            N = Integer.parseInt(br.readLine()); //크기
+            N = Integer.parseInt(br.readLine()); //NxN
             int[][] map = new int[N][N];
             coreList = new ArrayList<>();
+            coreMax = Integer.MIN_VALUE;
             coreWireList = new ArrayList<>();
-            maxCoreCnt = Integer.MIN_VALUE;
 
             for (int i = 0; i < N; i++) {
                 StringTokenizer st = new StringTokenizer(br.readLine());
                 for (int j = 0; j < N; j++) {
-                    map[i][j] = Integer.parseInt(st.nextToken());
+                    map[i][j] = Integer.parseInt(st.nextToken()); //1:core
                 }
             }
-            //가장자리 제외
             for (int i = 1; i < N - 1; i++) {
                 for (int j = 1; j < N - 1; j++) {
-                    if (map[i][j] == 1) { //core
-                        coreList.add(new Pos(i, j)); //리스트 추가
+                    if (map[i][j] == 1) {
+                        coreList.add(new Pos(i, j));
                     }
                 }
             }
-            makeWire(map, 0, 0,  0);
-            int minWireCnt = Integer.MAX_VALUE;
-            for (Core c : coreWireList) {
-                if (c.coreCnt == maxCoreCnt) { //최대 코어 수와 같다면
-                    minWireCnt = Math.min(minWireCnt, c.wireCnt);
+            connectCore(0, 0, map, 0);
+            int ans = Integer.MAX_VALUE;
+            for (Pos v : coreWireList) {
+                if (v.x == coreMax) {
+                    ans = Math.min(ans, v.y);
                 }
             }
-            sb.append("#").append(t + 1).append(" ");
-            sb.append(minWireCnt);
+
+            sb.append("#" + (t + 1) + " ");
+            sb.append(ans);
             sb.append("\n");
         }
         System.out.println(sb);
 
     }
 
-    public static void makeWire(int[][] map, int coreCnt, int wireCnt, int depth) { //현재 코어 위치
-        if (depth == coreList.size()) {
-            maxCoreCnt = Math.max(maxCoreCnt, coreCnt); //코어 최대개수
-            coreWireList.add(new Core(coreCnt, wireCnt)); //코어 개수와 전선 개수 리스트 저장
+
+    public static void connectCore(int coreCnt, int depth, int[][] map, int wireCnt) {
+        if (depth == coreList.size()) { //탐색 끝
+            coreMax = Math.max(coreMax, coreCnt);
+            coreWireList.add(new Pos(coreCnt, wireCnt));
             return;
         }
-        int remainCore = coreList.size() - depth + coreCnt; //검사해야할 남은 코어 수 + 연결시킨 코어수
-        if (remainCore < maxCoreCnt) { //(앞으로의 모든 코어 연결되더라도 < 이제껏 최대로 연결시킨 코어 수) 보다 작다면 이후 탐색할 필요 없음
+        //남은 코어 수
+        int remainCore = coreList.size() - (depth - coreCnt);
+        if (remainCore < coreMax) {
             return;
         }
+
+        //현재 탐색하고 있는 코어 좌표
         int x = coreList.get(depth).x;
         int y = coreList.get(depth).y;
 
+
         for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+            int tempR = dx[i];
+            int tempC = dy[i];
+
+            int cnt = 0; //전선 길이
+            boolean isArrive = false; //현재 코어가 전선을 완성했는가
+
             //배열 복사
-            int[][] copy = new int[N][N];
+            int[][] copyMap = new int[N][N];
             for (int j = 0; j < N; j++) {
-                copy[j] = map[j].clone();
+                copyMap[j] = map[j].clone();
             }
-            int wCnt = 0; //전선 길이
-            boolean isConnected = false; //전선이 연결되었는가
             while (true) {
-                //범위 안이라면
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (copy[nx][ny] == 2 || copy[nx][ny] == 1) { //이미 다른 전선이 있거나, 다른 core가 있다면 방향 전환
+                if (x + tempR >= 0 && x + tempR < N && y + tempC >= 0 && y + tempC < N) {
+                    if (copyMap[x + tempR][y + tempC] != 0) {
+                        isArrive = false;
                         break;
                     }
-                    if (copy[nx][ny] == 0) { //빈칸이라면
-                        copy[nx][ny] = 2; //전선 생성
-                        nx += dx[i];
-                        ny += dy[i];
-                        wCnt++; //전선 개수
+                    copyMap[x + tempR][y + tempC] = 2; //전선 생성
+                    cnt++; //전선 길이
+
+                    if (tempR > 0) {
+                        tempR++;
+                    } else if (tempR < 0) {
+                        tempR--;
                     }
-                } else { //범위 밖이라면 전선 다 만들어진 것
-                    isConnected = true;
-                    makeWire(copy, coreCnt + 1, wireCnt + wCnt, depth + 1); //해당 코어 선택
+                    if (tempC > 0) {
+                        tempC++;
+                    } else if (tempC < 0) {
+                        tempC--;
+                    }
+                } else { //범위밖이면 전선 연결 성공
+                    isArrive = true;
+                    connectCore(coreCnt + 1, depth + 1, copyMap, wireCnt + cnt);
                     break;
                 }
             }
-            if (!isConnected) { //이 코어를 선택하지 않았을 때
-                makeWire(map, coreCnt, wireCnt, depth + 1);
+            if (!isArrive) { //도착하지 못했다면
+                //다음 코어 탐색, 전선 만들지 않음, 전선 개수 동일
+                connectCore(coreCnt, depth + 1, map, wireCnt);
             }
         }
+
     }
 }
 
@@ -107,14 +122,5 @@ class Pos {
     public Pos(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-}
-
-class Core {
-    int coreCnt, wireCnt;
-
-    public Core(int coreCnt, int wireCnt) {
-        this.coreCnt = coreCnt;
-        this.wireCnt = wireCnt;
     }
 }
