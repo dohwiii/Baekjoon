@@ -2,25 +2,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 public class Main {
-    static int N, M;
-    static int[][] map;
+    static int N, M, islandCnt;
+    static List<Pos> islandList;
+    static List<List<Pos>> allIslandList;
     static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static ArrayList<ArrayList<int[]>> sumList;
-    static ArrayList<int[]> mList;
     static int[] parent;
 
+    /**
+     * 방향 중간에 바뀌면 안됨
+     * 다리 길이 2 이상
+     * 다리의 (가로, 세로) 방향과 같은 방향으로 섬이 있어야함
+     */
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        int[][] map = new int[N][M];
         visited = new boolean[N][M];
-        map = new int[N][M];
-        mList = new ArrayList<>();
+        allIslandList = new ArrayList<>();
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
@@ -28,44 +34,49 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        int count = 1;
+
+        int index = 1;
+        //섬 좌표 리스트에 넣기
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                if (!visited[i][j] && map[i][j] != 0) {
-                    BFS(i, j, count++);
-                    sumList.add(mList);
+                if (!visited[i][j] && map[i][j] == 1) {
+                    islandList = new ArrayList<>(); //한 개의 섬
+                    setIslandList(map, i, j, index);
+                    index++;
+                    allIslandList.add(islandList); //모든 섬에 추가
+                    islandCnt++; //섬 개수
                 }
             }
         }
-        parent = new int[count];
-        for (int i = 1; i < count; i++) { //5
+        parent = new int[islandCnt + 1];
+        for (int i = 1; i <= islandCnt; i++) {
             parent[i] = i;
         }
         PriorityQueue<Island> queue = new PriorityQueue<>();
-        for (int i = 0; i < sumList.size(); i++) {
-            ArrayList<int[]> now = sumList.get(i);
-            for (int j = 0; j < now.size(); j++) {
-                int r = now.get(j)[0];
-                int c = now.get(j)[1];
-                int now_S = map[r][c];
+        for (int p = 0; p < allIslandList.size(); p++) {
+            List<Pos> nowIslandList = allIslandList.get(p);
+            for (Pos now : nowIslandList) { //하나의 섬 중 한 좌표
+                int x = now.x;
+                int y = now.y;
+                int start = map[x][y];
 
-                for (int d = 0; d < 4; d++) {
-                    int tempR = dx[d];
-                    int tempC = dy[d];
+                //방향
+                for (int i = 0; i < 4; i++) {
+                    int tempR = dx[i];
+                    int tempC = dy[i];
                     int bridge = 0;
 
-                    while (r + tempR >= 0 && r + tempR < N && c + tempC >= 0 && c + tempC < M)
-                    {
-                        if (map[r + tempR][c + tempC] == now_S) {
+                    while (x + tempR >= 0 && x + tempR < N && y + tempC >= 0 && y + tempC < M) {
+                        if (map[x + tempR][y + tempC] == start) { //같은 섬 좌표
                             break;
-                        } else if (map[r + tempR][c + tempC] != 0) {
-                            if (bridge > 1) {
-                                queue.offer(new Island(now_S, map[r + tempR][c + tempC], bridge));
+                        } else if (map[x + tempR][y + tempC] != 0) { //다른 섬 만났다면
+                            if (bridge >= 2) { //다리 길이가 2이상
+                                queue.add(new Island(start, map[x + tempR][y + tempC], bridge));
                             }
                             break;
-                        }
-                        else
+                        } else {
                             bridge++;
+                        }
 
                         if (tempR > 0) {
                             tempR++;
@@ -85,95 +96,87 @@ public class Main {
         int result = 0;
         while (!queue.isEmpty()) {
             Island now = queue.poll();
-            if (find(now.x) != find(now.y)) {
-                union(now.x, now.y);
-                result += now.value;
+            //아직 연결되어있지 않은 섬이라면
+            if (find(now.start) != find(now.end)) {
+                union(now.start, now.end);
+                result += now.bridgeCnt; //다리 길이
                 useEdge++;
             }
         }
-        if (useEdge == count - 2) {
+        if (useEdge == islandCnt - 1) {
             System.out.println(result);
-        }
-        else
+        } else {
             System.out.println(-1);
+        }
+
     }
 
-    public static void BFS(int x, int y, int num) {
-        Queue<Island> queue = new LinkedList<>();
-        sumList = new ArrayList<>();
-        queue.add(new Island(x, y, num));
+    public static void setIslandList(int[][] map, int x, int y, int index) {
+        Queue<Pos> queue = new ArrayDeque<>();
+        queue.add(new Pos(x, y));
+        islandList.add(new Pos(x, y));
+        map[x][y] = index;
         visited[x][y] = true;
-        map[x][y] = num;
-        mList.add(new int[]{x, y});
 
         while (!queue.isEmpty()) {
-            Island now = queue.poll();
-            int r = now.x;
-            int c = now.y;
+            Pos now = queue.poll();
 
             for (int i = 0; i < 4; i++) {
-                int tempR = dx[i];
-                int tempC = dy[i];
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
 
-                while (r + tempR >= 0 && r + tempR < N && c + tempC >= 0 && c + tempC < M) {
-                    if (!visited[r + tempR][c + tempC] && map[r + tempR][c + tempC] != 0) {
-                        map[r + tempR][c + tempC] = now.value;
-                        visited[r + tempR][c + tempC] = true;
-                        queue.add(new Island(r + tempR, c + tempC, now.value));
-                        mList.add(new int[]{r + tempR, c + tempC});
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
+                    if (!visited[nx][ny] && map[nx][ny] == 1) {
+                        visited[nx][ny] = true;
+                        map[nx][ny] = index;
+                        islandList.add(new Pos(nx, ny));
+                        queue.add(new Pos(nx, ny));
                     }
-                    else
-                        break;
-
-                    if (tempR > 0) {
-                        tempR++;
-                    } else if (tempR < 0) {
-                        tempR--;
-                    }
-                    if (tempC > 0) {
-                        tempC++;
-                    } else if (tempC < 0) {
-                        tempC--;
-                    }
-
                 }
             }
+
         }
     }
 
+    public static void union(int a, int b) {
+        int pa = find(a);
+        int pb = find(b);
 
-    public static void union(int x, int y) {
-        int a = find(x);
-        int b = find(y);
-        if (a != b) {
-            parent[b] = a;
+        if (pa != pb) {
+            parent[pb] = pa;
         }
+
     }
 
     public static int find(int x) {
-        if (x == parent[x]) {
-            return x;
-        }
-        else
+        if (x != parent[x]) {
             return parent[x] = find(parent[x]);
+        }
+        return x;
+    }
+
+}
+
+class Pos {
+    int x, y;
+
+    public Pos(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }
-class Island implements Comparable<Island>
-{
-    int x, y, value;
 
-    public Island(int x, int y, int value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-    }
-    public Island(int x, int y) {
-        this.x = x;
-        this.y = y;
+class Island implements Comparable<Island> {
+    int start, end, bridgeCnt;
+
+    public Island(int start, int end, int bridgeCnt) {
+        this.start = start;
+        this.end = end;
+        this.bridgeCnt = bridgeCnt;
     }
 
     @Override
     public int compareTo(Island o) {
-        return this.value - o.value;
+        return this.bridgeCnt - o.bridgeCnt;
     }
 }
