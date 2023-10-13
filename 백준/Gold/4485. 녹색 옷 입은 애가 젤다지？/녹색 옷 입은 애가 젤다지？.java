@@ -1,5 +1,3 @@
-import org.omg.CORBA.CharSeqHelper;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,13 +6,12 @@ import java.util.*;
 public class Main {
     static int N;
     static int[][] map;
+    static int[][] money;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static int min;
-    static int[][] moneyArr;
+    static boolean[][] visited;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
 
@@ -25,8 +22,8 @@ public class Main {
                 break;
             }
             map = new int[N][N];
-            moneyArr = new int[N][N];
-            min = Integer.MAX_VALUE;
+            money = new int[N][N];
+            visited = new boolean[N][N];
 
             for (int i = 0; i < N; i++) {
                 StringTokenizer st = new StringTokenizer(br.readLine());
@@ -35,12 +32,12 @@ public class Main {
                 }
             }
             for (int i = 0; i < N; i++) {
-                Arrays.fill(moneyArr[i], Integer.MAX_VALUE);
+                Arrays.fill(money[i], Integer.MAX_VALUE); //최댓값으로 초기화
             }
-            moneyArr[0][0] = map[0][0];
-            bfs(0, 0);
-            sb.append("Problem ").append(index).append(": ");
-            sb.append(moneyArr[N - 1][N - 1]);
+            bfs(0, 0); //시작점
+
+            sb.append("Problem " + index + ": ");
+            sb.append(money[N - 1][N - 1]);
             sb.append("\n");
             index++;
         }
@@ -49,12 +46,12 @@ public class Main {
     }
 
     public static void bfs(int x, int y) {
-        PriorityQueue<Pos> queue = new PriorityQueue<>();
+        PriorityQueue<Pos> queue = new PriorityQueue<>(); //우선순위 큐
         queue.add(new Pos(x, y, map[x][y]));
+        money[x][y] = map[x][y]; //시작점 초기화
 
         while (!queue.isEmpty()) {
             Pos now = queue.poll();
-
             if (now.x == N - 1 && now.y == N - 1) {
                 return;
             }
@@ -63,30 +60,28 @@ public class Main {
                 int ny = now.y + dy[i];
 
                 if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (moneyArr[nx][ny] > moneyArr[now.x][now.y] + map[nx][ny]) {
-                        moneyArr[nx][ny] = moneyArr[now.x][now.y] + map[nx][ny];
-                        queue.add(new Pos(nx, ny, now.money + map[nx][ny]));
+                    if (money[nx][ny] > money[now.x][now.y] + map[nx][ny]) {
+                        queue.add(new Pos(nx, ny, money[now.x][now.y] + map[nx][ny]));
+                        money[nx][ny] = money[now.x][now.y] + map[nx][ny];
                     }
                 }
             }
-
         }
     }
+
 }
 
-class Pos implements Comparable<Pos>{
-    int x, y, money;
+class Pos implements Comparable<Pos> {
+    int x, y, value;
 
-    public Pos(int x, int y, int money) {
+    public Pos(int x, int y, int value) {
         this.x = x;
         this.y = y;
-        this.money = money;
+        this.value = value;
     }
-
 
     @Override
     public int compareTo(Pos o) {
-        return this.money - o.money;
+        return this.value - o.value;
     }
-
 }
