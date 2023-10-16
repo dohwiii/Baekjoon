@@ -1,97 +1,94 @@
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    public static ArrayList<Node>[] list;
+    static int N, M, K;
+    static List<Travel>[] list;
+    static StringBuilder sb = new StringBuilder();
+
     public static void main(String[] args) throws IOException {
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int N = Integer.parseInt(st.nextToken()); //도시 개수
-        int M = Integer.parseInt(st.nextToken()); //도로의 개수
-        int K = Integer.parseInt(st.nextToken()); //K번쨰
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        N = Integer.parseInt(st.nextToken()); //도시 개수
+        M = Integer.parseInt(st.nextToken()); //도로 개수
+        K = Integer.parseInt(st.nextToken()); //K번째 최단경로
         list = new ArrayList[N + 1];
 
         for (int i = 0; i <= N; i++) {
             list[i] = new ArrayList<>();
         }
+
         for (int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            int t = Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(bf.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken()); //a->b 소요시간
 
-            list[x].add(new Node(y, t));
+            list[a].add(new Travel(b, c));
         }
+        travel(2);
+        System.out.println(sb.toString());
+    }
 
+    public static void travel(int destination) {
+        //1번 도시 -> i번 도시 가는 K번째 최단경로의 소요시간
         PriorityQueue<Integer>[] distQueue = new PriorityQueue[N + 1];
         Comparator<Integer> cp = new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
                 return o1 < o2 ? 1 : -1;
             }
-
         };
+
         for (int i = 0; i <= N; i++) {
             distQueue[i] = new PriorityQueue<>(K, cp);
         }
-        PriorityQueue<Node> queue = new PriorityQueue<>();
-        queue.add(new Node(1, 0)); //최소 노드와 가는 시간
+        PriorityQueue<Travel> pq = new PriorityQueue<>();
+        pq.add(new Travel(1, 0));
         distQueue[1].add(0);
 
-        while (!queue.isEmpty())
-        {
-            Node now = queue.poll();
+        while (!pq.isEmpty()) {
+            Travel now = pq.poll(); //현재 도시
 
-            for (Node next : list[now.node])
-            {
-                if (distQueue[next.node].size() < K)
-                {
-                    distQueue[next.node].add(now.value + next.value);
-                    queue.add(new Node(next.node, now.value + next.value));
-                }
-                else if (distQueue[next.node].peek() > now.value + next.value)
-                {
-                    distQueue[next.node].poll();
-                    distQueue[next.node].add(now.value + next.value);
-                    queue.add(new Node(next.node, now.value + next.value));
-                }
+            for (Travel next : list[now.city]) {
 
+                if (distQueue[next.city].size() < K) { //아직 K번째에 도달하지 않았다면
+                    distQueue[next.city].add(now.time + next.time);
+                    pq.add(new Travel(next.city, now.time + next.time));
+
+                } else if (distQueue[next.city].peek() > now.time + next.time) {
+                    distQueue[next.city].poll();
+                    distQueue[next.city].add(now.time + next.time);
+                    pq.add(new Travel(next.city, now.time + next.time));
+                }
             }
-
         }
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         for (int i = 1; i <= N; i++) {
-            if (distQueue[i].size() == K) {
-                bw.write(distQueue[i].peek()+"\n");
+            if (distQueue[i].size() == K) { //K번째 최단거리가 있다면
+                sb.append(distQueue[i].peek()).append("\n");
+            } else {
+                sb.append("-1" + "\n");
             }
-            else
-            {
-                bw.write(-1 + "\n");
-            }
-        }
-        bw.flush();
-        bw.close();
-        br.close();
 
+        }
     }
 
 }
-class Node implements Comparable<Node>
-{
-    int node;
-    int value;
 
-    public Node(int node, int value)
-    {
-        this.node = node;
-        this.value = value;
+class Travel implements Comparable<Travel> {
+    int city, time;
+
+    public Travel(int end, int time) {
+        this.city = end;
+        this.time = time;
     }
 
     @Override
-    public int compareTo(Node o) {
-        return this.value - o.value;
+    public int compareTo(Travel o) {
+        return this.time - o.time;
     }
 }
