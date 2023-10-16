@@ -8,7 +8,7 @@ public class Main {
     static int[] dy = {0, 0, 1, -1};
     static int N, M, K;
     static int[][] map;
-    static boolean[][][] visited;
+    static int[][] visited;
     static int result;
     static boolean isPossible = false;
 
@@ -19,13 +19,16 @@ public class Main {
         M = Integer.parseInt(st.nextToken()); //세로
         K = Integer.parseInt(st.nextToken()); //부수는 벽의 개수
         map = new int[N][M];
-        visited = new boolean[N][M][K + 1];
+        visited = new int[N][M];
 
         for (int i = 0; i < N; i++) {
             String input = br.readLine();
             for (int j = 0; j < M; j++) {
                 map[i][j] = input.charAt(j) - '0';
             }
+        }
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(visited[i], 11);
         }
         bfs(0, 0);
         if (isPossible) {
@@ -40,61 +43,51 @@ public class Main {
 
     public static void bfs(int x, int y) {
         Queue<Pos> queue = new ArrayDeque<>();
-        queue.add(new Pos(x, y, 0, 1, false));
-        visited[x][y][0] = true;
+        queue.add(new Pos(x, y, 0));
+        int cnt = 1;
+        visited[x][y] = 0;
 
         while (!queue.isEmpty()) {
-            Pos now = queue.poll();
-            if (now.x == N - 1 && now.y == M - 1) {
-                isPossible = true;
-                result = now.cnt;
-                return;
-            }
-            if (now.wallCnt > K) {
-                continue;
-            }
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
+            int size = queue.size();
+            while (size-- > 0) {
+                Pos now = queue.poll();
 
-                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                    if (map[nx][ny] == 0) { //빈칸
-                        if (!now.alreadyBreak && !visited[nx][ny][0]) { //벽 부신적 없음
-                            queue.add(new Pos(nx, ny, now.wallCnt, now.cnt + 1, now.alreadyBreak));
-                            visited[nx][ny][0] = true;
-                        }
-                        else if (now.alreadyBreak && !visited[nx][ny][now.wallCnt]) { //벽 부신적 있음
-                            queue.add(new Pos(nx, ny, now.wallCnt, now.cnt + 1, now.alreadyBreak));
-                            visited[nx][ny][now.wallCnt] = true;
-                        }
-                    } 
-                    else if (map[nx][ny] == 1) { //벽
-                        if (now.wallCnt + 1 <= K) {
-                            if (!visited[nx][ny][now.wallCnt + 1]) {
-                                queue.add(new Pos(nx, ny, now.wallCnt + 1, now.cnt + 1, true));
-                                visited[nx][ny][now.wallCnt + 1] = true;
-                            }
-                        }
+                if (now.x == N - 1 && now.y == M - 1) {
+                    isPossible = true;
+                    result = cnt;
+                    return;
+                }
 
+                for (int i = 0; i < 4; i++) {
+                    int nx = now.x + dx[i];
+                    int ny = now.y + dy[i];
+
+                    if (nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny] <= now.wallCnt) continue;
+
+                    if (map[nx][ny] == 1) {
+                        if (now.wallCnt < K) {
+                            visited[nx][ny] = now.wallCnt;
+                            queue.offer(new Pos(nx, ny, now.wallCnt + 1));
+                        }
+                    } else if(map[nx][ny] == 0){
+                        visited[nx][ny] = now.wallCnt;
+                        queue.offer(new Pos(nx, ny, now.wallCnt));
                     }
-
                 }
             }
-
+            cnt++;
         }
     }
 }
 
 class Pos {
-    int x, y, wallCnt, cnt;
-    boolean alreadyBreak;
+    int x, y, wallCnt;
 
-    public Pos(int x, int y, int wallCnt, int cnt, boolean alreadyBreak) {
+    public Pos(int x, int y, int wallCnt) {
         this.x = x;
         this.y = y;
         this.wallCnt = wallCnt;
-        this.cnt = cnt;
-        this.alreadyBreak = alreadyBreak;
     }
+
 
 }
