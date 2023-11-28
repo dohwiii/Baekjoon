@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,23 +7,26 @@ import java.util.*;
 public class Main {
     static int N;
     static int[][] map;
-    static int[][] money;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static boolean[][] visited;
+    static StringBuilder sb = new StringBuilder();
+    static int result;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
+        int index = 0;
 
-        int index = 1;
         while (true) {
             N = Integer.parseInt(br.readLine());
             if (N == 0) {
+                System.out.println(sb.toString());
                 break;
             }
+            result = 0;
+            index++;
             map = new int[N][N];
-            money = new int[N][N];
             visited = new boolean[N][N];
 
             for (int i = 0; i < N; i++) {
@@ -31,57 +35,64 @@ public class Main {
                     map[i][j] = Integer.parseInt(st.nextToken());
                 }
             }
-            for (int i = 0; i < N; i++) {
-                Arrays.fill(money[i], Integer.MAX_VALUE); //최댓값으로 초기화
-            }
-            bfs(0, 0); //시작점
-
-            sb.append("Problem " + index + ": ");
-            sb.append(money[N - 1][N - 1]);
+            solve(0, 0);
+            sb.append("Problem " + index + ": " + result);
             sb.append("\n");
-            index++;
         }
-        System.out.println(sb);
+
 
     }
 
-    public static void bfs(int x, int y) {
-        PriorityQueue<Pos> queue = new PriorityQueue<>(); //우선순위 큐
-        queue.add(new Pos(x, y, map[x][y]));
-        money[x][y] = map[x][y]; //시작점 초기화
+    public static void solve(int x, int y) {
+        PriorityQueue<Pos> pqueue = new PriorityQueue<>();
+        pqueue.add(new Pos(x, y, 0));
+        visited[x][y] = true;
 
-        while (!queue.isEmpty()) {
-            Pos now = queue.poll();
+        int[][] dist = new int[N][N];
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        dist[0][0] = map[0][0];
+
+        while (!pqueue.isEmpty()) {
+            Pos now = pqueue.poll();
+            //도착지점
             if (now.x == N - 1 && now.y == N - 1) {
+                result = dist[now.x][now.y];
                 return;
             }
+
             for (int i = 0; i < 4; i++) {
                 int nx = now.x + dx[i];
                 int ny = now.y + dy[i];
 
                 if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (money[nx][ny] > money[now.x][now.y] + map[nx][ny]) {
-                        queue.add(new Pos(nx, ny, money[now.x][now.y] + map[nx][ny]));
-                        money[nx][ny] = money[now.x][now.y] + map[nx][ny];
+                    if (!visited[nx][ny]) {
+                        if (dist[nx][ny] > dist[now.x][now.y] + map[nx][ny]) {
+                            dist[nx][ny] = dist[now.x][now.y] + map[nx][ny];
+                            pqueue.add(new Pos(nx, ny, dist[now.x][now.y] + map[nx][ny]));
+                        }
                     }
                 }
+
             }
         }
     }
 
+
 }
 
 class Pos implements Comparable<Pos> {
-    int x, y, value;
+    int x, y, money;
 
-    public Pos(int x, int y, int value) {
+    public Pos(int x, int y, int money) {
         this.x = x;
         this.y = y;
-        this.value = value;
+        this.money = money;
     }
 
     @Override
     public int compareTo(Pos o) {
-        return this.value - o.value;
+        return this.money - o.money;
     }
 }
