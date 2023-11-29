@@ -8,6 +8,7 @@ public class Main {
     static int N, D, C;
     static List<Hack>[] list;
     static int[] time;
+    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,6 +20,7 @@ public class Main {
             D = Integer.parseInt(st.nextToken()); //의존성 개수
             C = Integer.parseInt(st.nextToken()); //해킹당한 컴퓨터 번호
 
+            visited = new boolean[N + 1];
             time = new int[N + 1];
             list = new ArrayList[N + 1];
             for (int i = 1; i <= N; i++) {
@@ -60,12 +62,17 @@ public class Main {
         while (!pqueue.isEmpty()) {
             Hack now = pqueue.poll();
 
-            for (Hack next : list[now.com]) {
-                if (time[next.com] > now.sec + next.sec) {
-                    time[next.com] = now.sec + next.sec;
-                    pqueue.add(new Hack(next.com, now.sec + next.sec));
+            if (!visited[now.com]) {
+                visited[now.com] = true;
+
+                for (Hack next : list[now.com]) {
+                    if (time[next.com] > now.sec + next.sec) {
+                        time[next.com] = now.sec + next.sec;
+                        pqueue.add(new Hack(next.com, now.sec + next.sec));
+                    }
                 }
             }
+
         }
 
     }
