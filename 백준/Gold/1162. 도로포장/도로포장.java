@@ -8,7 +8,7 @@ public class Main {
     static int N, M, K;
     static List<Node>[] list;
     static boolean[][] visited;
-    static long INF = Long.MAX_VALUE;
+    static long INF = 50000000001L;
     static long result = Long.MAX_VALUE;
     static long[][] dist;
 
@@ -42,9 +42,10 @@ public class Main {
         PriorityQueue<Node> pq = new PriorityQueue<>();
         dist = new long[N + 1][K + 1];
         visited = new boolean[N + 1][K + 1];
-        for (int i = 2; i <= N; i++) {
+        for (int i = 1; i <= N; i++) {
             Arrays.fill(dist[i], INF);
         }
+        dist[1][0] = 0;
         pq.add(new Node(1, 0, 0));
 
         while (!pq.isEmpty()) {
