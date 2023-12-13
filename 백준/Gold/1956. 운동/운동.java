@@ -1,6 +1,4 @@
 
-import org.w3c.dom.Node;
-
 import java.io.*;
 import java.util.*;
 
@@ -55,6 +53,9 @@ public class Main {
                 if (i == j) {
                     continue;
                 }
+                if (dist[i][j] == INF) {
+                    continue;
+                }
                 min = Math.min(min, dist[i][j] + dist[j][i]);
             }
         }
@@ -62,10 +63,9 @@ public class Main {
             System.out.println(min);
         } else {
             System.out.println(-1);
-            
+
         }
 
     }
-
 
 }
