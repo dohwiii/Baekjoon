@@ -6,89 +6,90 @@ import java.util.*;
 
 public class Main {
     static int N, E;
-    static List<Pos>[] list;
-    static int u, v;
+    static List<Node>[] list;
+    static int[] dist;
     static final int INF = 200000000;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(st.nextToken());
         E = Integer.parseInt(st.nextToken());
-        list = new ArrayList[N + 1];
 
-        for (int i = 0; i <= N; i++) {
+        dist = new int[N + 1];
+        list = new List[N + 1];
+        for (int i = 1; i <= N; i++) {
             list[i] = new ArrayList<>();
         }
+
         for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
-            list[a].add(new Pos(b, c));
-            list[b].add(new Pos(a, c));
+
+            list[a].add(new Node(b, c));
+            list[b].add(new Node(a, c));
         }
-        //반드시 통과해야하는 정점
         st = new StringTokenizer(br.readLine());
-        u = Integer.parseInt(st.nextToken());
-        v = Integer.parseInt(st.nextToken());
+        int u = Integer.parseInt(st.nextToken());
+        int v = Integer.parseInt(st.nextToken());
 
         int res1 = 0;
-        res1 += dijkstra(1, u);
-        res1 += dijkstra(u, v);
-        res1 += dijkstra(v, N);
+        res1 += solve(1, u);
+        res1 += solve(u, v);
+        res1 += solve(v, N);
 
         int res2 = 0;
-        res2 += dijkstra(1, v);
-        res2 += dijkstra(v, u);
-        res2 += dijkstra(u, N);
+        res2 += solve(1, v);
+        res2 += solve(v, u);
+        res2 += solve(u, N);
 
-        if (res1 >= INF && res2 >= INF) {
+        if (res1 >= INF || res2 >= INF) {
             System.out.println(-1);
-        }
-        else {
+        } else {
             System.out.println(Math.min(res1, res2));
         }
     }
 
-    public static int dijkstra(int start, int end) {
-        PriorityQueue<Pos> pq = new PriorityQueue<>();
-        boolean[] visited = new boolean[N + 1];
-        int[] dist = new int[N + 1];
-
-        pq.add(new Pos(start, 0));
+    public static int solve(int start, int end) {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(start, 0));
         Arrays.fill(dist, INF);
         dist[start] = 0;
 
         while (!pq.isEmpty()) {
-            Pos now = pq.poll();
+            Node now = pq.poll();
 
-            if (!visited[now.end]) {
-                visited[now.end] = true;
-
-                for (Pos next : list[now.end]) {
-                    if (dist[next.end] > dist[now.end] + next.value) {
-                        dist[next.end] = dist[now.end] + next.value;
-                        pq.add(new Pos(next.end, dist[next.end]));
-                    }
-                }
+            if (now.node == end) {
+                break;
+            }
+            if (dist[now.node] < now.value) {
+                continue;
             }
 
+            for (Node next : list[now.node]) {
+                if (dist[next.node] > dist[now.node] + next.value) {
+                    dist[next.node] = dist[now.node] + next.value;
+                    pq.offer(new Node(next.node, dist[next.node]));
+                }
+            }
         }
         return dist[end];
     }
 }
 
-class Pos implements Comparable<Pos> {
-    int end, value;
+class Node implements Comparable<Node> {
+    int node, value;
 
-    public Pos(int node, int value) {
-        this.end = node;
+    public Node(int node, int value) {
+        this.node = node;
         this.value = value;
     }
 
     @Override
-    public int compareTo(Pos o) {
+    public int compareTo(Node o) {
         return this.value - o.value;
     }
 }
