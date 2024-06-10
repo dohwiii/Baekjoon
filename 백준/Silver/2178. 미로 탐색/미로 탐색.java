@@ -47,6 +47,7 @@ public class Main {
 
             if (now.x == N - 1 && now.y == M - 1) { //현재 위치가 도착지라면
                 min = Math.min(min, now.cnt);
+                return;
             }
 
             for (int i = 0; i < 4; i++) {
