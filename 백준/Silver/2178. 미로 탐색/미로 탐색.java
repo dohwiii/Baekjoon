@@ -1,77 +1,76 @@
-import org.w3c.dom.Node;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int[][] arr;
-    static int N;
-    static int M;
+    static int N, M;
+    static int[][] map;
     static boolean[][] visited;
-    static int count = 0;
+    static int[] dx = {1, -1, 0, 0};
+    static int[] dy = {0, 0, 1, -1};
+
+    static int min = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken()); //세로
-        M = Integer.parseInt(st.nextToken()); //가로
-        arr = new int[N][M];
+        N = Integer.parseInt(st.nextToken()); //행
+        M = Integer.parseInt(st.nextToken()); //열
+
+        map = new int[N][M];
         visited = new boolean[N][M];
-        count = 0;
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
-
             for (int j = 0; j < M; j++) {
-                arr[i][j] = str.charAt(j) - '0';
+                map[i][j] = str.charAt(j) - '0';
             }
-
         }
-        BFS(0, 0);
-        System.out.println(arr[N - 1][M - 1]);
+        bfs(0, 0);
+        System.out.println(min);
 
     }
 
-    public static void BFS(int x, int y)
-    {
-        Queue<int[]> queue = new LinkedList<>();
-        int[] dx = {0, 0, -1, 1}; //아래, 위, 오른쪽, 위쪽
-        int[] dy = {-1, 1, 0, 0};
+    public static void bfs(int x, int y) {
+        Queue<Pos> queue = new ArrayDeque<>();
+        queue.add(new Pos(x, y, 1));
+        visited[x][y] = true;
 
-        queue.add(new int[]{x, y});
-        count = 1;
+        while (!queue.isEmpty()) {
+            Pos now = queue.poll();
 
-        while (!queue.isEmpty())
-        {
-            int[] now = queue.poll();
+            if (now.x == N - 1 && now.y == M - 1) { //현재 위치가 도착지라면
+                min = Math.min(min, now.cnt);
+            }
 
-            for (int i = 0; i < 4; i++)
-            {
-                int x1 = now[0] + dx[i];
-                int y1 = now[1] + dy[i];
+            for (int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
 
-                if ((x1 >= 0 && x1 < N) && (y1  >= 0 && y1 < M))
-                {
-                    if (arr[x1][y1] == 1 && !visited[x1][y1])
-                    {
-                        queue.add(new int[]{x1, y1});
-                        visited[x1][y1] = true;
-                        arr[x1][y1] = arr[now[0]][now[1]] + 1;
-
-
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
+                    if (!visited[nx][ny] && map[nx][ny] == 1) {
+                        queue.offer(new Pos(nx, ny, now.cnt + 1));
+                        visited[nx][ny] = true;
                     }
                 }
-
             }
 
         }
-
     }
+}
 
+class Pos {
+    int x, y, cnt;
+
+    public Pos(int x, int y, int cnt) {
+        this.x = x;
+        this.y = y;
+        this.cnt = cnt;
+    }
 }
