@@ -1,123 +1,112 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
+
+import java.io.*;
+import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-class Main
-{
+public class Main {
+    static int R, C;
     static char[][] map;
     static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static int N, M, result;
-    static Queue<Pos> fqueue = new LinkedList<>();
-    static Queue<Pos> jqueue = new LinkedList<>();
-    static boolean isPossible = false;
+    static Queue<Pos> fQueue = new ArrayDeque<>();
+    static Queue<Pos> jQueue = new ArrayDeque<>();
+    static int answer;
 
-    public static void main(String args[]) throws Exception
-    {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        map = new char[N][M];
-        visited = new boolean[N][M];
 
-        for (int i = 0; i < N; i++)
-        {
+        R = Integer.parseInt(st.nextToken());   //행
+        C = Integer.parseInt(st.nextToken());   //열
+        map = new char[R][C];
+        visited = new boolean[R][C];
+
+        for (int i = 0; i < R; i++) {
             String str = br.readLine();
-            for (int j = 0; j < M; j++)
-            {
+            for (int j = 0; j < C; j++) {
                 map[i][j] = str.charAt(j);
-                if (map[i][j] == 'J')
-                {
-                    jqueue.add(new Pos(i, j, 0));
+                if (map[i][j] == 'J') { //시작위치
+                    jQueue.offer(new Pos(i, j));
                     visited[i][j] = true;
-                    map[i][j] = '.';
                 }
-                if (map[i][j] == 'F')
-                {
-                    fqueue.add(new Pos(i, j, 0));
+                else if (map[i][j] == 'F') {    //불 위치
+                    fQueue.offer(new Pos(i, j));
                 }
             }
         }
-        bfs();
-        if (isPossible)
-        {
-            System.out.println(result);
+        fire();
+        if (answer == 0) {
+            System.out.println("IMPOSSIBLE ");
         }
-        else
-            System.out.println("IMPOSSIBLE");
-
+        else {
+            System.out.println(answer);
+        }
 
     }
 
-    public static void bfs()
-    {
+    public static void fire() {
 
-        while (!jqueue.isEmpty())
-        {
-            int sizeF = fqueue.size();
-            int sizeJ = jqueue.size();
+        while (jQueue.size() > 0 || fQueue.size() > 0) {
+            int jSize = jQueue.size();
+            int fSize = fQueue.size();
 
-            for (int s = 0; s < sizeF; s++)
-            {
-                Pos nowF = fqueue.poll();
+            //불
+            while (fSize-- > 0) {
+                Pos now = fQueue.poll();
 
-                for (int i = 0; i < 4; i++)
-                {
-                    int nx = nowF.x + dx[i];
-                    int ny = nowF.y + dy[i];
+                for (int i = 0; i < 4; i++) {
+                    int nx = now.x + dx[i];
+                    int ny = now.y + dy[i];
 
-                    if (nx >= 0 && nx < N && ny >= 0 && ny < M)
-                    {
-                        if (map[nx][ny] == '.')
-                        {
-                            map[nx][ny] = 'F';
-                            fqueue.add(new Pos(nx, ny, nowF.cnt + 1));
-//                            System.out.println("fire: " + nx + " " + ny);
+                    if (nx >= 0 && nx < R && ny >= 0 && ny < C) {
+                        if (map[nx][ny] == '.') {
+                            map[nx][ny] = 'F';  //확산
+                            fQueue.offer(new Pos(nx, ny));
                         }
                     }
                 }
             }
-            for (int s = 0; s < sizeJ; s++)
-            {
-                Pos nowJ = jqueue.poll();
-                for (int i = 0; i < 4; i++)
-                {
-                    int nx = nowJ.x + dx[i];
-                    int ny = nowJ.y + dy[i];
 
-                    //빠져나오기 가능
-                    if (nx < 0 || nx >= N || ny < 0 || ny >= M)
-                    {
-                        result = nowJ.cnt + 1;
-                        isPossible = true;
-                        return;
-                    }
-                    //범위 안
-                    if (map[nx][ny] == '.' && !visited[nx][ny])
-                    {
-                        jqueue.add(new Pos(nx, ny, nowJ.cnt + 1));
-                        visited[nx][ny] = true;
-//                        System.out.println("jihoon: " + nx + " " + ny);
+            //지훈
+            while (jSize-- > 0) {
+                Pos now = jQueue.poll();
+                //가장자리
+                if (now.x == 0 || now.x == R - 1 || now.y == 0 || now.y == C - 1) {
+                    answer = now.cnt + 1;
+                    return;
+                }
 
+                for (int i = 0; i < 4; i++) {
+                    int nx = now.x + dx[i];
+                    int ny = now.y + dy[i];
+
+                    if (nx >= 0 && nx < R && ny >= 0 && ny < C) {
+                        if (!visited[nx][ny] && map[nx][ny] == '.') {
+                            jQueue.offer(new Pos(nx, ny, now.cnt + 1));
+                            visited[nx][ny] = true;
+                        }
                     }
                 }
             }
+
+
+
         }
     }
 
 }
 
-class Pos
-{
+class Pos {
     int x, y, cnt;
 
-    public Pos(int x, int y, int cnt)
-    {
+    public Pos(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Pos(int x, int y, int cnt) {
         this.x = x;
         this.y = y;
         this.cnt = cnt;
