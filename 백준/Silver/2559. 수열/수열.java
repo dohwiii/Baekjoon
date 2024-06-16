@@ -13,10 +13,10 @@ public class Main {
 
         N = Integer.parseInt(st.nextToken());   //전체 날짜 수
         K = Integer.parseInt(st.nextToken());   //연속 날짜 수
-        arr = new int[N];
+        arr = new int[N + 1];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
@@ -24,26 +24,21 @@ public class Main {
         System.out.println(result);
 
     }
+
     public static void solve() {
         int left = 0;
         int right = 0;
         int sum = 0;
         int size = 0;
 
-        while (left < N && right < N) {
-            if (size >= K) {
-                sum -= arr[left];
-                left++;
-                size--;
-            }
-            else if (size < K) {
-                sum += arr[right];
-                right++;
-                size++;
-            }
-            if (size == K) {
-                result = Math.max(result, sum);
-            }
+        for (int i = 1; i <= K; i++) {
+            sum += arr[i];
+        }
+        result = sum;
+
+        for (int i = K + 1, j = 1; i <= N; i++, j++) {
+            sum += arr[i] - arr[j];
+            if (result < sum) result = sum;
         }
     }
 
