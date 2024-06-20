@@ -1,58 +1,62 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+
+import java.io.*;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int[] dishes;
-    static int[] eat;
+    static int N, d, k, c;
+    static int[] sushi;
+    static int max;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken()); //접시의 수
-        int d = Integer.parseInt(st.nextToken()); //초밥의 가짓수
-        int k = Integer.parseInt(st.nextToken()); //연속해서 먹는 접시의 수
-        int c = Integer.parseInt(st.nextToken()); //쿠폰 번호
-        dishes = new int[N]; //접시
-        eat = new int[d + 1]; //초밥 가짓수
-        int result = 1;
+
+        N = Integer.parseInt(st.nextToken());   //접시의 수
+        d = Integer.parseInt(st.nextToken());   //초밥의 가짓수
+        k = Integer.parseInt(st.nextToken());   //연속해서 먹는 접시의 수
+        c = Integer.parseInt(st.nextToken());   //쿠폰 번호
+        sushi = new int[N];
 
         for (int i = 0; i < N; i++) {
-            dishes[i] = Integer.parseInt(br.readLine()); //초밥 종류 번호
+            sushi[i] = Integer.parseInt(br.readLine());
         }
-        eat[c]++;
-        Queue<Integer> queue = new LinkedList<>();
+        solve();
+        System.out.println(max);
 
-        for (int i = N - k; i < N; i++) {
-            if (eat[dishes[i]] == 0) { //큐에 아직 없다면 result 증가
-                result++;
+    }
+
+    public static void solve() {
+        int[] cnt = new int[d + 1]; //먹은 초밥 카운트
+        int type = 0;   //초밥 종류
+
+        for (int i = 0; i < k; i++) {
+            if (cnt[sushi[i]] == 0) {
+                type++;
             }
-            eat[dishes[i]]++; //먹은 횟수 증가
-            queue.offer(dishes[i]);
+            cnt[sushi[i]]++;
         }
-        int cnt = result;
-        for (int i = 0; i < N - 1; i++) {
-            int now = queue.poll();
-            eat[now]--;
-            if (eat[now] == 0) {
-                cnt--;
-            }
-            queue.add(dishes[i]);
-            if (eat[dishes[i]] == 0) {
-                cnt++;
-            }
-            eat[dishes[i]]++;
 
-            if (cnt > result) {
-                result = cnt;
+        max = (cnt[c] == 0) ? type + 1 : type;;
+
+        //i가 start 지점
+        for (int i = 1; i < N; i++) {
+            int end = (i + k - 1) % N;
+            if (cnt[sushi[end]] == 0) {
+                type++;
+            }
+            cnt[sushi[end]]++;
+
+            cnt[sushi[i - 1]]--;    //이전 초밥 제거
+            if (cnt[sushi[i - 1]] == 0) {
+                type--;
+            }
+
+            // 쿠폰 초밥을 포함하여 최대 종류 계산
+            if (cnt[c] == 0) {
+                max = Math.max(max, type + 1);
+            } else {
+                max = Math.max(max, type);
             }
         }
-        System.out.println(result);
-
     }
 }
