@@ -14,31 +14,26 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
         dolls = new int[N];
+        int idx = 0;
+        int result = 0;
 
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
-            dolls[i] = Integer.parseInt(st.nextToken());
-            if (dolls[i] == 1) {    //라이언
-                list.add(i);    //라이언 인형의 인덱스를 저장
-
+            if (Integer.parseInt(st.nextToken()) == 1) {    //라이언
+                dolls[idx++] = i;    //라이언 인형의 인덱스를 저장
             }
         }
-        System.out.println(solve());
+        if (idx < K) {
+            result = -1;
+        }
+        else {
+            result = dolls[K - 1] - dolls[0] + 1;
+            for (int i = 1; i < idx - K + 1; i++) {
+                int end = i + K - 1;
+                result = Math.min(result, dolls[end] - dolls[i] + 1);
+            }
+        }
+        System.out.println(result);
 
     }
-    public static int solve() {
-        //list에는 0, 4, 6, 9 저장
-        int size = 0;
-        if (list.size() < K) {
-            return -1;
-        }
-        size += list.get(K - 1) - list.get(0) + 1;
-
-        for (int i = 1; i < list.size() - K + 1; i++) {
-            int end = i + K - 1;
-            size = Math.min(size, list.get(end) - list.get(i) + 1);
-        }
-        return size;
-    }
-
 }
