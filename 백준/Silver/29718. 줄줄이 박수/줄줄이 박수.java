@@ -9,22 +9,13 @@ public class Main {
 
         int N = Integer.parseInt(st.nextToken());   //행
         int M = Integer.parseInt(st.nextToken());   //열
-        int[][] cheer = new int[N][M];
+        int[] sumArr = new int[M];
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++) {
-                cheer[i][j] = Integer.parseInt(st.nextToken());
+                sumArr[j] += Integer.parseInt(st.nextToken());
             }
-        }
-        int[] sumArr = new int[M];
-
-        for (int i = 0; i < M; i++) {   //4
-            int sum = 0;
-            for (int j = 0; j < N; j++) {   //3
-                sum += cheer[j][i];
-            }
-            sumArr[i] = sum;
         }
         int K = Integer.parseInt(br.readLine());    //열의 개수
         int result = 0;
