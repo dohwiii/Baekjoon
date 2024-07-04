@@ -31,25 +31,12 @@ public class Main {
 
         while (minHeight < maxHeight) {
             visited = new boolean[N][N];
-            int[][] cloneMap = new int[N][N];
             int area = 0;
 
-            for (int i = 0; i < N; i++) {   //깊은 복사
-                cloneMap[i] = map[i].clone();
-            }
-
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
-                    cloneMap[i][j] -= minHeight;
-                    if (cloneMap[i][j] < 0) {
-                        cloneMap[i][j] = 0;
-                    }
-                }
-            }
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (cloneMap[i][j] != 0 && !visited[i][j]) {
-                        bfs(i, j, cloneMap);
+                    if (map[i][j] > minHeight && !visited[i][j]) {
+                        bfs(i, j);
                         area++;
                     }
                 }
@@ -61,7 +48,7 @@ public class Main {
         System.out.println(maxArea);
     }
 
-    public static void bfs(int x, int y, int[][] cloneMap) {
+    public static void bfs(int x, int y) {
         Queue<Pos> queue = new ArrayDeque<>();
         queue.add(new Pos(x, y));
         visited[x][y] = true;
@@ -74,7 +61,7 @@ public class Main {
                 int ny = now.y + dy[i];
 
                 if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (!visited[nx][ny] && cloneMap[nx][ny] != 0) {
+                    if (!visited[nx][ny] && map[nx][ny] > minHeight) {
                         queue.offer(new Pos(nx, ny));
                         visited[nx][ny] = true;
                     }
