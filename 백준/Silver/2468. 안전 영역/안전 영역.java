@@ -1,82 +1,66 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
+//DFS
 public class Main {
-    static int[][] map;
-    static int minHeight, N, maxHeight;
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
-    static boolean[][] visited;
+	static int N;
+	static int[][] map;
+	static int ans;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        N = Integer.parseInt(br.readLine());
-        map = new int[N][N];
-        visited = new boolean[N][N];
-        minHeight = 101;
-        maxHeight = 0;
-        int maxArea = 1;
+		N = Integer.parseInt(br.readLine());
+		map = new int[N][N];
 
-        for (int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
-                minHeight = minHeight > map[i][j] ? map[i][j] : minHeight;
-                maxHeight = maxHeight < map[i][j] ? map[i][j] : maxHeight;
-            }
-        }
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
 
+		for (int i = 0; i < N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < N; j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+				min = Math.min(min, map[i][j]);
+				max = Math.max(max, map[i][j]);
+			}
+		}
 
-        while (minHeight < maxHeight) {
-            visited = new boolean[N][N];
-            int area = 0;
+		ans = 1;
+		for (int m = max - 1; m >= min; m--) {
+			ans = Math.max(ans, dfs(0, m));
+		}
 
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (map[i][j] > minHeight && !visited[i][j]) {
-                        bfs(i, j);
-                        area++;
-                    }
-                }
-            }
-            maxArea = Math.max(maxArea, area);
-            minHeight++;
-        }
+		System.out.println(ans);
+	}
 
-        System.out.println(maxArea);
-    }
+	static int[] dx = { -1, 1, 0, 0 };
+	static int[] dy = { 0, 0, -1, 1 };
 
-    public static void bfs(int x, int y) {
-        Queue<Pos> queue = new ArrayDeque<>();
-        queue.add(new Pos(x, y));
-        visited[x][y] = true;
+	static int dfs(int idx, int m) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (map[i][j] > m) {
+					map[i][j] = m;
+					setMap(i, j, m);
+					idx++;
+				}
+			}
+		}
+		return idx;
+	}
 
-        while (!queue.isEmpty()) {
-            Pos now = queue.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (!visited[nx][ny] && map[nx][ny] > minHeight) {
-                        queue.offer(new Pos(nx, ny));
-                        visited[nx][ny] = true;
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-class Pos {
-    int x, y;
-
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
+	static void setMap(int r, int c, int m) {
+		for (int k = 0; k < 4; k++) {
+			int nx = r + dx[k];
+			int ny = c + dy[k];
+			if (nx >= N || ny >= N || nx < 0 || ny < 0)
+				continue;
+			if (map[nx][ny] > m) {
+				map[nx][ny] = m;
+				setMap(nx, ny, m);
+			}
+		}
+	}
 }
