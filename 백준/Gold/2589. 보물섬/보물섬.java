@@ -44,7 +44,6 @@ public class Main {
 
         while (!queue.isEmpty()) {
             Pos now = queue.poll();
-            max = Math.max(max, now.cnt);
 
             for (int i = 0; i < 4; i++) {
                 int nx = now.x + dx[i];
@@ -57,6 +56,9 @@ public class Main {
                     queue.offer(new Pos(nx, ny, now.cnt + 1));
                     visited[nx][ny] = true;
                 }
+            }
+            if (queue.isEmpty()) {
+                max = Math.max(max, now.cnt);
             }
         }
 
