@@ -1,110 +1,83 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
     static int N;
-    static char[][] map;
+    static char[][] normalMap;
+    static char[][] abnormalMap;
+    static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static boolean[][] visited;
+    static boolean flag;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+//        StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(br.readLine());
-        map = new char[N][N];
         visited = new boolean[N][N];
+        normalMap = new char[N][N];
+        abnormalMap = new char[N][N];
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
             for (int j = 0; j < N; j++) {
-                map[i][j] = str.charAt(j);
+                normalMap[i][j] = str.charAt(j);
             }
         }
-        int normal = 0;
-        int special = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (!visited[i][j]) {
-                    bfs(i, j);
-                    normal++;
+                if (normalMap[i][j] == 'R') {
+                    abnormalMap[i][j] = 'G';
+                } else {
+                    abnormalMap[i][j] = normalMap[i][j];
+                }
+            }
+        }
+        int xCnt = 0;
+        int oCnt = 0;
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (normalMap[i][j] != 'X') {
+                    dfs(i, j, normalMap);
+                    xCnt++;
                 }
             }
         }
         visited = new boolean[N][N];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (!visited[i][j]) {
-                    bfs2(i, j);
-                    special++;
+                if (abnormalMap[i][j] != 'X') {
+                    dfs(i, j, abnormalMap);
+                    oCnt++;
                 }
             }
         }
-        System.out.print(normal + " " + special);
+        bw.write(xCnt + " " + oCnt);   //적록색약 아닌 사람
+
+        bw.flush();
 
     }
 
-    public static void bfs(int x, int y) {
-        Queue<Pos> queue = new ArrayDeque<>();
-        queue.add(new Pos(x, y));
-        visited[x][y] = true;
+    public static void dfs(int x, int y, char[][] map) {
+        char nowColor = map[x][y];  //현재 색깔
+        map[x][y] = 'X';
 
-        while (!queue.isEmpty()) {
-            Pos now = queue.poll();
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
 
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    //방문하지 않았고, 같은 색상이면 고
-                    if (!visited[nx][ny] && map[nx][ny] == map[x][y]) {
-                        queue.offer(new Pos(nx, ny));
-                        visited[nx][ny] = true;
-                    }
-                }
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N || map[nx][ny] == 'X') {
+                continue;
+            }
+            if (map[nx][ny] == nowColor) {
+                dfs(nx, ny, map);
             }
         }
     }
-    public static void bfs2(int x, int y) {
-        Queue<Pos> queue = new ArrayDeque<>();
-        queue.add(new Pos(x, y));
-        visited[x][y] = true;
 
-        while (!queue.isEmpty()) {
-            Pos now = queue.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (!visited[nx][ny]) {
-                        if (map[x][y] == 'R') {
-                            if (map[nx][ny] == 'R' || map[nx][ny] == 'G') {
-                                queue.offer(new Pos(nx, ny));
-                                visited[nx][ny] = true;
-                            }
-                        } else if (map[x][y] == 'G') {
-                            if (map[nx][ny] == 'G' || map[nx][ny] == 'R') {
-                                queue.offer(new Pos(nx, ny));
-                                visited[nx][ny] = true;
-                            }
-                        }
-                        else {
-                            if (map[nx][ny] == map[x][y]) {
-                                queue.offer(new Pos(nx, ny));
-                                visited[nx][ny] = true;
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-    }
 }
 
 class Pos {
