@@ -1,7 +1,5 @@
-select d.dept_id, dept_name_en, round(avg(e.sal), 0) as 'AVG_SAL'
+select DEPT_ID, DEPT_NAME_EN, ROUND(AVG(SAL), 0) 'AVG_SAL'
 from HR_DEPARTMENT d join HR_EMPLOYEES e
-on d.dept_id = e.dept_id
-group by dept_id
-order by avg(e.sal) desc;
-
-
+using (DEPT_ID)
+group by DEPT_ID
+order by AVG_SAL desc;
