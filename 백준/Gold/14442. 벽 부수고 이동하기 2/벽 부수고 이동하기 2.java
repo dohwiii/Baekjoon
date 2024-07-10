@@ -1,93 +1,86 @@
+import javax.swing.text.Position;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
     static int N, M, K;
-    static int[][] map;
-    static int[][] visited;
-    static int result;
-    static boolean isPossible = false;
+    static int[] dx = { 1, 0, -1, 0 };
+    static int[] dy = { 0, 1, 0, -1 };
+
+    static int[][] map, broke;
+    static boolean[][][] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken()); //가로
-        M = Integer.parseInt(st.nextToken()); //세로
-        K = Integer.parseInt(st.nextToken()); //부수는 벽의 개수
+
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());   //부술 수 있는 벽 개수
         map = new int[N][M];
-        visited = new int[N][M];
+        broke = new int[N][M];
+        visited = new boolean[N][M][K + 1];
 
         for (int i = 0; i < N; i++) {
-            String input = br.readLine();
+            String str = br.readLine();
             for (int j = 0; j < M; j++) {
-                map[i][j] = input.charAt(j) - '0';
+                map[i][j] = str.charAt(j) - '0';
             }
         }
-        for (int i = 0; i < N; i++) {
-            Arrays.fill(visited[i], 11);
-        }
-        bfs(0, 0);
-        if (isPossible) {
-            System.out.println(result);
 
-        } else {
-            System.out.println(-1);
+        for (int[] b : broke) {
+            Arrays.fill(b, 123456789);
+
         }
+
+        System.out.println(solve(0,0));
 
 
     }
 
-    public static void bfs(int x, int y) {
+    public static int solve(int x, int y) {
         Queue<Pos> queue = new ArrayDeque<>();
-        queue.add(new Pos(x, y, 0));
-        int cnt = 1;
-        visited[x][y] = 0;
+        queue.offer(new Pos(x, y, 1));
+        visited[x][y][0] = true;
+        broke[x][y] = 0;
 
         while (!queue.isEmpty()) {
-            int size = queue.size();
-            while (size-- > 0) {
-                Pos now = queue.poll();
-
-                if (now.x == N - 1 && now.y == M - 1) {
-                    isPossible = true;
-                    result = cnt;
-                    return;
-                }
-
-                for (int i = 0; i < 4; i++) {
-                    int nx = now.x + dx[i];
-                    int ny = now.y + dy[i];
-
-                    if (nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny] <= now.wallCnt) continue;
-
-                    if (map[nx][ny] == 1) {
-                        if (now.wallCnt < K) {
-                            visited[nx][ny] = now.wallCnt;
-                            queue.offer(new Pos(nx, ny, now.wallCnt + 1));
-                        }
-                    } else if(map[nx][ny] == 0){
-                        visited[nx][ny] = now.wallCnt;
-                        queue.offer(new Pos(nx, ny, now.wallCnt));
-                    }
-                }
+            Pos now = queue.poll();
+            if (now.x == N - 1 && now.y == M - 1) {
+                return now.cnt;
             }
-            cnt++;
+
+            for (int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+
+                if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
+                    continue;
+                }
+                int nextWall = broke[now.x][now.y] + map[nx][ny];
+                if (nextWall > K || broke[nx][ny] <= nextWall) {
+                    continue;
+                }
+                broke[nx][ny] = nextWall;
+                queue.offer(new Pos(nx, ny, now.cnt + 1));
+            }
         }
+        return -1;
     }
+
 }
 
 class Pos {
-    int x, y, wallCnt;
+    int x, y, cnt;
 
-    public Pos(int x, int y, int wallCnt) {
+    public Pos(int x, int y, int cnt) {
         this.x = x;
         this.y = y;
-        this.wallCnt = wallCnt;
+        this.cnt = cnt;
     }
-
-
 }
