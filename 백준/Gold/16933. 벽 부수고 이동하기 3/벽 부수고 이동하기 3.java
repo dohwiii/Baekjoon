@@ -35,7 +35,6 @@ public class Main {
 
         for (int[] b : broke) {
             Arrays.fill(b, 123456789);
-
         }
         System.out.println(solve(0, 0));
 
@@ -44,7 +43,6 @@ public class Main {
     public static int solve(int x, int y) {
         Queue<Pos> queue = new ArrayDeque<>();
         queue.offer(new Pos(x, y, 1, 0, true));
-        visited[x][y][0] = true;
         broke[x][y] = 0;
 
         while (!queue.isEmpty()) {
@@ -60,23 +58,23 @@ public class Main {
                 if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
                     continue;
                 }
+                if (broke[nx][ny] <= now.wall) {
+                    continue;
+                }
                 if (map[nx][ny] == 1) { //벽이라면
+                    if (now.wall >= K || broke[nx][ny] <= now.wall + 1) {
+                        continue;
+                    }
                     if (now.isRisen) {  //낮이라면
-                        if (now.wall < K) {
-                            if (!visited[nx][ny][now.wall + 1]) {
-                                queue.offer(new Pos(nx, ny, now.cnt + 1, now.wall + 1, !now.isRisen));
-                                visited[nx][ny][now.wall + 1] = true;
-                            }
-                        }
+                        queue.offer(new Pos(nx, ny, now.cnt + 1, now.wall + 1, !now.isRisen));
+                        broke[nx][ny] = now.wall + 1;
+
                     } else {    //밤이라면
                         queue.offer(new Pos(now.x, now.y, now.cnt + 1, now.wall, !now.isRisen));    //제자리 걸음
                     }
-                }
-                else {  //빈 공간
-                    if (!visited[nx][ny][now.wall]) {
-                        queue.offer(new Pos(nx, ny, now.cnt + 1, now.wall, !now.isRisen));
-                        visited[nx][ny][now.wall] = true;
-                    }
+                } else {  //빈 공간
+                    queue.offer(new Pos(nx, ny, now.cnt + 1, now.wall, !now.isRisen));
+                    broke[nx][ny] = now.wall;
                 }
             }
         }
