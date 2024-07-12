@@ -1,69 +1,67 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.OutputStreamWriter;
+import java.util.*;
 
 public class Main {
-    static ArrayList<Integer>[] list;
+    static int N, M;
+    static List<Integer>[] list;
     static boolean[] visited;
     static boolean isPossible;
-    static int N;
 
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        list = new ArrayList[N];
+        M = Integer.parseInt(st.nextToken());
+        list = new List[N];
 
         for (int i = 0; i < N; i++) {
             list[i] = new ArrayList<>();
         }
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            list[a].add(b);
-            list[b].add(a);
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            list[x].add(y);
+            list[y].add(x);
         }
-        isPossible = false;
-        for (int i = 0; i < N; i++) {
-            visited = new boolean[N];
-            if (!visited[i]) {
-                dfs(i, 1);
-            }
 
+        for (int i = 0; i < N; i++) {
+            isPossible = false;
+            visited = new boolean[N];
+            solve(i, 1);
             if (isPossible) {
                 System.out.println(1);
                 break;
             }
-
         }
+
         if (!isPossible) {
             System.out.println(0);
         }
 
     }
 
-    public static void dfs(int index, int depth) {
-        if (visited[index]) {
+    public static void solve(int x, int depth) {
+        if (visited[x]) {
             return;
         }
-        if (depth == 5) { //친구 관계 도달
+        if (depth == 5) {
             isPossible = true;
             return;
         }
-        visited[index] = true;
-        for (int p : list[index]) {
-            if (!visited[p]) {
-                dfs(p, depth + 1);
+        visited[x] = true;
+
+        for (int temp : list[x]) {
+            if (!visited[temp]) {
+                solve(temp, depth + 1);
             }
         }
-        visited[index] = false;
-
+        visited[x] = false;
     }
 }
