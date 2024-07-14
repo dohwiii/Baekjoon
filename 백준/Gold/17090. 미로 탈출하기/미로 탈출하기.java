@@ -30,6 +30,9 @@ public class Main {
                 map[i][j] = str.charAt(j);
             }
         }
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(dp[i], -1);
+        }
         int result = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
@@ -47,10 +50,9 @@ public class Main {
         if (depth > N * M) {
             return dp[x][y];
         }
-        if (visited[x][y]) {
+        if (dp[x][y] != -1) {
             return dp[x][y];
         }
-        visited[x][y] = true;
         dp[x][y] = 0;
 
         int dir = direction(map[x][y]);
