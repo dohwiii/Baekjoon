@@ -62,9 +62,8 @@ public class Main {
             }
             else {  //숫자라면
                 int calResult = cal(value, map[nx][ny] - '0', operator);
-                //이미 방문한 곳이라면
                 if (flag == 0) {
-                    if (dp[flag][nx][ny] != Integer.MIN_VALUE) {
+                    if (dp[flag][nx][ny] != Integer.MIN_VALUE) {    //이미 방문한 곳이라면
                         dp[flag][nx][ny] = Math.max(dp[flag][nx][ny], calResult);
                     }
                     else {
@@ -72,7 +71,7 @@ public class Main {
                     }
                 }
                 else {
-                    if (dp[flag][nx][ny] != Integer.MAX_VALUE) {
+                    if (dp[flag][nx][ny] != Integer.MAX_VALUE) {    //이미 방문한 곳이라면  
                         dp[flag][nx][ny] = Math.min(dp[flag][nx][ny], calResult);
                     }
                     else {
