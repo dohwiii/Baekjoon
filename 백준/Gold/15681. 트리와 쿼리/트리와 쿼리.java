@@ -48,7 +48,7 @@ public class Main {
         arr[node] = 1;
 
         for (int next : list[node]) {
-            if (next != prev) {
+            if (next != prev && arr[next] == 0) {
                 arr[node] += dfs(next, node);
             }
         }
