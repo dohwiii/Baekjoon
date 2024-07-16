@@ -1,59 +1,71 @@
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.*;
 
 public class Main {
-	static class Node{
-		int to;
-		int w;
-		
-		public Node(int to, int w) {
-			this.to = to;
-			this.w = w;
-		}
-	}
-	static int n,m, INF = 987654321;
-	static List<Node>[] list;
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int t = Integer.parseInt(br.readLine());
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
-		while(t-->0) {
-			st = new StringTokenizer(br.readLine());
-			n = Integer.parseInt(st.nextToken());
-			m = Integer.parseInt(st.nextToken());
-			
-			list = new ArrayList[n+1];
-			for(int i=1; i<n+1; i++) {
-				list[i] = new ArrayList<>();	
-			}
-			
-			for(int i=0; i<m; i++) {
-				st = new StringTokenizer(br.readLine());
-				int a = Integer.parseInt(st.nextToken());
-				int b = Integer.parseInt(st.nextToken());
-				int w = Integer.parseInt(st.nextToken());
-				
-				list[a].add(new Node(b,w));
-				list[b].add(new Node(a,w));
-			}
-			int res = dfs(1, -1, INF);
-			
-			sb.append((res==INF? 0:res) +"\n");
-		}
-		System.out.println(sb.toString());
-	}
-	
-	static int dfs(int here, int pa, int bomb) {
-		int ret=0;
-		for(Node nxt : list[here]) {
-			if(pa != nxt.to) {
-				ret += dfs(nxt.to, here, nxt.w);
-			}
-		}
-		if(ret == 0) { // leaf 
-			ret = bomb;
-		}
-		return Math.min(ret, bomb);
-	}
+    static int N, M;
+    static final int INF = 987654321;
+    static List<Node>[] list;
+
+    public static void main(String[] args) throws NumberFormatException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        int T = Integer.parseInt(br.readLine());
+
+        while (T-- > 0) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            N = Integer.parseInt(st.nextToken());
+            M = Integer.parseInt(st.nextToken());
+            list = new List[N + 1];
+
+            for (int i = 0; i <= N; i++) {
+                list[i] = new ArrayList<>();
+            }
+
+            for (int i = 0; i < M; i++) {
+                st = new StringTokenizer(br.readLine());
+                int s = Integer.parseInt(st.nextToken());
+                int e = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
+
+                list[s].add(new Node(e, v));
+                list[e].add(new Node(s, v));
+            }
+
+            int result = dfs(1, INF, -1);
+            int res = result == INF ? 0 : result;
+            bw.write(res + "\n");
+        }
+        bw.flush();
+
+    }
+
+    public static int dfs(int now, int bomb, int parent) {
+        int cost = 0;
+
+        for (Node next : list[now]) {
+            if (next.node != parent) {
+                cost += dfs(next.node, next.value, now);
+            }
+        }
+        if (cost == 0) {
+            cost = bomb;
+        }
+        return Math.min(cost, bomb);
+    }
+
+}
+
+class Node {
+    int node, value;
+
+    public Node(int node, int value) {
+        this.node = node;
+        this.value = value;
+    }
 }
