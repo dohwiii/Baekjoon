@@ -44,8 +44,9 @@ public class Main {
         long sum = 0;
 
         for (Node next : list[node]) {
-            if (next.node != prev) {
-                sum += dfs(next.node, next.value, node);;
+            if (next.node != prev && arr[next.node] == INF) {
+                sum += dfs(next.node, next.value, node);
+                ;
             }
         }
         if (sum == 0) {
