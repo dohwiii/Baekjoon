@@ -36,23 +36,19 @@ public class Main {
         for (int i = 0; i < N; i++) {
             Arrays.fill(dp[i], -1);
         }
-        int result = dfs(0, 0, 0);
+        int result = dfs(0, 0);
         bw.write(result + " ");
         bw.flush();
 
 
     }
 
-    public static int dfs(int x, int y, int depth) {
+    public static int dfs(int x, int y) {
         if (visited[x][y]) {
             System.out.println(-1);
             System.exit(0);
         }
 
-        if (depth > N * M) {
-            System.out.println(-1);
-            System.exit(0);
-        }
         if (dp[x][y] != -1) {
             return dp[x][y];
         }
@@ -69,7 +65,7 @@ public class Main {
                 continue;
             }
 
-            dp[x][y] = Math.max(dp[x][y], dfs(nx, ny, depth + 1) + 1);
+            dp[x][y] = Math.max(dp[x][y], dfs(nx, ny) + 1);
         }
         visited[x][y] = false;
         return dp[x][y];
