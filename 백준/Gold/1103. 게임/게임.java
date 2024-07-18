@@ -45,8 +45,7 @@ public class Main {
 
     public static int dfs(int x, int y) {
         if (visited[x][y]) {
-            System.out.println(-1);
-            System.exit(0);
+            return -1;  // 무한 루프 감지
         }
 
         if (dp[x][y] != -1) {
@@ -54,20 +53,25 @@ public class Main {
         }
 
         visited[x][y] = true;
-        dp[x][y] = 1;
+        int maxMoves = 1;
         int num = map[x][y] - '0';
 
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i] * num;
             int ny = y + dy[i] * num;
 
-            if (nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] == 'H') {
-                continue;
+            if (nx >= 0 && nx < N && ny >= 0 && ny < M && map[nx][ny] != 'H') {
+                int moves = dfs(nx, ny);
+                if (moves == -1) {
+                    visited[x][y] = false;
+                    return -1;  // 무한 루프 감지
+                }
+                maxMoves = Math.max(maxMoves, moves + 1);
             }
-
-            dp[x][y] = Math.max(dp[x][y], dfs(nx, ny) + 1);
         }
+
         visited[x][y] = false;
+        dp[x][y] = maxMoves;
         return dp[x][y];
     }
 
