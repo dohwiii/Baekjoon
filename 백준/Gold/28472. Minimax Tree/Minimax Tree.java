@@ -81,11 +81,3 @@ public class Main {
     }
 
 }
-class Node {
-    int node, value;
-
-    public Node(int node, int value) {
-        this.node = node;
-        this.value = value;
-    }
-}
