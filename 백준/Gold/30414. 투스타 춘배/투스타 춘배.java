@@ -6,8 +6,6 @@ public class Main {
     static List<Integer>[] tree;
     static int[] currentHeight;
     static int[] targetHeight;
-    static boolean[] visited;
-    static long totalCost = 0;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -23,7 +21,6 @@ public class Main {
 
         currentHeight = new int[N + 1];
         targetHeight = new int[N + 1];
-        visited = new boolean[N + 1];
 
         st = new StringTokenizer(br.readLine());
         for (int i = 1; i <= N; i++) {
@@ -43,22 +40,23 @@ public class Main {
             tree[v].add(u);
         }
 
-        visited[P] = true;
-        long result = dfs(P);
+        long result = dfs(P, -1);
         System.out.println(result);
     }
 
-    public static long dfs(int node) {
-        long cost = targetHeight[node] - currentHeight[node];
+    public static long dfs(int now, int parent) {
+        if (tree[now].size() == 1 && tree[now].get(0) == parent) {
+            return Math.max(targetHeight[now] - currentHeight[now], 0);
+        }
+        long cost = targetHeight[now] - currentHeight[now];
 
-        for (int next : tree[node]) {
-            if (!visited[next]) {
-                visited[next] = true;
-                cost += dfs(next);
+        for (int next : tree[now]) {
+            if (next != parent) {
+                cost += dfs(next, now);
             }
         }
 
         return Math.max(cost, 0);
     }
-    
+
 }
