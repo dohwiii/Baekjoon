@@ -4,11 +4,11 @@ import java.util.StringTokenizer;
 
 public class Main {
     static int R, C;
-    static int[][] dp;
     static char[][] map;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static int maxLen = 0;
+    static int[][] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,8 +18,7 @@ public class Main {
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
         map = new char[R][C];
-        dp = new int[R][C];
-        boolean[] visited = new boolean[26];
+        visited = new int[R][C];
 
         for (int i = 0; i < R; i++) {
             String str = br.readLine();
@@ -27,28 +26,29 @@ public class Main {
                 map[i][j] = str.charAt(j);
             }
         }
-        for (int i = 0; i < R; i++) {
-            Arrays.fill(dp[i], -1);
-        }
 
-        dfs(0, 0, 1, visited);
+        dfs(0, 0, 1 << map[0][0] - 'A', 1);
         bw.write(maxLen + "\n");
         bw.flush();
     }
 
-    public static void dfs(int x, int y, int count, boolean[] visited) {
-        visited[map[x][y] - 'A'] = true;
+    public static void dfs(int x, int y, int bit, int count) {
+        if (visited[x][y] == bit) {
+            return;
+        }
+        visited[x][y] = bit;
         maxLen = Math.max(maxLen, count);
 
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if (nx >= 0 && nx < R && ny >= 0 && ny < C && !visited[map[nx][ny] - 'A']) {
-                dfs(nx, ny, count + 1, visited);
+            if (nx < 0 || nx >= R || ny < 0 || ny >= C || (bit & (1 << map[nx][ny] - 'A')) != 0) {
+                continue;
             }
+            dfs(nx, ny, bit | (1 << map[nx][ny] - 'A'), count + 1);
+
         }
 
-        visited[map[x][y] - 'A'] = false; // 재귀 호출이 끝나면 원래 상태로 복구
     }
 }
