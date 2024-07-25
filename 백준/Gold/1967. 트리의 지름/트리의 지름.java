@@ -5,9 +5,7 @@ public class Main {
     static int N;
     static List<Node>[] tree;
     static List<Integer> leaf;
-    static boolean[] visited;
     static int maxDistance;
-    static int farthestNode;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -34,33 +32,45 @@ public class Main {
                 leaf.add(i);
             }
         }
-        int max = Integer.MIN_VALUE;
+        dfs(1, 0, -1);
 
-        for (int node : leaf) {
-            visited = new boolean[N + 1];
-            dfs(node, 0);
-        }
         bw.write(maxDistance + " ");
         bw.flush();
 
     }
 
-    public static void dfs(int now, int distance) {
-        visited[now] = true;
-        if (distance > maxDistance) {
-            maxDistance = distance;
-            farthestNode = now;
-        }
+    private static int dfs(int now, int dist, int parent) {
+        int max = 0;  // 현재 노드에서 가장 긴 경로의 길이
+        int longest = 0;  // 현재 노드에서 출발하여 가장 긴 경로의 길이
+        int secondLongest = 0;  // 현재 노드에서 출발하여 두 번째로 긴 경로의 길이
 
         for (Node next : tree[now]) {
-            if (!visited[next.node]) {
-                dfs(next.node, distance + next.value);
+            if (next.node != parent) {
+                int nd = dfs(next.node, next.value, now);
+
+                // 현재 노드에서 가장 긴 경로의 길이를 갱신
+                if (max < nd) {
+                    max = nd;
+                }
+
+                // 현재 노드에서 출발하여 가장 긴 두 경로의 길이를 갱신
+                if (nd > longest) {
+                    secondLongest = longest;
+                    longest = nd;
+                } else if (nd > secondLongest) {
+                    secondLongest = nd;
+                }
             }
         }
+
+        // 현재 노드에서 출발하는 두 경로의 길이 합이 최대 경로의 길이보다 크면 갱신
+        int sum = longest + secondLongest;
+        if (maxDistance < sum) {
+            maxDistance = sum;
+        }
+
+        return dist + max;  // 부모 노드로 반환
     }
-
-
-
 
 }
 
