@@ -1,118 +1,106 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-
-    static int[] people;
-    static ArrayList<Integer>[] list;
-    static boolean[] visited;
     static int N;
-    static int min = Integer.MAX_VALUE;
-    static boolean isPossible;
+    static List<Integer>[] list;
+    static int[] population;
+    static boolean[] visited;
+    static List<Integer> groupB;
+    static List<Integer> groupA;
+    static int minDiff = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine()); //구역의 개수
-        people = new int[N + 1]; //구역의 인구수
-        list = new ArrayList[N + 1]; //구역마다 연결되어 있는 구역
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        N = Integer.parseInt(br.readLine());   //구역 개수
+        population = new int[N + 1];
+        visited = new boolean[N + 1];
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 1; i <= N; i++) {
+            population[i] = Integer.parseInt(st.nextToken());
+        }
+        list = new ArrayList[N + 1];
         for (int i = 0; i <= N; i++) {
             list[i] = new ArrayList<>();
         }
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) { //i번째의 구역의 인구수
-            people[i] = Integer.parseInt(st.nextToken());
-        }
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
-            int nearArea = Integer.parseInt(st.nextToken()); //인접한 구역의 개수
-            for (int j = 0; j < nearArea; j++) {
-                int node = Integer.parseInt(st.nextToken());
-                list[(i + 1)].add(node); //무향 인접 그래프 노드 추가
+            int near = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < near; j++) {
+                list[i].add(Integer.parseInt(st.nextToken()));
             }
         }
-        for (int i = 1; i <= N; i++) {
-            visited = new boolean[N + 1];
-            combi(1, 0, i);
+        for (int i = 1; i <= N - 1; i++) {
+            combination(1, i);
         }
-        if (isPossible) {
-            System.out.println(min);
-        }
-        else {
-            System.out.println(-1);
-        }
+        int result = minDiff == Integer.MAX_VALUE ? -1 : minDiff;
+        bw.write(result + " ");
+        bw.close();
     }
 
-    public static void combi(int index, int depth, int cnt) {
-        //A 구역은 방문 true, B 구역은 false
-        if (depth == cnt) {
-            List<Integer> Agroup = new ArrayList<>();
-            List<Integer> Bgroup = new ArrayList<>();
-            int aSum = 0;
-            int bSum = 0;
+    public static void combination(int start, int depth) {
+        if (depth == 0) {
+            groupA = new ArrayList<>();
+            groupB = new ArrayList<>();
 
             for (int i = 1; i <= N; i++) {
-                if (visited[i]) { //A구역
-                    Agroup.add(i);
-                } else { //B구역
-                    Bgroup.add(i);
+                if (visited[i]) {
+                    groupA.add(i);
+                }
+                else {
+                    groupB.add(i);
                 }
             }
-            if (check(Agroup) && check(Bgroup)) {
-                for (int num : Agroup) {
-                    aSum += people[num];
+            //연결되었는지 확인
+            if (isConnected(groupA) && isConnected(groupB)) {
+                int sumA = 0;
+                int sumB = 0;
+                for (int a : groupA) {
+                    sumA += population[a];
                 }
-                for (int num : Bgroup) {
-                    bSum += people[num];
-
+                for (int b : groupB) {
+                    sumB += population[b];
                 }
-                min = Math.min(min, Math.abs(aSum - bSum));
-                isPossible = true;
+                minDiff = Math.min(minDiff, Math.abs(sumA - sumB));
             }
             return;
         }
-        for (int i = index; i <= N; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                combi(i + 1, depth + 1, cnt);
-                visited[i] = false;
-            }
+        for (int i = start; i <= N; i++) {
+            visited[i] = true;
+            combination(i + 1, depth - 1);
+            visited[i] = false;
         }
     }
 
-    //리스트에 담긴 구역들이 연결되어 있는지 확인
-    public static boolean check(List<Integer> areaList) {
-        boolean[] visitedArea = new boolean[N + 1];
-        if (areaList.isEmpty()) {
-            return false;
-        }
+    public static boolean isConnected(List<Integer> group) {
+        boolean[] connected = new boolean[N + 1];
         Queue<Integer> queue = new ArrayDeque<>();
-        queue.add(areaList.get(0));
-        visitedArea[areaList.get(0)] = true;
-        int cnt = 0;
+        queue.offer(group.get(0));
+        connected[group.get(0)] = true;
 
         while (!queue.isEmpty()) {
             int now = queue.poll();
 
-            for (int n : list[now]) { //첫번째 구역과 인접한 구역들
-                if (!visitedArea[n]) {
-                    for (int i = 1; i < areaList.size(); i++) {
-                        if (n == areaList.get(i)) {
-                            visitedArea[n] = true;
-                            queue.add(n);
-                            cnt++;
-                            break;
-                        }
-                    }
+            for (int next : list[now]) {
+                if (connected[next]) {
+                    continue;
                 }
-
+                if (!group.contains(next)) {
+                    continue;
+                }
+                connected[next] = true;
+                queue.offer(next);
             }
         }
-        if (cnt != areaList.size() - 1) {
-            return false;
+        for (int num : group) {
+            if (!connected[num]) {
+                return false;
+            }
         }
         return true;
     }
+
 }
