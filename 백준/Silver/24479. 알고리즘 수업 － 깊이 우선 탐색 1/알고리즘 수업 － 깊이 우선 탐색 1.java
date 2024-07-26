@@ -5,9 +5,8 @@ public class Main {
     static int N, M, R;
     static List<Integer>[] list;
     static int[] arr;
-    static boolean[] visited;
     static StringBuilder sb = new StringBuilder();
-    static int cnt;
+    static int cnt = 1;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,7 +18,6 @@ public class Main {
         R = Integer.parseInt(st.nextToken());   //시작 정점
 
         arr = new int[N + 1];
-        visited = new boolean[N + 1];
         list = new ArrayList[N + 1];
         for (int i = 0; i <= N; i++) {
             list[i] = new ArrayList<>();
@@ -33,18 +31,12 @@ public class Main {
             list[B].add(A);
         }
         for (int i = 1; i <= N; i++) {
-            list[i].sort((o1, o2) -> o1 - o2);
+            list[i].sort(Comparator.naturalOrder());
         }
         dfs(R);
 
         for (int i = 1; i <= N; i++) {
-            if (!visited[i]) {
-                sb.append("0");
-            }
-            else {
-                sb.append(arr[i]);
-            }
-            sb.append("\n");
+            sb.append(arr[i]).append("\n");
         }
         bw.write(sb.toString());
         bw.flush();
@@ -52,13 +44,10 @@ public class Main {
     }
 
     public static void dfs(int now) {
-        visited[now] = true;
-        cnt++;
-        arr[now] = cnt;
-
+        arr[now] = cnt++;
 
         for (int next : list[now]) {
-            if (!visited[next]) {
+            if (arr[next] == 0) {
                 dfs(next);
             }
         }
