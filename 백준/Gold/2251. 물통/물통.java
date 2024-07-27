@@ -5,6 +5,7 @@ public class Main {
     static int A, B, C;
     static Set<Integer> set = new HashSet<>();
     static boolean[][][] visited;
+    static boolean[] ans;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,12 +16,13 @@ public class Main {
         B = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
         visited = new boolean[A + 1][B + 1][C + 1];
+        ans = new boolean[C + 1];
 
         bfs();
-        List<Integer> li = new ArrayList<>(set);
-        Collections.sort(li);
-        for (int num : li) {
-            bw.write(num + " ");
+        for (int i = 0; i <= C; i++) {
+            if (ans[i]) {
+                bw.write(i + " ");
+            }
         }
         bw.flush();
         bw.close();
@@ -34,14 +36,14 @@ public class Main {
         while (!queue.isEmpty()) {
             Bottle now = queue.poll();
             if (now.A == 0) {
-                set.add(now.C);
+                ans[now.C] = true;
             }
             int quantity;
             int nA, nB, nC;
 
             if (now.A > 0) {
                 quantity = now.A;
-                if (now.B + quantity > B) {
+                if (now.B + quantity > B) { //A->B
                     nA = quantity - (B - now.B);
                     nB = B;
                     nC = now.C;
@@ -55,15 +57,10 @@ public class Main {
                     queue.offer(new Bottle(nA, nB, nC));
                     visited[nA][nB][nC] = true;
                 }
-                if (now.C + quantity > C) {
-                    nA = quantity - (C - now.C);
-                    nB = now.B;
-                    nC = C;
-                } else {
-                    nA = 0;
-                    nB = now.B;
-                    nC = now.C + quantity;
-                }
+                //A->C
+                nA = 0;
+                nB = now.B;
+                nC = now.C + quantity;
                 if (!visited[nA][nB][nC]) {
                     queue.offer(new Bottle(nA, nB, nC));
                     visited[nA][nB][nC] = true;
@@ -71,7 +68,7 @@ public class Main {
             }
             if (now.B > 0) {
                 quantity = now.B;
-                if (now.A + quantity > A) {
+                if (now.A + quantity > A) { //B->A
                     nA = A;
                     nB = quantity - (A - now.A);
                     nC = now.C;
@@ -85,15 +82,10 @@ public class Main {
                     queue.offer(new Bottle(nA, nB, nC));
                     visited[nA][nB][nC] = true;
                 }
-                if (now.C + quantity > C) {
-                    nA = now.A;
-                    nB = quantity - (C - now.C);
-                    nC = C;
-                } else {
-                    nA = now.A;
-                    nB = 0;
-                    nC = now.C + quantity;
-                }
+                //B->C
+                nA = now.A;
+                nB = 0;
+                nC = now.C + quantity;
                 if (!visited[nA][nB][nC]) {
                     queue.offer(new Bottle(nA, nB, nC));
                     visited[nA][nB][nC] = true;
