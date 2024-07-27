@@ -1,92 +1,144 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int[] Sender = {0, 0, 1, 1, 2, 2};
-    static int[] Receiver = {1, 2, 0, 2, 0, 1};
-    static boolean[][] visited;
-    static int[] water;
-    static boolean[] answer;
+    static int A, B, C;
+    static Set<Integer> set = new HashSet<>();
+    static boolean[][][] visited;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        water = new int[3]; //물통
-        visited = new boolean[201][201];
-        answer = new boolean[201];
+        A = Integer.parseInt(st.nextToken());
+        B = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        visited = new boolean[A + 1][B + 1][C + 1];
 
-        water[0] = Integer.parseInt(st.nextToken());
-        water[1] = Integer.parseInt(st.nextToken());
-        water[2] = Integer.parseInt(st.nextToken());
-
-        BFS();
-        for (int i = 0; i < answer.length; i++) {
-            if (answer[i]) {
-                System.out.print(i + " ");
-            }
+        bfs();
+        List<Integer> li = new ArrayList<>(set);
+        Collections.sort(li);
+        for (int num : li) {
+            bw.write(num + " ");
         }
-
-
-
+        bw.flush();
+        bw.close();
     }
 
-    public static void BFS()
-    {
-        Queue<AB> queue = new LinkedList<>();
-        queue.add(new AB(0, 0));
-        visited[0][0] = true;
-        answer[water[2]] = true; //시간을 줄이기위해 0,0은 queue에 추가하지않고 10 바로 답에 저장
+    public static void bfs() {
+        Queue<Bottle> queue = new ArrayDeque<>();
+        queue.offer(new Bottle(0, 0, C));
+        visited[0][0][C] = true;
 
-        while (!queue.isEmpty())
-        {
-            AB p = queue.poll();
-            //물의 양
-            int A = p.A;
-            int B = p.B;
-            int C = water[2] - A - B;
+        while (!queue.isEmpty()) {
+            Bottle now = queue.poll();
+            if (now.A == 0) {
+                set.add(now.C);
+            }
+            int quantity;
+            int nA, nB, nC;
 
-            for (int i = 0; i < 6; i++)
-            {
-                int[] next = {A, B, C};
-                next[Receiver[i]] = next[Receiver[i]] + next[Sender[i]];
-                next[Sender[i]] = 0;
-                if (next[Receiver[i]] > water[Receiver[i]])
-                {
-                    next[Sender[i]] = next[Receiver[i]] - water[Receiver[i]];
-                    next[Receiver[i]] = water[Receiver[i]];
+            if (now.A > 0) {
+                quantity = now.A;
+                if (now.B + quantity > B) {
+                    nA = quantity - (B - now.B);
+                    nB = B;
+                    nC = now.C;
 
-
+                } else {
+                    nA = 0;
+                    nB = now.B + quantity;
+                    nC = now.C;
                 }
-                if (!visited[next[0]][next[1]])
-                {
-                    visited[next[0]][next[1]] = true;
-                    queue.add(new AB(next[0], next[1]));
-                    if (next[0] == 0) {
-                        answer[next[2]] = true;
-                    }
-
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
+                }
+                if (now.C + quantity > C) {
+                    nA = quantity - (C - now.C);
+                    nB = now.B;
+                    nC = C;
+                } else {
+                    nA = 0;
+                    nB = now.B;
+                    nC = now.C + quantity;
+                }
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
                 }
             }
+            if (now.B > 0) {
+                quantity = now.B;
+                if (now.A + quantity > A) {
+                    nA = A;
+                    nB = quantity - (A - now.A);
+                    nC = now.C;
 
+                } else {
+                    nA = now.A + quantity;
+                    nB = 0;
+                    nC = now.C;
+                }
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
+                }
+                if (now.C + quantity > C) {
+                    nA = now.A;
+                    nB = quantity - (C - now.C);
+                    nC = C;
+                } else {
+                    nA = now.A;
+                    nB = 0;
+                    nC = now.C + quantity;
+                }
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
+                }
+            }
+            if (now.C > 0) {
+                quantity = now.C;
+                if (now.A + quantity > A) { //C가 A에게 줌
+                    nA = A;
+                    nB = now.B;
+                    nC = quantity - (A - now.A);
 
+                } else {
+                    nA = now.A + quantity;
+                    nB = now.B;
+                    nC = 0;
+                }
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
+                }
+                if (now.B + quantity > B) { //C->B
+                    nA = now.A;
+                    nB = B;
+                    nC = quantity - (B - now.B);
+                } else {
+                    nA = now.A;
+                    nB = now.B + quantity;
+                    nC = 0;
+                }
+                if (!visited[nA][nB][nC]) {
+                    queue.offer(new Bottle(nA, nB, nC));
+                    visited[nA][nB][nC] = true;
+                }
+            }
         }
-
     }
-
 }
-class AB
-{
-    int A;
-    int B;
 
-    public AB(int A, int B) {
+class Bottle {
+    int A, B, C;
+
+    public Bottle(int A, int B, int C) {
         this.A = A;
         this.B = B;
+        this.C = C;
     }
 }
