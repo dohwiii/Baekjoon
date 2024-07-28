@@ -18,45 +18,54 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         map = new char[N][M];
         visited = new boolean[N][M];
-        Pos start = new Pos(0, 0);
+        Pos start = null;
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
             for (int j = 0; j < M; j++) {
                 map[i][j] = str.charAt(j);
                 if (map[i][j] == 'I') {
-                    start = new Pos(i, j);  //도연이 위치
+                    start = new Pos(i, j);  // 도연이 위치
                 }
             }
         }
-        dfs(start.x, start.y);
+
+        if (start != null) {
+            bfs(start.x, start.y);
+        }
+        
         String temp = ans == 0 ? "TT" : ans + " ";
         bw.write(temp);
         bw.flush();
         bw.close();
+        br.close();
     }
 
-    public static void dfs(int x, int y) {
-        if (visited[x][y]) {
-            return;
-        }
-        if (map[x][y] == 'P') {
-            ans++;
-        }
-
+    public static void bfs(int x, int y) {
+        Queue<Pos> queue = new LinkedList<>();
+        queue.add(new Pos(x, y));
         visited[x][y] = true;
 
-        for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+        while (!queue.isEmpty()) {
+            Pos current = queue.poll();
+            x = current.x;
+            y = current.y;
 
-            if (nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] == 'X') {
-                continue;
+            if (map[x][y] == 'P') {
+                ans++;
             }
-            dfs(nx, ny);
+
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M && !visited[nx][ny] && map[nx][ny] != 'X') {
+                    queue.add(new Pos(nx, ny));
+                    visited[nx][ny] = true;
+                }
+            }
         }
     }
-
 }
 
 class Pos {
