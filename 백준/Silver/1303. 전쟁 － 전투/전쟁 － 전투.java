@@ -6,7 +6,7 @@ public class Main {
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static char[][] map;
-    static int[][] dp;
+    static boolean[][] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,7 +16,7 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         N = Integer.parseInt(st.nextToken());
         map = new char[N][M];
-        dp = new int[N][M];
+        visited = new boolean[N][M];
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
@@ -24,54 +24,42 @@ public class Main {
                 map[i][j] = str.charAt(j);
             }
         }
-        double W = 0;  //흰색
-        double B = 0;  //파란색
+
+        int powerW = 0;  // 흰색 병사의 총 위력
+        int powerB = 0;  // 파란색 병사의 총 위력
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                if (dp[i][j] == 0) {
+                if (!visited[i][j]) {
+                    int soldierCount = dfs(i, j, map[i][j]);
+                    int power = soldierCount * soldierCount;
                     if (map[i][j] == 'W') {
-                        int result = dfs(i, j, map[i][j]);
-                        W += Math.pow(result, 2);
-                    }
-                    else {
-                        int result = dfs(i, j,  map[i][j]);
-                        B += Math.pow(result, 2);
+                        powerW += power;
+                    } else {
+                        powerB += power;
                     }
                 }
             }
         }
-        bw.write((int) W + " " + (int) B);
+
+        bw.write(powerW + " " + powerB);
         bw.flush();
         bw.close();
     }
 
     public static int dfs(int x, int y, char flag) {
-        if (dp[x][y] != 0) {
-            return 0;
-        }
-        dp[x][y] = 1;
-        int size = 1;
+        visited[x][y] = true;
+        int count = 1;
 
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if (nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] != flag || dp[nx][ny] != 0) {
-                continue;
+            if (nx >= 0 && nx < N && ny >= 0 && ny < M && map[nx][ny] == flag && !visited[nx][ny]) {
+                count += dfs(nx, ny, flag);
             }
-            size += dfs(nx, ny, flag);
         }
 
-        return size;
-    }
-
-}
-
-class Pos {
-    int x, y;
-
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
+        return count;
     }
 }
