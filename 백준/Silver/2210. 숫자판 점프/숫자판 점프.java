@@ -5,18 +5,15 @@ public class Main {
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
     static int[][] map;
-    static int[] selected;
-    static boolean[][] visited;
-    static Set<String> result;
+    static boolean[] visited;
+    static int ans;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         map = new int[5][5];
-        selected = new int[6];
-        visited = new boolean[5][5];
-        result = new HashSet<>();
+        visited = new boolean[1000000];
 
         for (int i = 0; i < 5; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -26,24 +23,22 @@ public class Main {
         }
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                dfs(i, j, 0);
+                dfs(i, j, 0, map[i][j]);
             }
         }
-        bw.write(result.size() + " ");
+        bw.write(ans + " ");
         bw.flush();
         bw.close();
     }
 
-    public static void dfs(int x, int y, int depth) {
-        if (depth == 6) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 6; i++) {
-                sb.append(selected[i]);
+    public static void dfs(int x, int y, int depth, int num) {
+        if (depth == 5) {
+            if (!visited[num]) {
+                visited[num] = true;
+                ans++;
             }
-            result.add(sb.toString());
             return;
         }
-        selected[depth] = map[x][y];
 
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
@@ -52,7 +47,7 @@ public class Main {
             if (nx < 0 || nx >= 5 || ny < 0 || ny >= 5) {
                 continue;
             }
-            dfs(nx, ny, depth + 1);
+            dfs(nx, ny, depth + 1, num * 10 + map[nx][ny]);
         }
     }
 
