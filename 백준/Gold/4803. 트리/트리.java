@@ -15,16 +15,15 @@ public class Main {
             StringTokenizer st = new StringTokenizer(br.readLine());
             N = Integer.parseInt(st.nextToken());
             M = Integer.parseInt(st.nextToken());
+            parent = new int[N + 1];
+            isTree = new boolean[N + 1];
             if (N == 0) {
                 break;
             }
-            isTree = new boolean[N + 1];
-            parent = new int[N + 1];
             for (int i = 1; i <= N; i++) {
                 parent[i] = i;
+                isTree[i] = true;
             }
-            Arrays.fill(isTree, true);
-
             for (int i = 0; i < M; i++) {
                 st = new StringTokenizer(br.readLine());
                 int s = Integer.parseInt(st.nextToken());
@@ -38,7 +37,7 @@ public class Main {
             }
             int treeCount = 0;
             for (int i = 1; i <= N; i++) {
-                if (parent[i] == i && isTree[i]) {
+                if (isTree[i] && parent[i] == i) {
                     treeCount++;
                 }
             }
@@ -57,11 +56,11 @@ public class Main {
         System.out.println(sb);
     }
 
-    public static int find(int a) {
-        if (a != parent[a]) {
-            return parent[a] = find(parent[a]);
+    public static int find(int x) {
+        if (x == parent[x]) {
+            return x;
         }
-        return parent[a];
+        return parent[x] = find(parent[x]);
     }
 
     public static void union(int a, int b) {
@@ -73,13 +72,5 @@ public class Main {
             isTree[parentA] = isTree[parentA] && isTree[parentB];
         }
     }
-}
 
-class Node {
-    int n1, n2;
-
-    public Node(int n1, int n2) {
-        this.n1 = n1;
-        this.n2 = n2;
-    }
 }
