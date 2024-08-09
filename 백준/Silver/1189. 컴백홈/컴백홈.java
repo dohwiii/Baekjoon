@@ -30,6 +30,9 @@ public class Main {
     }
 
     public static void dfs(int x, int y, int depth) {
+        if (depth > K) {
+            return;
+        }
         if (depth == K && x == 0 && y == C - 1) {
             ans++;
             return;
