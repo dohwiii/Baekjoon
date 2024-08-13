@@ -26,8 +26,10 @@ public class Main {
             }
         }
         for (int i = 0; i < N; i++) {
-            if (!visited[0][i] && !isPossible) {
-                dfs(0, i);
+            if (map[0][i] == 0) {
+                if (!visited[0][i] && !isPossible) {
+                    dfs(0, i);
+                }
             }
         }
         if (isPossible) {
