@@ -7,7 +7,6 @@ public class Main {
     static int[] dy = {1, -1, 0, 0};
     static boolean[][] visited;
     static char[][] map;
-    static boolean isPossible;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -26,11 +25,11 @@ public class Main {
         }
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                visited = new boolean[N][M];
-                dfs(i, j, new Pos(i, j), 1);
-                if (isPossible) {
-                    System.out.println("Yes");
-                    return;
+                if (!visited[i][j]) {
+                    if (dfs(i, j, new Pos(i, j), -1, -1, 1)) {
+                        System.out.println("Yes");
+                        return;
+                    }
                 }
             }
         }
@@ -38,8 +37,7 @@ public class Main {
 
     }
 
-    public static void dfs(int x, int y, Pos start, int cnt) {
-
+    public static boolean dfs(int x, int y, Pos start, int px, int py, int cnt) {
         visited[x][y] = true;
 
         for (int i = 0; i < 4; i++) {
@@ -49,18 +47,17 @@ public class Main {
             if (nx < 0 || nx >= N || ny < 0 || ny >= M || map[start.x][start.y] != map[nx][ny]) {
                 continue;
             }
-            if (visited[nx][ny]) {
-                if (nx == start.x && ny == start.y) {
-                    if (cnt % 2 == 0 && cnt >= 4) {
-                        isPossible = true;
-                        return;
-                    }
+            if (!visited[nx][ny]) {
+                if (dfs(nx, ny, start, x, y, cnt + 1)) {
+                    return true;
                 }
-                continue;
+            } else if (nx != px || ny != py) {
+                if (cnt >= 4) {
+                    return true;
+                }
             }
-
-            dfs(nx, ny, start, cnt + 1);
         }
+        return false;
     }
 }
 
