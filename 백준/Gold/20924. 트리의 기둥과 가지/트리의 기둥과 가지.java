@@ -30,7 +30,7 @@ public class Main {
             list[b].add(new Node(a, v));
         }
         int gigaRoot = findGigaRoot(R, 0);  //기가 노드 찾기
-        maxBranch = findLongestBranch(gigaRoot);    //가장 긴 가지 찾기
+        findLongestBranch(gigaRoot, 0);    //가장 긴 가지 찾기
         System.out.println(totalPillar + " " + maxBranch);
     }
 
@@ -50,16 +50,19 @@ public class Main {
         }
         return node;  // 기가 노드까지 가지 않는 경우
     }
-    public static int findLongestBranch(int node) {
+    public static void findLongestBranch(int node, int length) {
         visited[node] = true;
-        int maxLength = 0;
+
+        if (list[node].size() == 1) {
+            maxBranch = Math.max(maxBranch, length);
+            return;
+        }
 
         for (Node next : list[node]) {
             if (!visited[next.node]) {
-                maxLength = Math.max(maxLength, findLongestBranch(next.node) + next.value);
+               findLongestBranch(next.node, length + next.value);
             }
         }
-        return maxLength;
     }
 }
 
