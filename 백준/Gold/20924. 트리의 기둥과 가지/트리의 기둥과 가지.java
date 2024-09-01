@@ -29,19 +29,16 @@ public class Main {
             list[a].add(new Node(b, v));
             list[b].add(new Node(a, v));
         }
-        int gigaRoot = findGigaRoot(R, 0);
-        maxBranch = findLongestBranch(gigaRoot);
+        int gigaRoot = findGigaRoot(R, 0);  //기가 노드 찾기
+        maxBranch = findLongestBranch(gigaRoot);    //가장 긴 가지 찾기
         System.out.println(totalPillar + " " + maxBranch);
     }
 
     public static int findGigaRoot(int node, int length) {
         visited[node] = true;
 
-        if (list[node].size() > 2 || (node == R && list[node].size() > 1)) {
+        if (list[node].size() > 2 || (node == R && list[node].size() > 1) || (list[node].size() == 1 && node != R)) {
             // 현재 노드가 기가 노드인 경우
-            totalPillar = length;
-            return node;
-        } else if (list[node].size() == 1 && node != R) {
             totalPillar = length;
             return node;
         }
