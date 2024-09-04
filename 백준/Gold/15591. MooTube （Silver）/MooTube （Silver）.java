@@ -55,7 +55,7 @@ public class Main {
 
     }
 
-    public static long dfs(int video, int node, long minValue) {
+    public static void dfs(int video, int node, long minValue) {
         visited[node] = true;
         for (Node next = nodes[node]; next != null; next = next.next) {
             if (!visited[next.node]) {
@@ -64,7 +64,6 @@ public class Main {
                 dfs(video, next.node, currentMin);
             }
         }
-        return minValue;
     }
 
 }
