@@ -51,7 +51,7 @@ public class Main {
             if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
                 continue;
             }
-            if (height < map[nx][ny]) {
+            if (height < map[nx][ny]) { //이미 방문한 곳이더라도 더 높은 곳이 있다면 산봉우리가 아님
                 isPeak = false;
                 continue;
             }
