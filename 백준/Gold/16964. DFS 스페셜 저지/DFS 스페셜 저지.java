@@ -35,20 +35,22 @@ public class Main {
             position[order[i]] = i;
         }
         for (int i = 1; i <= N; i++) {
-            list[i].sort(Comparator.comparingInt(a -> position[a]));
+            Collections.sort(list[i], new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return position[o1] - position[o2];
+                }
+            });
         }
         if (order[0] != 1) {
             System.out.println(0);
-        }
-        else {
+        } else {
             if (dfs(1)) {
                 System.out.println(1);
-            }
-            else {
+            } else {
                 System.out.println(0);
             }
         }
-
 
 
     }
