@@ -35,30 +35,27 @@ public class Main {
             position[order[i]] = i;
         }
         for (int i = 1; i <= N; i++) {
-            Collections.sort(list[i], new Comparator<Integer>() {
+            list[i].sort(new Comparator<Integer>() {
                 @Override
                 public int compare(Integer o1, Integer o2) {
                     return position[o1] - position[o2];
                 }
             });
         }
-        if (order[0] != 1) {
-            System.out.println(0);
-        } else {
-            if (dfs(1)) {
-                System.out.println(1);
-            } else {
-                System.out.println(0);
-            }
+        if (dfs(1)) {
+            System.out.println(1);
         }
-
+        else {
+            System.out.println(0);
+        }
 
     }
 
     public static boolean dfs(int node) {
-        if (order[idx++] != node) {
+        if (position[node] != idx) {
             return false;
         }
+        idx++;
         visited[node] = true;
 
         for (int next : list[node]) {
