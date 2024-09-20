@@ -30,12 +30,7 @@ public class Main {
 
         //오름차순 정렬
         for (int i = 1; i <= N; i++) {
-            Collections.sort(list[i], new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    return o1 - o2;
-                }
-            });
+            Collections.sort(list[i]);
         }
         Arrays.fill(sequence, -1);
         dfs(R, 0);
