@@ -4,11 +4,15 @@
 
 ### 성능 요약
 
-메모리: 17932 KB, 시간: 224 ms
+메모리: 11784 KB, 시간: 64 ms
 
 ### 분류
 
-그리디 알고리즘(greedy), 수학(math), 정렬(sorting)
+그리디 알고리즘, 수학, 정렬
+
+### 제출 일자
+
+2024년 9월 27일 09:56:59
 
 ### 문제 설명
 
@@ -29,17 +33,4 @@
 ### 출력 
 
  <p>첫째 줄에 S의 최솟값을 출력한다.</p>
-
-### 내 풀이
-* int 배열-> list 변환  
-List<int[]> list = Arrays.asList(b);
-
-* list에서 최댓값 찾기  
-int max = Collections.max(list);
-
-* list에서 값 삭제하기  
-인덱스로 삭제 : list.remove(int index)  
-특정값으로 삭제 : list.remove(Object obj) -> list.remove(Integer.valueOf(값))
-
-
 

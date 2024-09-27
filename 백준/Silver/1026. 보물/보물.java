@@ -1,36 +1,37 @@
+
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args)  {
+    static int N;
+    static int[] A;
+    static int[] B;
 
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        int[] a = new int[n];
-        int[] b = new int[n];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        for (int i = 0; i < n; i++)
-        {
-            a[i] = sc.nextInt();
+        N = Integer.parseInt(br.readLine());
+        A = new int[N];
+        B = new int[N];
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            A[i] = Integer.parseInt(st.nextToken());
         }
-        Arrays.sort(a);
-        for (int i = 0; i < n; i++)
-        {
-            b[i] = sc.nextInt();
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            B[i] = Integer.parseInt(st.nextToken());
         }
+        Arrays.sort(A);
+        Arrays.sort(B);
+        int sum = 0;
 
-        List<Integer> bList = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
-            bList.add(b[i]);
+        for (int i = 0; i < N; i++) {
+            sum += A[i] * B[N - 1 - i];
         }
-        int ans = 0;
+        System.out.println(sum);
 
-        for (int i = 0; i < n; i++)
-        {
-            int max = Collections.max(bList);
-            ans = ans + (a[i] * max);
-            bList.remove(Integer.valueOf(max));
-        }
-        System.out.println(ans);
     }
+
+
 }
