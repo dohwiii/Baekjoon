@@ -1,16 +1,15 @@
 
 import java.io.*;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, M;
+    static int M, N;
     static int[][] map;
-    static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static Queue<Pos> tomatoQueue = new ArrayDeque<>();
+    static Queue<Pos> tomatos = new ArrayDeque<>();
+    static boolean[][] visited;
+    static boolean isRipen = true;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -25,64 +24,69 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (map[i][j] == 1) {
-                    tomatoQueue.offer(new Pos(i, j, 0));
-
+                if (map[i][j] == 1) {   //익은 토마토
+                    tomatos.offer(new Pos(i, j));
                 }
             }
         }
-        System.out.println(tomato());
-
+        // 모든 토마토가 익어있는 상태
+        if (tomatos.size() == M * N) {
+            System.out.println(0);
+        } else {
+            System.out.println(bfs());
+        }
     }
-    // 1 - 익은 토마토
-    // 0 - 익지 않은 토마토
-    // -1 - 토마토 없음
-    public static int tomato() {
-        int max = 0;
 
-        while (!tomatoQueue.isEmpty()) {
-            Pos now = tomatoQueue.poll();
-            max = Math.max(max, now.day);
+    public static int bfs() {
+        int day = 0;
 
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
+        while (!tomatos.isEmpty()) {
+            int size = tomatos.size();
 
-                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                    if (!visited[nx][ny] && map[nx][ny] == 0) {
-                        tomatoQueue.offer(new Pos(nx, ny, now.day + 1));
-                        visited[nx][ny] = true;
-                        map[nx][ny] = now.day + 1;
+            while (size-- > 0) {
+                Pos now = tomatos.poll();
+                visited[now.x][now.y] = true;
+
+                for (int i = 0; i < 4; i++) {
+                    int nx = now.x + dx[i];
+                    int ny = now.y + dy[i];
+
+                    if (nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny] || map[nx][ny] != 0) {
+                        continue;
                     }
+                    map[nx][ny] = 1;
+                    visited[nx][ny] = true;
+                    tomatos.offer(new Pos(nx, ny));
                 }
             }
+            day++;  //하루 지남
         }
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
                 if (map[i][j] == 0) {
-                    max = -1;
+                    isRipen = false;
                     break;
                 }
             }
-            if (max == -1) {
+            if (!isRipen) {
                 break;
             }
         }
-        return max;
+        if (isRipen) {
+            return day - 1;
+        } else {
+            return -1;
+        }
     }
+
 }
 
 class Pos {
-    int x, y, day;
+    int x, y;
 
-    public Pos(int x, int y, int day) {
+    public Pos(int x, int y) {
         this.x = x;
         this.y = y;
-        this.day = day;
     }
 }
