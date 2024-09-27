@@ -1,94 +1,87 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    static int V, E;
+    static List<Node>[] list;
+    static int[] dist;
+    static boolean[] visited;
 
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        int start = Integer.parseInt(br.readLine());
-        int min = Integer.MAX_VALUE;
 
-        ArrayList<Node>[] list = new ArrayList[N + 1];
-        int[] shortArray = new int[N + 1];
-        boolean[] visited = new boolean[N + 1];
-        boolean isPossible = true;
-
-        for (int i = 0; i <= N; i++) {
+        V = Integer.parseInt(st.nextToken());
+        E = Integer.parseInt(st.nextToken());
+        dist = new int[V + 1];
+        visited = new boolean[V + 1];
+        list = new List[V + 1];
+        for (int i = 0; i <= V; i++) {
             list[i] = new ArrayList<>();
         }
-        for (int i = 1; i <= N; i++) {
-            shortArray[i] = Integer.MAX_VALUE;
-        }
-        for (int i = 0; i < M; i++) {
+
+        int start = Integer.parseInt(br.readLine());    //시작 정점
+
+        for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
             int w = Integer.parseInt(st.nextToken());
-
-            list[x].add(new Node(y, w));
-
+            list[u].add(new Node(v, w));
         }
-        shortArray[start] = 0;
-        PriorityQueue<Node> queue = new PriorityQueue<>(new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                return o1.value - o2.value;
-            }
-        });
-        queue.offer(new Node(start, 0));
+        Arrays.fill(dist, Integer.MAX_VALUE);
 
-        while (!queue.isEmpty())
-        {
+        bfs(start);
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 1; i <= V; i++) {
+            if (dist[i] == Integer.MAX_VALUE) {
+                sb.append("INF");
+            } else {
+                sb.append(dist[i]);
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb);
+
+
+    }
+
+    public static void bfs(int node) {
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        queue.offer(new Node(node, 0));
+        dist[node] = 0;
+
+        while (!queue.isEmpty()) {
             Node now = queue.poll();
-            int now_node = now.node;
-            if (visited[now_node]) {
+            if (now.value > dist[now.node]) {
                 continue;
             }
-            visited[now_node] = true;
 
-            for (Node j : list[now_node])
-            {
-                int node = j.node;
-                int weight = j.value;
-
-                if (shortArray[node] > shortArray[now_node] + weight) {
-
-                    shortArray[node] = shortArray[now_node] + weight;
-                    queue.add(new Node(node, shortArray[node]));
-
+            for (Node next : list[now.node]) {
+                if (dist[next.node] > dist[now.node] + next.value) {
+                    dist[next.node] = dist[now.node] + next.value;
+                    queue.offer(new Node(next.node, dist[next.node]));
                 }
             }
         }
-
-        for (int i = 1; i <= N; i++) {
-            if(visited[i])
-            {
-                System.out.println(shortArray[i]);
-            }
-            else
-                System.out.println("INF");
-
-        }
-
-
-
     }
 
-
 }
-class Node
-{
-    int node;
-    int value;
 
-    public Node(int node, int value)
-    {
+class Node implements Comparable<Node>{
+    int node, value;
+
+    public Node(int node, int value) {
         this.node = node;
         this.value = value;
     }
+
+
+    @Override
+    public int compareTo(Node o) {
+        return this.value - o.value;
+    }
+    
 }
