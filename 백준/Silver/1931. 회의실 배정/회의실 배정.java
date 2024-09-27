@@ -1,42 +1,56 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int N;
+    static List<Time> times;
+    static int[] dp;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//        StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(br.readLine());
-        int[][] meetings = new int[N][2];
+
+        N = Integer.parseInt(br.readLine());
+        times = new ArrayList<>();
+        dp = new int[N + 1];
+
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            meetings[i][0] = Integer.parseInt(st.nextToken());
-            meetings[i][1] = Integer.parseInt(st.nextToken());
-
+            int s = Integer.parseInt(st.nextToken());
+            int e = Integer.parseInt(st.nextToken());
+            times.add(new Time(s, e));
         }
-        Arrays.sort(meetings, new Comparator<int[]>() {
+        // 끝나는 시간 오름차순 (먼저 끝나는 순으로)
+        Collections.sort(times, new Comparator<>() {
             @Override
-            public int compare(int[] o1, int[] o2) {
-                if (o1[0] == o2[0]) {
-                    return o1[1] - o2[1];
+            public int compare(Time o1, Time o2) {
+                if (o1.end == o2.end) {
+                    return o1.start - o2.start;
                 }
-                return o1[0] - o2[0];
+                return o1.end - o2.end;
             }
         });
-        int start = 0;
-        int end = 0;
-        int count = 0;
+        int t = 0;
+        int ans = 0;
 
-        for (int[] now : meetings) {
-            if (end <= now[0]) { //새로운 회의
-                start = now[0];
-                end = now[1];
-                count++;
+        for (int i = 0; i < N; i++) {
+            Time now = times.get(i);
+            if (t > now.start) {
+                continue;
             }
-            else if (end > now[1]) {
-                start = now[0];
-                end = now[1];
-            }
+            ans++;
+            t = now.end;
         }
-        System.out.println(count);
+        System.out.println(ans);
+    }
+
+
+}
+class Time {
+    int start, end;
+
+    public Time(int start, int end) {
+        this.start = start;
+        this.end = end;
     }
 }
