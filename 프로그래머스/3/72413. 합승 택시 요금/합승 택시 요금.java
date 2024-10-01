@@ -53,23 +53,6 @@ class Solution {
             }
         }
     }
-   
-//     public static int dfs(Node now) {
-//         if(visited[now.v]) {
-//             return money[now.v];
-//         }
-//         money[now.v] = now.c;
-//         visited[now.v] = true;
-        
-//         for(Node next : list[now.v]) {
-//             if(visited[next.v]) continue;
-            
-//             money[next.v] = Math.min(money[next.v], dfs(next) + now.c);
-            
-//         }
-//         visited[now.v] = false;
-//         return money[now.v];
-//     }
 }
 class Node implements Comparable<Node>{
     int v, c;
