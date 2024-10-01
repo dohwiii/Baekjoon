@@ -12,8 +12,13 @@ class Solution {
         Set<Integer> gateSet = new HashSet<>();
         Set<Integer> summitSet = new HashSet<>();
         
-        for (int gate : gates) gateSet.add(gate);
-        for (int summit : summits) summitSet.add(summit);
+        //출입구와 산봉우리 Set에 추가
+        for(int gate : gates) {
+            gateSet.add(gate);
+        }
+        for(int summit : summits) {
+            summitSet.add(summit);
+        }
         
         for(int[] path : paths) {
             int a = path[0];
@@ -22,47 +27,50 @@ class Solution {
             list[a].add(new Node(b, v));
             list[b].add(new Node(a, v));
         }
-        
         int[] minIntensity = new int[n+1];
         Arrays.fill(minIntensity, Integer.MAX_VALUE);
         PriorityQueue<Node> pq = new PriorityQueue<>();
         
         for(int gate : gates) {
-            pq.offer(new Node(gate, 0));
             minIntensity[gate] = 0;
+            pq.offer(new Node(gate, 0));
         }
         
         while(!pq.isEmpty()) {
             Node now = pq.poll();
             
-            // 만약 산봉우리에 도달하면 그 이상 탐색하지 않는다.
-            if (summitSet.contains(now.vertex)) continue;
-            
-            if(minIntensity[now.vertex] < now.cost) {
+            if(minIntensity[now.vertex] < now.cost) {   //현재 비용이 더 크다면 알아볼 필요가 없음
+                continue;
+            }
+            if(summitSet.contains(now.vertex)) {
                 continue;
             }
             
             for(Node next : list[now.vertex]) {
-                int newIntensity = Math.max(minIntensity[now.vertex], next.cost);
-                if(newIntensity < minIntensity[next.vertex] && !gateSet.contains(next.vertex)) {
-                    pq.offer(new Node(next.vertex, newIntensity));
-                    minIntensity[next.vertex] = newIntensity;
+                int nextIntensity = Math.max(minIntensity[now.vertex], next.cost);
+                
+                if(gateSet.contains(next.vertex)) {
+                    continue;
+                }
+                
+                if(minIntensity[next.vertex] > nextIntensity) {
+                    minIntensity[next.vertex] = nextIntensity;
+                    pq.offer(new Node(next.vertex, nextIntensity));
                 }
             }
         }
-        // 최소 intensity 산봉우리 찾기
-        int minSummit = -1;
-        int minSummitIntensity = Integer.MAX_VALUE;
-        Arrays.sort(summits); // 산봉우리 번호가 작은 순서대로 찾기 위해 정렬
-
-        for (int summit : summits) {
-            if (minIntensity[summit] < minSummitIntensity) {
-                minSummitIntensity = minIntensity[summit];
-                minSummit = summit;
+        // System.out.print(Arrays.toString(minIntensity));
+        int minInten = Integer.MAX_VALUE;
+        int mountain = 0;
+        Arrays.sort(summits);
+        
+        for(int summit : summits) {
+            if(minInten > minIntensity[summit]) {
+                minInten = minIntensity[summit];
+                mountain = summit;
             }
         }
-
-        return new int[]{minSummit, minSummitIntensity};
+        return new int[]{mountain, minInten};
     }
 
 }
