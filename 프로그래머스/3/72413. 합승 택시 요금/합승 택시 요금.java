@@ -23,10 +23,7 @@ class Solution {
         solve(s, 0);
         solve(a, 1);
         solve(b, 2);
-        
-        for(int i=0; i<3; i++) {
-            System.out.print(Arrays.toString(money[i]));
-        }
+
         int min = Integer.MAX_VALUE;
         for(int i=1; i<=n; i++) {
             min = Math.min(min, money[0][i] + money[1][i] + money[2][i]);
