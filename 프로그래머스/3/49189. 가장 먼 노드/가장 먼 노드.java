@@ -35,7 +35,6 @@ class Solution {
                 }
             }
         }
-        System.out.println(maxDepth);
         for(int i=1; i<=n; i++) {
             if(depth[i] == maxDepth) {
                 answer++;
