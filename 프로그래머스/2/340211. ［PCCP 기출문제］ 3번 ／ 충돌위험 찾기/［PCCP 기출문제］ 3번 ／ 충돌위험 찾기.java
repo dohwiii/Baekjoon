@@ -8,7 +8,6 @@ class Solution {
     static boolean[][][] visited;
     static int[][] robotsAt;
     static int[] nextTargetIndex;
-    static Map<Integer, Integer> collisions = new HashMap<>();
 
     public int solution(int[][] points, int[][] routes) {
         int answer = 0;
@@ -28,6 +27,7 @@ class Solution {
             int startPoint = route[0];
             int r = points[startPoint-1][0];
             int c = points[startPoint-1][1];
+            nextTargetIndex[index+1] = 0;
             queue.offer(new Pos(index+1, r, c));
             index++;
         }
