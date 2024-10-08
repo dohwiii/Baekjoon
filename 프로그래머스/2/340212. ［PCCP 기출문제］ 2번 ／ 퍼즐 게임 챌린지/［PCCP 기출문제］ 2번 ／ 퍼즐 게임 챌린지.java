@@ -2,13 +2,10 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] diffs, int[] times, long limit) {
-        int answer = Integer.MAX_VALUE;
+        int answer = 0;
         int sum = 0;
-        for(int i=0; i<diffs.length; i++) {
-            sum += diffs[i];
-        }
-        int N = diffs.length;
-        int l = 1, r = Arrays.stream(diffs).max().getAsInt();;
+        int l = 1;
+        int r = 100000;
         
         while(l <= r) {
             int level = (int) (l + r) / 2;
@@ -18,7 +15,7 @@ class Solution {
                 l = level + 1;
             }
             else if(totalTime <= limit) {  //시간 괜찮
-                answer = Math.min(answer, level);
+                answer = level;
                 r = level - 1;
             }
             
