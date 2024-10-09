@@ -28,13 +28,12 @@ class Solution {
                 }
             }
         }
-        if(list.size() == 0) {
-            return new int[]{-1};
-        }
-        answer = list.stream().mapToInt(Integer::intValue).toArray();
-        Arrays.sort(answer);
+        // if(list.size() == 0) {
+        //     return new int[]{-1};
+        // }
+        Collections.sort(list);
         
-        return answer;
+        return list.size() == 0 ? new int[]{-1} : list.stream().mapToInt(Integer::intValue).toArray();
     }
     public static int bfs(int x, int y) {
         Queue<Pos> queue = new ArrayDeque<>();
