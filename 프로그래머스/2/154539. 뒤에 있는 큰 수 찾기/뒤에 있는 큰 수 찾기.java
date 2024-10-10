@@ -18,32 +18,20 @@ class Solution {
                     stack.push(num);
                     break;
                 }
-                if(stack.peek() > num) {
-                    answer[i] = stack.peek();
-                    stack.push(num);
-                    break;
-                }
-                else {
-                    stack.pop();
+                else {  //이미 스택에 값이 있다면
+                    if(num >= stack.peek()) {    //뒷 큰수 아님
+                        stack.pop();
+                    }
+                    else {
+                        answer[i] = stack.peek();
+                        stack.push(num);
+                        break;
+                    }
                 }
             }
+            
             
         }
         return answer;
     }
-//     public static void find(int num, int index) {
-//         int l = index;
-//         int r = N;
-        
-//         while(l <= r) {
-            
-//         }
-//     }
-    // static class Number {
-    //     int num, index;
-    //     public Nubmer(int num, int index) {
-    //         this.num=num;
-    //         this.index=index;
-    //     }
-    // }
 }
