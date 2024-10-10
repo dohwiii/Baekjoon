@@ -13,23 +13,16 @@ class Solution {
         for(int i=N-1; i>=0; i--) {
             int num = numbers[i];
             
-            while(true) {
-                if(stack.isEmpty()) {
-                    stack.push(num);
+            while(!stack.isEmpty()) {
+                if(num >= stack.peek()) {
+                    stack.pop();
+                }
+                else {
+                    answer[i] = stack.peek();
                     break;
                 }
-                else {  //이미 스택에 값이 있다면
-                    if(num >= stack.peek()) {    //뒷 큰수 아님
-                        stack.pop();
-                    }
-                    else {
-                        answer[i] = stack.peek();
-                        stack.push(num);
-                        break;
-                    }
-                }
             }
-            
+            stack.push(num);
             
         }
         return answer;
