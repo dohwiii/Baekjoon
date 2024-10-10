@@ -7,12 +7,7 @@ public class Solution {
         for(int i=0; i<arr.length; i++) {
             int now = arr[i];
             
-            if(!stack.isEmpty()) {
-                if(now != stack.peek()) {
-                    stack.push(now);
-                }
-            }
-            else {
+            if(stack.size() == 0 || now != stack.peek()) {
                 stack.push(now);
             }
             
