@@ -20,13 +20,9 @@ class Solution {
             if(now == '(') {
                 countA++;
             }
-            else if(now == ')') {
+            else {
                 countB++;
             }
-            if(countA < countB) {
-                return false;
-            }
-        
         }
         if(countA == countB) {
             return true;
