@@ -20,9 +20,13 @@ class Solution {
             if(now == '(') {
                 countA++;
             }
-            else {
+            else if(now == ')') {
                 countB++;
             }
+            if(countA < countB) {   //닫는괄호(')')가 여는괄호('(')보다 많은 경우
+                return false;
+            }
+        
         }
         if(countA == countB) {
             return true;
