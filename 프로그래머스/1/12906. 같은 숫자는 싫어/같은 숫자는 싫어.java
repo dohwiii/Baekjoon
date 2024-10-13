@@ -2,22 +2,28 @@ import java.util.*;
 
 public class Solution {
     public int[] solution(int[] arr) {
-        Stack<Integer> stack = new Stack<>();
+        int[] answer = {};
+        Queue<Integer> queue = new ArrayDeque<>();
+        List<Integer> list = new ArrayList<>();
         
         for(int i=0; i<arr.length; i++) {
-            int now = arr[i];
+            queue.offer(arr[i]);
+        }
+        int index = 0;
+        
+        while(!queue.isEmpty()) {
+            int now = queue.poll();
+            list.add(now);
             
-            if(stack.size() == 0 || now != stack.peek()) {
-                stack.push(now);
+            for(int next : queue) {
+                if(now == next) {
+                    queue.poll();
+                }
+                else {
+                    break;
+                }
             }
-            
         }
-        int[] answer = new int[stack.size()];
-        int index = stack.size() - 1;
-        while(!stack.isEmpty()) {
-            answer[index] = stack.pop();
-            index--;
-        }
-        return answer;
+        return list.stream().mapToInt(Integer::intValue).toArray();
     }
 }
