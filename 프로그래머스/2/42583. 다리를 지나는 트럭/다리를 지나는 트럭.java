@@ -1,16 +1,15 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
-        Queue<Integer> bridge = new LinkedList<>(); // 다리 위 트럭 상태 (큐)
+        Queue<Integer> bridge = new ArrayDeque<>(); // 다리 위 트럭 상태 (큐)
         int totalWeightOnBridge = 0; // 다리 위 트럭의 총 무게
         int time = 0; // 경과 시간
         int index = 0; // 대기 중인 트럭 배열의 인덱스
 
         // 다리 길이만큼 큐를 0으로 채워서 초기화 (트럭이 없는 상태)
         for (int i = 0; i < bridge_length; i++) {
-            bridge.add(0);
+            bridge.offer(0);
         }
 
         while (!bridge.isEmpty()) {
@@ -24,12 +23,12 @@ class Solution {
             if (index < truck_weights.length) {
                 if (totalWeightOnBridge + truck_weights[index] <= weight) {
                     // 새로운 트럭을 다리에 올림
-                    bridge.add(truck_weights[index]);
+                    bridge.offer(truck_weights[index]);
                     totalWeightOnBridge += truck_weights[index];
                     index++;
                 } else {
                     // 트럭이 다리 위에 올라갈 수 없으면 빈 공간 추가
-                    bridge.add(0);
+                    bridge.offer(0);
                 }
             }
         }
