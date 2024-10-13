@@ -2,25 +2,30 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-        Stack<Integer> stack = new Stack<>();
-        Map<Integer, Integer> map = new HashMap<>();
-        
-        for(int i=progresses.length-1; i>=0; i--) {
-            int remain = 100 - progresses[i];
-            int day = remain % speeds[i] != 0 ? (int) (remain / speeds[i]) + 1 : (int) remain / speeds[i];
-            stack.push(day);
-        }
+        int[] answer = {};
+        Queue<Integer> queue = new ArrayDeque<>();
         List<Integer> list = new ArrayList<>();
-        while(!stack.isEmpty()) {
-            int now = stack.pop();
-            int count = 1;
+        
+        for(int i=0; i<progresses.length; i++) {
+            int result = (int) (100 - progresses[i]) % speeds[i] == 0 ? (int) (100 - progresses[i]) / speeds[i] : (int) (100 - progresses[i]) / speeds[i] + 1;
             
-            while(!stack.isEmpty() && now >= stack.peek()) {
-                System.out.println(stack.pop());
-                count++;
-            }
-            list.add(count);
+            queue.offer(result);
         }
-        return list.stream().mapToInt(i->i).toArray();
+        while(!queue.isEmpty()) {
+            int now = queue.poll();
+            int cnt = 1;
+            
+            while(!queue.isEmpty()) {
+                int next = queue.peek();
+                if(now < next) {
+                    break;
+                }
+                cnt++;
+                queue.poll();
+            }
+            list.add(cnt);
+        }       
+        
+        return list.stream().mapToInt(Integer::intValue).toArray();
     }
 }
