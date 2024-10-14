@@ -1,43 +1,41 @@
 import java.util.*;
-
 class Solution {
     public int solution(int[] diffs, int[] times, long limit) {
-        int answer = 0;
-        int sum = 0;
-        int l = 1;
-        int r = 100000;
+        int answer = Integer.MAX_VALUE; //최소 숙련도
+        int left = 1;
+        int right = 100000;
+        long time = 0;  //걸리는 시간
         
-        while(l <= r) {
-            int level = (int) (l + r) / 2;
-            long totalTime = solve(limit, level, diffs, times);    //숙련도와 걸린 시간
+        while(left <= right) {
+            int level = (int) (left + right) / 2;
+            time = 0;
 
-            if(totalTime > limit) {    //시간이 초과
-                l = level + 1;
+            for(int i=0; i<diffs.length; i++) {
+                int diff = diffs[i];
+                
+                if(level >= diff) {
+                    time += times[i];
+                }
+                else if(level < diff) {
+                    int wrongCnt = diff - level;    //틀린 횟수
+                    int result = (times[i] + times[i - 1]) * wrongCnt + times[i];
+                    time += result;
+                }
             }
-            else if(totalTime <= limit) {  //시간 괜찮
+
+            //현재 걸리는 시간이 제한시간을 초과한다면 -> 숙련도 증가
+            if(time > limit) {
+                left = level + 1;
+            }
+            else {  //제한시간 내에 들어오지만 최소 숙련도를 구해야하므로 숙련도 감소
+                right = level - 1;
+                if(answer <= level) {
+                    continue;
+                }
                 answer = level;
-                r = level - 1;
             }
-            
         }
         
         return answer;
-    }
-    public long solve(long limit, int level, int[] diffs, int[] times) {
-        long time = 0;
-        
-        for(int i=0; i<diffs.length; i++) {
-            if(level >= diffs[i]) { //숙련도 충분해서 퍼즐 바로 풀 수 있음
-                time += times[i];
-            }
-            else {
-                int remain = diffs[i] - level;  //틀린 횟수
-                int x = times[i - 1] + times[i];
-                time += x * remain + times[i];
-                    
-            }
-        }
-        
-        return time;
     }
 }
