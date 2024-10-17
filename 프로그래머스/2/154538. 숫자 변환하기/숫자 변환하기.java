@@ -1,62 +1,34 @@
 import java.util.*;
 class Solution {
+    static Queue<Integer> queue;
+    static int[] visited;
+    
     public int solution(int x, int y, int n) {
         int answer = 0;
-        int[] dp = new int[y+1];
-        PriorityQueue<Num> pq = new PriorityQueue<>();
-        pq.offer(new Num(x, 0));
-        Arrays.fill(dp, Integer.MAX_VALUE);
-        dp[x] = 0;
+        visited = new int[y + 1];
         
-        while(!pq.isEmpty()) {
-            Num now = pq.poll();
-            
-            if(dp[now.num] < now.times) {
-                continue;
-            }
-            if(now.num > y) {
-                continue;
-            }
-            int next = 0;
-            
-            next = now.num + n;
-            if(next <= y) {
-                if(dp[next] > dp[now.num] + 1) {
-                    dp[next] = dp[now.num] + 1;
-                    pq.offer(new Num(next, dp[now.num] + 1));
-                }
-            }
-            next = now.num * 2;
-            if(next <= y) {
-                if(dp[next] > dp[now.num] + 1) {
-                    dp[next] = dp[now.num] + 1;
-                    pq.offer(new Num(next, dp[now.num] + 1));
-                }
-            }
-            next = now.num * 3;
-            if(next <= y) {
-                if(dp[next] > dp[now.num] + 1) {
-                    dp[next] = dp[now.num] + 1;
-                    pq.offer(new Num(next, dp[now.num] + 1));
-                }
-            }
-            
-        }
-        
-        if(dp[y] == Integer.MAX_VALUE) {
-            return -1;
-        }
-        return dp[y];
+        return bfs(x, y, n);
     }
-    static class Num implements Comparable<Num> {
-        int num, times;
-        public Num(int num, int times) {
-            this.num=num;
-            this.times=times;
+    public static int bfs(int node, int y, int n) {
+        queue = new ArrayDeque<>();
+        queue.offer(node);
+        
+        while(!queue.isEmpty()) {
+            int now = queue.poll();
+            int next = 0;
+            if(now == y) {
+                return visited[now];
+            }
+            addQueue(now + n, now, y);
+            addQueue(now * 2, now, y);
+            addQueue(now * 3, now, y);           
         }
-        @Override
-        public int compareTo(Num n) {
-            return this.times - n.times;
+        return -1;
+    }
+    public static void addQueue(int next, int now, int y) {
+        if(next <= y && visited[next] == 0) {
+            queue.offer(next);
+            visited[next] = visited[now] + 1;
         }
     }
 }
