@@ -25,18 +25,16 @@ class Solution {
                         break;
                     }
                 }
+                if(isTrue) {
+                    answer++;
+                }
             }         
-            if(isTrue) {
-                answer++;
-            }
             return;
         }
         for(int i = start; i < nums.length; i++) {
             if(!visited[i]) {
                 visited[i] = true;
-                
                 combi(i + 1, depth + 1, nums);
-                
                 visited[i] = false;
             }
         }
