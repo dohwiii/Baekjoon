@@ -13,15 +13,14 @@ class Solution {
             }
         });
 
-        int result = 0;
         for(int i = row_begin - 1; i <= row_end -1 ; i++) {
             int sum = 0;
             
             for(int j = 0; j < data[0].length; j++) {
                 sum += (data[i][j] % (i + 1));
             }
-            result = result ^ sum;
+            answer = answer ^ sum;
         }
-        return result;
+        return answer;
     }
 }
