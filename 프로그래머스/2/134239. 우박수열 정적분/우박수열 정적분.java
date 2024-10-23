@@ -1,52 +1,50 @@
 import java.util.*;
 
 class Solution {
-    static List<Integer> list;
+    static List<Integer> collatz;
+    static List<Double> areas;
+    
     public double[] solution(int k, int[][] ranges) {
         double[] answer = new double[ranges.length];
-        list = new ArrayList<>();
-        list.add(k);
+        areas = new ArrayList<>();
+        collatz = new ArrayList<>();
+        collatz.add(k);
         
-        int times = calc(k, 0); //몇번 했는지
-        double[] function = new double[times+1];
+        calc(k); //좌표, 면적 계산
         int index = 0;
-        for(int i = 0; i < times; i++) {
-            function[i] = calcArea(i, i+1, times);
-        }
+        int n = areas.size();
+        
         for(int[] range : ranges) {
             int start = range[0];
-            int end = times + range[1];
+            int end = n + range[1];
             if(start > end) {
                 answer[index++] = -1.0;
                 continue;
             }
             double sum = 0;
             for(int i=start; i<end; i++) {
-                sum += function[i];
+                sum += areas.get(i);
             }
             answer[index++] = sum;
         }
 
         return answer;
     }
-    public double calcArea(int a, int b, int n) {
-        int start = a;
-        int end = b;
-        int height = end - start;
-        
-        return (list.get(start) + list.get(end)) * height * 0.5;
-    }
-    public int calc(int num, int depth) {
+    public void calc(int num) {
         if(num == 1) {
-            return depth;
+            return;
         }
         if(num % 2 == 0) {
-            list.add(num / 2);
-            return calc(num / 2, depth + 1);
+            int next = num / 2;
+            areas.add((next + num) / 2.0);
+            collatz.add(next);
+            calc(next);
         }
         else {
-            list.add(num * 3 + 1);
-            return calc(num * 3 + 1, depth + 1);
+            int next = num * 3 + 1;
+            areas.add((next + num) / 2.0);
+            collatz.add(next);
+            calc(next);
         }
     }
 }
