@@ -3,15 +3,18 @@ class Solution {
     public int solution(int k, int[] tangerine) {
         int answer = 0;
         PriorityQueue<Fruit> pq = new PriorityQueue<>();
-        Map<Integer, Integer> map = new HashMap<>();
-        
+        int maxSize = Arrays.stream(tangerine).max().getAsInt();
+        int[] size = new int[maxSize+1];
+            
         for(int i=0; i<tangerine.length; i++) {
-            map.put(tangerine[i], map.getOrDefault(tangerine[i], 0) + 1);
+            size[tangerine[i]]++;
         }
-        for(int key : map.keySet()) {
-            int value = map.get(key);
-            pq.offer(new Fruit(key, value));
+        for(int i=1; i<=maxSize; i++) {
+            if(size[i] > 0) {
+                pq.offer(new Fruit(i, size[i]));
+            }
         }
+
         int sum = 0;
         int type = 0;
         while(!pq.isEmpty()) {
