@@ -15,6 +15,7 @@ class Solution {
                 sum += elements[i];
             }
             set.add(sum);
+            
             for(int i=1; i<elements.length; i++) {
                 sum -= elements[i-1];
                 sum += elements[(i + size - 1) % elements.length];
