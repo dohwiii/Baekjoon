@@ -6,32 +6,22 @@ class Solution {
     
     public int solution(int[] elements) {
         int answer = 0;
-        arr = new int[elements.length * 2];
-        System.arraycopy(elements, 0, arr, 0, elements.length);
-        System.arraycopy(elements, 0, arr, elements.length, elements.length);
-        int maxLength = elements.length;
+        arr = new int[elements.length];
         
-        for(int i=1; i<=maxLength; i++) {
-            calc(i, elements);
+        for(int size = 1; size <= elements.length; size++) {
+            int sum = 0;
+            
+            for(int i=0; i<size; i++) {
+                sum += elements[i];
+            }
+            set.add(sum);
+            for(int i=1; i<elements.length; i++) {
+                sum -= elements[i-1];
+                sum += elements[(i + size - 1) % elements.length];
+                set.add(sum);
+            }
         }
         return set.size();
     }
-    public void calc(int size, int[] elements) {
-        int start = 0;
-        int end = 0;
-        int sum = 0;
-                
-        while(true) {     
-            sum += arr[end++];
-            
-            if(end == start + size) {
-                set.add(sum);
-                sum -= arr[start];
-                start++;
-            }
-            if(start == elements.length) {  //끝까지 다 왔다면
-                break;   
-            }
-        }
-    }
+    
 }
