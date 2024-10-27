@@ -2,7 +2,7 @@ import java.util.*;
 
 class Solution {
     static Map<Integer, Integer> parking = new HashMap<>();
-    static Map<Integer, Integer> fee = new HashMap<>();
+    static Map<Integer, Integer> fee = new TreeMap<>();
     
     public int[] solution(int[] fees, String[] records) {
         List<Integer> list = new ArrayList<>();
