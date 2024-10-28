@@ -9,8 +9,6 @@ class Solution {
             answer[(int)(i - left)] = (int) max + 1; 
         }
         
-        
-        
         return answer;
     }
 }
