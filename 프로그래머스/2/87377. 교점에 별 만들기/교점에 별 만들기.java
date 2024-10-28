@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Solution {
-    static List<Pos> list = new ArrayList<>();
+    static Set<Pos> set = new HashSet<>();
     
     public String[] solution(int[][] line) {
         int minX = Integer.MAX_VALUE;
@@ -16,7 +16,7 @@ class Solution {
                 findIntersection(standard[0], standard[1], standard[2], compare[0], compare[1], compare[2]);
             }
         }
-        for(Pos now : list) {
+        for(Pos now : set) {
             minX = Math.min(minX, now.x);   //가장 작은 X
             maxX = Math.max(maxX, now.x);
             minY = Math.min(minY, now.y);
@@ -30,7 +30,7 @@ class Solution {
         }
         String[] answer = new String[height];
         
-        for(Pos p : list) {
+        for(Pos p : set) {
             int x = p.x - minX;
             int y = maxY - p.y;
             map[y][x] = '*';
@@ -54,7 +54,7 @@ class Solution {
         if(xNumerator % denominator == 0 && yNumerator % denominator == 0) {
             int x = (int) (xNumerator / denominator);
             int y = (int) (yNumerator / denominator);
-            list.add(new Pos(x, y));
+            set.add(new Pos(x, y));
         }
     }
     static class Pos {
