@@ -35,9 +35,14 @@ class Solution {
             int y = maxY - p.y;
             map[y][x] = '*';
         }
-        for(int i=0; i<height; i++) {
-            answer[i] = new String(map[i]);
+        for (int i = 0; i < height; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < width; j++) {
+                sb.append(map[i][j]);
+            }
+            answer[i] = sb.toString();
         }
+        
         return answer;
     }
     public void findIntersection(int a1, int b1, int c1, int a2, int b2, int c2) {
