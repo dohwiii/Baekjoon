@@ -1,72 +1,47 @@
 import java.util.*;
 
 class Solution {
-    static Set<Pos> set = new HashSet<>();
-    
+    static Set<List<Long>> intersection;
+    static long xMin, xMax, yMin, yMax;
     public String[] solution(int[][] line) {
-        int minX = Integer.MAX_VALUE;
-        int maxX = Integer.MIN_VALUE;
-        int minY = Integer.MAX_VALUE;
-        int maxY = Integer.MIN_VALUE;
-        
-        for(int i=0; i<line.length - 1; i++) {
-            int[] standard = line[i];
-            for(int j=i+1; j<line.length; j++) {
-                int[] compare = line[j];
-                findIntersection(standard[0], standard[1], standard[2], compare[0], compare[1], compare[2]);
+        intersection = new HashSet<>();
+        xMin = Long.MAX_VALUE; yMin = Long.MAX_VALUE;
+        xMax = Long.MIN_VALUE; yMax = Long.MIN_VALUE;
+
+        for(int i=0; i<line.length-1; i++){
+            for(int j=i+1; j<line.length; j++){
+                getIntersection(line[i], line[j]);
             }
         }
-        for(Pos now : set) {
-            minX = Math.min(minX, now.x);   //가장 작은 X
-            maxX = Math.max(maxX, now.x);
-            minY = Math.min(minY, now.y);
-            maxY = Math.max(maxY, now.y);   //가장 큰 Y
+
+        String[] answer = new String[(int) (yMax - yMin) + 1];
+        for(int i=0; i<answer.length; i++){
+            answer[i] = ".".repeat((int)(xMax - xMin) + 1);
         }
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
-        char[][] map = new char[height][width];
-        for(char[] row : map) {
-            Arrays.fill(row, '.');
+
+        for(List<Long> star : intersection){
+            long x = star.get(0), y = star.get(1);
+            answer[(int)(yMax-y)] = answer[(int)(yMax-y)].substring(0, (int)(x-xMin)) + "*" + answer[(int)(yMax-y)].substring((int)(x-xMin)+1);
         }
-        String[] answer = new String[height];
-        
-        for(Pos p : set) {
-            int x = p.x - minX;
-            int y = maxY - p.y;
-            map[y][x] = '*';
-        }
-        for (int i = 0; i < height; i++) {
-            StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < width; j++) {
-                sb.append(map[i][j]);
-            }
-            answer[i] = sb.toString();
-        }
-        
+
         return answer;
     }
-    public void findIntersection(int a1, int b1, int c1, int a2, int b2, int c2) {
-        long denominator = (long) a1 * b2 - (long) b1 * a2; //분모
-        
-        if(denominator == 0) {  //평행
-            return;
+
+    public void getIntersection(int[] line1, int[] line2){
+        double A, B, C, D, E, F;
+        A = line1[0]; B = line1[1]; E = line1[2];
+        C = line2[0]; D = line2[1]; F = line2[2];
+
+        double slope  = A*D - B*C;
+        if(slope == 0)  return;    
+
+        double x = (B*F - E*D) / slope, y = (E*C - A*F) / slope;
+        long ix = (long) x, iy = (long) y;
+        if(x == ix && y == iy){
+            intersection.add((List<Long>)Arrays.asList(new Long[] {ix, iy}));
+            xMin = Math.min(xMin, ix); xMax = Math.max(xMax, ix);
+            yMin = Math.min(yMin, iy); yMax = Math.max(yMax, iy);
         }
-        
-        long xNumerator = (long) b1 * c2 - (long) c1 * b2;
-        long yNumerator = (long) c1 * a2 - (long) a1 * c2;
-        
-        //정수 여부
-        if(xNumerator % denominator == 0 && yNumerator % denominator == 0) {
-            int x = (int) (xNumerator / denominator);
-            int y = (int) (yNumerator / denominator);
-            set.add(new Pos(x, y));
-        }
-    }
-    static class Pos {
-        int x, y;
-        public Pos(int x, int y) {
-            this.x=x;
-            this.y=y;
-        }
+        return;
     }
 }
