@@ -2,102 +2,54 @@ import java.util.*;
 
 class Solution {
     static char[][] map;
-    static Queue<Pos> queue = new ArrayDeque<>();
-    // static int[] dx = {1, -1 , 0, 0, -1, -1, 1, 1, 0, -2, 0, 2};
-    // static int[] dy = {0, 0, 1, -1, 1, -1, -1, 1, 2, 0, -2, 0};
-    static int[] dx = {1, -1 , 0, 0};
-    static int[] dy = {0, 0, 1, -1};
     static boolean[][] visited;
     static boolean isPossible;
-    
+
     public int[] solution(String[][] places) {
         int[] answer = new int[5];
-        map = new char[5][5];
-        visited = new boolean[5][5];
-        int index = 0;
-        
-        for(int i=0; i<places.length; i++) {
-            String[] place = places[i];
+        for (int i = 0; i < places.length; i++) {
             map = new char[5][5];
             visited = new boolean[5][5];
             isPossible = true;
-            
-            for(int j=0; j<5; j++) {
-                map[j] = place[j].toCharArray();
+
+            for (int j = 0; j < 5; j++) {
+                map[j] = places[i][j].toCharArray();
             }
-            for(int j=0; j<5; j++) {
-                for(int k=0; k<5; k++) {
-                    if(map[j][k] == 'P' && !visited[j][k]) {
-                        dfs(j, k, -1, -1, 0, 0);
+
+            for (int r = 0; r < 5; r++) {
+                for (int c = 0; c < 5; c++) {
+                    if (map[r][c] == 'P' && !visited[r][c]) {
+                        dfs(r, c, 0);
+                        if (!isPossible) break; // 한 번이라도 거리두기 실패 시 종료
                     }
                 }
+                if (!isPossible) break;
             }
-            if(isPossible) {
-                answer[index++] = 1;
-            }
-            else {
-                answer[index++] = 0;
-            }
+            answer[i] = isPossible ? 1 : 0;
         }
-        
-        
         return answer;
     }
-    public void dfs(int x, int y, int prevX, int prevY, int depth, int oCnt) {       
-        if(visited[x][y]) {
+
+    private void dfs(int x, int y, int distance) {
+        if (distance > 2 || !isPossible) return; // 거리 2 이상 시 탐색 중단
+        if (distance > 0 && map[x][y] == 'P') { // 응시자 발견 시 거리두기 실패
+            isPossible = false;
             return;
-        }
-        if(oCnt >= 2) {
-            return;
-        }
-        if(prevX != -1 || prevY != -1) {    //맨 처음이 아닐 때
-            if(map[x][y] == 'P') {    //응시자라면
-                if(Math.abs(x - prevX) + Math.abs(y - prevY) <= 2) {
-                    // System.out.println("아닐 때 "+x+" "+y+" "+prevX+" "+prevY);
-                    isPossible = false;
-                    return;
-                }
-            }
         }
 
-        if(depth == 25) {   //다 돌았을 때
-            return;
-        }    
         visited[x][y] = true;
         
-        for(int i=0; i<4; i++) {
+        int[] dx = {1, -1, 0, 0};
+        int[] dy = {0, 0, 1, -1};
+        
+        for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if(nx < 0 ||nx >= 5 || ny <0 || ny>=5 || map[nx][ny] == 'X' || visited[nx][ny]) {
-                continue;
+            if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5 && !visited[nx][ny]) {
+                if (map[nx][ny] == 'X') continue; // 파티션일 경우 지나가지 않음
+                dfs(nx, ny, distance + 1); // 거리 2 이하인 경우 계속 탐색
             }
-            if(map[x][y] == 'P') {  //현재 위치가 응시자라면
-                if(map[nx][ny] == 'O') {
-                    dfs(nx, ny, x, y, depth + 1, oCnt + 1);
-                }
-                else {  //응시자
-                    dfs(nx, ny, x, y, depth + 1, 0);
-                }
-                
-            }
-            else if(map[x][y] == 'O') {
-                if(map[nx][ny] == 'O') {
-                    dfs(nx, ny, prevX, prevY, depth + 1, oCnt + 1);
-                }
-                else {
-                    dfs(nx, ny, prevX, prevY, depth + 1, 0);
-                }
-                
-            }
-            
-        }
-    }
-    static class Pos {
-        int x, y;
-        public Pos(int x, int y) {
-            this.x=x;
-            this.y=y;
         }
     }
 }
