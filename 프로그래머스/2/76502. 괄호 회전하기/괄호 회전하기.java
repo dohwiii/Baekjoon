@@ -1,116 +1,50 @@
 import java.util.*;
+
 class Solution {
     static Queue<Character> queue = new ArrayDeque<>();
     
     public int solution(String s) {
         int answer = 0;
   
-        for(int i=0; i<s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             queue.offer(s.charAt(i));
         }
-        int cnt = 1;
-        while(cnt <= s.length()) { 
-            if(isRight()) {     
+
+        for (int i = 0; i < s.length(); i++) { 
+            if (isRight()) {     
                 answer++;
             }
+            // 회전: 첫 번째 문자를 뒤로 보냄
             char now = queue.poll();
             queue.offer(now);
-            cnt++;
         }
         
         return answer;
     }
+
     public boolean isRight() {
         Stack<Character> stack = new Stack<>();
         
-        for(char c : queue) {
-            if(c == '{' || c == '[' || c == '(') {
+        for (char c : queue) {
+            // 열린 괄호는 스택에 넣음
+            if (c == '(' || c == '[' || c == '{') {
                 stack.push(c);
-            }
-            else {  //닫힌 괄호
-                if(stack.isEmpty()) {
+            } else {
+                // 닫힌 괄호일 경우
+                if (stack.isEmpty()) {
+                    return false;  // 짝이 맞지 않음
+                }
+                char top = stack.pop();
+                
+                // 스택에서 꺼낸 열린 괄호와 닫힌 괄호가 짝이 맞는지 확인
+                if ((c == ')' && top != '(') ||
+                    (c == ']' && top != '[') ||
+                    (c == '}' && top != '{')) {
                     return false;
                 }
-                if(c == ']') {
-                    if(stack.peek() == '(' || stack.peek() == '{') {
-                        return false;
-                    }
-                    else {
-                        stack.pop();
-                    }
-                }
-                if(c == '}') {
-                    if(stack.peek() == '(' || stack.peek() == '[') {
-                        return false;
-                    }
-                    else {
-                        stack.pop();
-                    }
-                }
-                if(c == ')') {
-                    if(stack.peek() == '[' || stack.peek() == '{') {
-                        return false;
-                    }
-                    else {
-                        stack.pop();
-                    }
-                }
             }
-                
         }
+        // 모든 열린 괄호가 짝이 맞아 스택이 비어 있어야 올바른 괄호열임
         return stack.isEmpty();
-        
     }
-    
-    
-    
-    
-//     public boolean isRight() {
-//         Stack<Character> stack1 = new Stack<>();    //()
-//         Stack<Character> stack2 = new Stack<>();    //[]
-//         Stack<Character> stack3 = new Stack<>();    //{}
-        
-//         for(char c : queue) {
-//             if(c == '(') {
-//                 stack1.push('(');
-//             }
-//             else if(c == ')') {
-//                 if(stack1.isEmpty()) {  //열린 괄호 없을 때
-//                     return false;
-//                 }
-//                 if(!stack2.isEmpty() || !stack3.isEmpty()) {
-//                     return false;
-//                 }
-//                 stack1.pop();
-//             }
-            
-//             if(c == '[') {
-//                 stack2.push('[');
-//             }
-//             else if(c == ']') {
-//                 if(stack2.isEmpty()) {
-//                     return false;
-//                 }
-//                 if(!stack1.isEmpty() || !stack3.isEmpty()) {  //다른 열린 괄호들이 사이에 껴있다면
-//                     return false;
-//                 }
-//                 stack2.pop();
-//             }
-            
-//             if(c == '{') {
-//                 stack3.push('{');
-//             }
-//             else if(c == '}') {
-//                 if(stack3.isEmpty()) {
-//                     return false;
-//                 }
-//                 if(!stack1.isEmpty() || !stack2.isEmpty()) {  //다른 열린 괄호들이 사이에 껴있다면
-//                     return false;
-//                 }
-//                 stack3.pop();
-//             }
-//         }
-//         return stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty();
-//     }
-    
 }
