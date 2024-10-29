@@ -11,7 +11,6 @@ class Solution {
         int[] answer = new int[5];
         map = new char[5][5];
         visited = new boolean[5][5];
-        int index = 0;
         
         for(int i=0; i<places.length; i++) {
             map = new char[5][5];
@@ -34,7 +33,7 @@ class Solution {
                     break;
                 }
             }
-            answer[index++] = isPossible ? 1 : 0;
+            answer[i] = isPossible ? 1 : 0;
         }
         
         return answer;
