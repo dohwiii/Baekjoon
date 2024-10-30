@@ -1,89 +1,76 @@
 import java.util.*;
 
 class Solution {
-    static int[] percent = {10, 20, 30, 40};
-    static List<Result> resultList;
-    static PriorityQueue<Result> pq = new PriorityQueue<>();
+    static int[] discount = {10, 20, 30, 40};
+    static boolean[] visited;
+    static List<Sale> list;
+    static List<Join> resultList = new ArrayList<>();
     
     public int[] solution(int[][] users, int[] emoticons) {
-        int[] answer = {};
-        resultList = new ArrayList<>();
-        int[] selected = new int[emoticons.length];  // 선택된 할인율을 저장할 배열
-
-        combi(0, selected, users, emoticons);
+        int[] answer = new int[2];
+        visited = new boolean[4];
+        list = new ArrayList<>(emoticons.length);
+        int[] selectedDiscount = new int[emoticons.length]; //이모티콘마다 할인율 담는 배열
         
-        if (!pq.isEmpty()) {  // 큐가 비어있는지 확인
-            Result r = pq.poll();
-            answer = new int[]{r.subscribers, r.totalSales};
-        } else {
-            answer = new int[]{0, 0}; // 예외 처리 (큐가 비어있는 경우)
-        }
+        permutation(0, emoticons, users, selectedDiscount);
+        
+        Collections.sort(resultList);
+        Join j = resultList.get(0);
+        answer[0] = j.member;
+        answer[1] = j.sales;
         return answer;
     }
-    public static void combi(int depth, int[] selected, int[][] users, int[] emoticons) {
-        if(depth == selected.length) {  //모든 이모티콘 할인율 뽑았다면
-            Sale[] discountedPrice = calculatePrice(selected, emoticons);    //할인율에 대해 계산
-            buyEmoticons(discountedPrice, users);
+    public void permutation(int depth, int[] emoticons, int[][] users, int[] selectedDiscount) {
+        if(depth == emoticons.length) {
+            int join = 0;
+            int money = 0;
+            
+            for(int[] user : users) {   //유저마다
+                int purchase = 0;
+                for(int i=0; i<selectedDiscount.length; i++) {
+                    int percent = selectedDiscount[i];
+                    if(percent >= user[0]) {  //할인율 이상 구매
+                        int discount = (int) (emoticons[i] * (100 - percent) / 100.0);
+                        purchase += discount;
+                    }
+                }
+                //모든 구매 끝
+                if(purchase >= user[1]) {   //이모티콘 플러스 가입자
+                    join++;
+                }
+                else {
+                    money += purchase;
+                }
+            }
+            resultList.add(new Join(join, money));  //가입자, 매출액
+                
             return;
         }
         for(int i=0; i<4; i++) {
-            selected[depth] = percent[i];
-            combi(depth + 1, selected, users, emoticons);
+            selectedDiscount[depth] = discount[i];
+            permutation(depth + 1, emoticons, users, selectedDiscount);
         }
-    }
-    public static Sale[] calculatePrice(int[] discount, int[] emoticons) {
-        Sale[] price = new Sale[emoticons.length];
-        
-        for(int i=0; i<emoticons.length; i++) {
-            price[i] = new Sale(discount[i], (int) (emoticons[i] * (100 - discount[i]) / 100.0));
-        }
-        return price;
-    }
-    public static void buyEmoticons(Sale[] price, int[][] users) {
-        int subscribers = 0;
-        int totalSales = 0;
-        
-        for(int[] user : users) {
-            int discountRate = user[0];
-            int standard = user[1];
-            int totalPrice = 0;
-            
-            for(Sale p : price) {
-                if(discountRate <= p.percent) { 
-                    totalPrice += p.price;  //이모티콘 구매
-                }
-            }
-
-            if(totalPrice >= standard) {    //기준 이상 -> 이모티콘 플러스 구매자
-                subscribers++;  //가입자
-            }
-            else {  //이모티콘 플러스 구매액보다 적을 때 -> 매출액
-                totalSales += totalPrice;
-            }
-        }
-
-        pq.offer(new Result(subscribers, totalSales));
     }
     
     static class Sale {
-        int percent, price;
-        public Sale(int percent, int price) {
+        int item, percent;
+        public Sale(int item, int percent) {
+            this.item=item;
             this.percent=percent;
-            this.price=price;
         }
     }
-    static class Result implements Comparable<Result> {
-        int subscribers, totalSales;   //가입자수, 매출액
-        public Result(int subscribers, int totalSales) {
-            this.subscribers = subscribers;
-            this.totalSales = totalSales;
+    static class Join implements Comparable<Join> {
+        int member, sales;
+        public Join(int member, int sales) {
+            this.member=member;
+            this.sales=sales;
         }
         @Override
-        public int compareTo(Result r) {
-            if(this.subscribers == r.subscribers) {
-                return r.totalSales - this.totalSales;
+        public int compareTo(Join j) {
+            if(j.member == this.member) {
+                return j.sales - this.sales;
             }
-            return r.subscribers - this.subscribers;
+            return j.member - this.member;
         }
     }
 }
