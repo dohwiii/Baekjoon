@@ -1,53 +1,82 @@
 import java.util.*;
 
 class Solution {
+    static boolean[] visited;
+    static int max;
+    static String maxMenu = "";
+    static Map<String, Integer> map = new HashMap<>();
     
     public String[] solution(String[] orders, int[] course) {
-        List<String> result = new ArrayList<>();
+        String[] answer = {};
+        List<String> list = new ArrayList<>();
         
-        for(int i=0; i<course.length; i++) {
-            Map<String, Integer> map = new HashMap<>();
-            int length = course[i]; //코스요리에 해당하는 길이(요리 개수)
+        for(int j=0; j<orders.length; j++) {
+            char[] charArr = orders[j].toCharArray(); // String to Char Array
+            Arrays.sort(charArr); // Char Array 알파벳 순 정렬
+            String order = new String(charArr); // 또는 String.valueOf(charArr);  
             
-            for(int j=0; j<orders.length; j++) {
-                if(length > orders[j].length()) {
+            for(int i=0; i<course.length; i++) {
+                int length = course[i]; //코스요리에 해당하는 길이(요리 개수)
+                if(length > order.length()) {
                     continue;
                 }
-                char[] charArr = orders[j].toCharArray(); // String to Char Array
-                Arrays.sort(charArr); // Char Array 알파벳 순 정렬
-
-                combi(length, charArr, 0, new StringBuilder(), map);
-            } 
-            int maxCount = 2;
-            List<String> maxCombinations = new ArrayList<>();
+                max = 2;    //같은 조합을 시킨 사람의 수
+                maxMenu = " ";
+                visited = new boolean[order.length()];
+                combi(0, length, order, 0, orders);
+            }
             
-            for(Map.Entry<String, Integer> entry : map.entrySet()) {
-                if(entry.getValue() > maxCount) {
-                    maxCount = entry.getValue();
-                    maxCombinations.clear();
-                    maxCombinations.add(entry.getKey());
-                }
-                else if(entry.getValue() == maxCount) {
-                    maxCombinations.add(entry.getKey());
+        } 
+
+        for(int i=0; i<course.length; i++) {
+            int length = course[i];
+            int max = 0;
+            
+            for(String s : map.keySet()) {
+                if(s.length() == length) {
+                    if(max < map.get(s)) {
+                        max = map.get(s);
+                    }
                 }
             }
-            result.addAll(maxCombinations);
+            for(String s : map.keySet()) {
+                if(s.length() == length) {
+                    if(map.get(s) == max) {
+                        list.add(s);
+                    }
+                }
+                
+            }
         }
-        Collections.sort(result);
+        Collections.sort(list);
         
-        return result.toArray(new String[0]);
+        return list.toArray(new String[list.size()]);
     }
-    public void combi(int length, char[] menuItems, int start, StringBuilder combination, Map<String, Integer> combinationCount) {
-        if(combination.length() == length) {
+    public void combi(int depth, int length, String menu, int index, String[] orders) {
+        if(depth == length) {
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i<menu.length(); i++) {
+                if(visited[i]) {
+                    sb.append(menu.charAt(i));
+                }
+            }
             //원하는 길이의 문자열 조합 만들어짐
-            String combo = combination.toString();
-            combinationCount.put(combo, combinationCount.getOrDefault(combo, 0) + 1);
+            //다른 메뉴들과 비교 -> 어떤 조합이 제일 인기가 많은지
+            int result = countSameMenu(sb.toString(), orders);
+
+            if(max <= result) {
+                max = result;
+                maxMenu = sb.toString();
+                map.put(maxMenu, result);
+            }
             return;
         }
-        for(int i=start; i<menuItems.length; i++) {
-            combination.append(menuItems[i]);
-            combi(length, menuItems, i + 1, combination, combinationCount);
-            combination.deleteCharAt(combination.length() - 1); //마지막 지우기(백트래킹)
+        for(int i=index; i<menu.length(); i++) {
+            if(!visited[i]) {
+                visited[i] = true;
+                combi(depth + 1, length, menu, i + 1, orders);
+                visited[i] = false;
+            }
         }
         
     }
