@@ -1,16 +1,23 @@
+import java.util.*;
+
 class Solution {
-    public int[] solution(String s) {
-        int[] answer = new int[2];
-        int temp;
-        while( !s.equals("1") ) {
-            answer[1] += s.length();
-            s = s.replaceAll("0", "");
-            temp = s.length();
-            s = Integer.toBinaryString(temp);
-            //System.out.println("s : " + s ); 
-            answer[0]++;
-            answer[1] -= temp;
+    static int zeroCnt;
+    static int cnt;
+    
+    public int[] solution(String s) {  
+        solve(s);
+        int[] answer = new int[]{cnt, zeroCnt};
+        return answer;
+    }
+    public void solve(String s) {
+        if(s.equals("1")) {
+            return;
         }
-        return answer;  
+        int length = s.length();
+        String trans = s.replace("0", "");
+        zeroCnt += (length - trans.length());
+        String binary = Integer.toBinaryString(trans.length());
+        cnt++;
+        solve(binary);
     }
 }
