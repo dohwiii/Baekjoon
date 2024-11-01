@@ -7,8 +7,32 @@ class Solution {
         n = arr.length;
         boolean isPossible = true;
         //맨 처음 -> 전체 같은지 검사
-        
-        solve(0, 0, n, arr);
+        int temp = arr[0][0];
+        for(int i=0; i<arr.length; i++) {
+            for(int j=0; j<arr[0].length; j++) {
+                if(temp != arr[i][j]) {
+                    isPossible = false;
+                    break;
+                }
+            }
+            if(!isPossible) {
+                break;
+            }
+        }
+        if(isPossible) {
+            if(temp == 0) {
+                answer[0]++;
+            }
+            else {
+                answer[1]++;
+            }
+        }
+        else {
+            solve(0, 0, n/2, arr);
+            solve(0, n/2, n/2, arr);
+            solve(n/2, 0, n/2, arr);
+            solve(n/2, n/2, n/2, arr);
+        }
             
         return answer;
     }
@@ -43,6 +67,7 @@ class Solution {
             else {
                 answer[1]++;
             }
+            return;
         }
         else {
             size = size / 2;
