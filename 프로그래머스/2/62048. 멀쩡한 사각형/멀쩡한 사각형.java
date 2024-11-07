@@ -2,16 +2,23 @@ import java.util.*;
 
 class Solution {
     public long solution(int w, int h) {
-        long answer = 0;  
-        double prev = h;   //y절편
+        long W = (long) w;
+        long H = (long) h;
         
-        for(long i=1; i<=w; i++) {
-            double temp = -1 * h * i / (double) w + h;
-            double diff = prev - Math.floor(temp);
-            answer += diff;
-            prev = Math.ceil(temp);
+        // 최대공약수(GCD) 계산
+        long gcd = gcd(W, H);
+        
+        // 전체 격자 개수에서 대각선이 지나는 격자 개수를 뺌
+        return W * H - (W + H - gcd);
+    }
+    
+    // 유클리드 호제법을 사용한 GCD 계산
+    private long gcd(long a, long b) {
+        while (b != 0) {
+            long temp = b;
+            b = a % b;
+            a = temp;
         }
-        
-        return (long) w*h - answer;
+        return a;
     }
 }
