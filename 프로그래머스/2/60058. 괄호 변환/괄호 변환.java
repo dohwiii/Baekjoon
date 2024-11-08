@@ -1,21 +1,19 @@
 import java.util.*;
 
 class Solution {
-    static StringBuilder sb = new StringBuilder();
     public String solution(String p) {
         String answer = "";
         String str = p;
         if(isRightSentence(p)) {
             return p;
         }
-        splitStr(p);
         
-        return sb.toString();
+        return getCorrectString(p);
     }
     
-    public void splitStr(String str) {
+    public String getCorrectString(String str) {
         if(str.isEmpty()) {
-            return;
+            return "";
         }
         int left = 0;
         int right = 0;
@@ -38,12 +36,12 @@ class Solution {
         String v = str.substring(index, str.length());
         
         if(isRightSentence(u)) {
-            sb.append(u);
-            splitStr(v);
+            return u + getCorrectString(v);
         }
         else {
+            StringBuilder sb = new StringBuilder();
             sb.append("(");
-            splitStr(v);
+            sb.append(getCorrectString(v));
             sb.append(")");
             
             for(int i=1; i<u.length() - 1; i++) {
@@ -54,6 +52,7 @@ class Solution {
                     sb.append("(");
                 }
             }
+            return sb.toString();
         }
     }
     //올바른 괄호 문자열인지
