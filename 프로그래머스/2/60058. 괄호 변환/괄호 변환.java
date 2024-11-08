@@ -1,63 +1,78 @@
-import java.util.Stack;
+import java.util.*;
 
 class Solution {
+    static StringBuilder sb = new StringBuilder();
     public String solution(String p) {
-        if (isCorrectString(p)) {
+        String answer = "";
+        String str = p;
+        if(isRightSentence(p)) {
             return p;
         }
-        return convertToCorrectString(new StringBuilder(p)).toString();
+        splitStr(p);
+        
+        return sb.toString();
     }
     
-    private StringBuilder convertToCorrectString(StringBuilder str) {
-        if (str.length() == 0) {
-            return new StringBuilder();
+    public void splitStr(String str) {
+        if(str.isEmpty()) {
+            return;
         }
-
-        int index = splitBalancedIndex(str);
-        StringBuilder u = new StringBuilder(str.substring(0, index));
-        StringBuilder v = new StringBuilder(str.substring(index));
-
-        if (isCorrectString(u.toString())) {
-            return u.append(convertToCorrectString(v));
-        } else {
-            StringBuilder sb = new StringBuilder();
+        int left = 0;
+        int right = 0;
+        int index = 0;
+        
+        for(int i=0; i<str.length(); i++) {
+            if(str.charAt(i) == '(') {
+                left++;
+            }
+            else {
+                right++;
+            }
+            if(left == right) {
+                index = i;
+                break;
+            }
+        }
+        index = index + 1;
+        String u = str.substring(0, index);
+        String v = str.substring(index, str.length());
+        // System.out.println(u +" "+v);
+        
+        if(isRightSentence(u)) {
+            sb.append(u);
+            splitStr(v);
+        }
+        else {
             sb.append("(");
-            sb.append(convertToCorrectString(v));
+            splitStr(v);
             sb.append(")");
-            sb.append(reverseString(u.substring(1, u.length() - 1)));
-            return sb;
-        }
-    }
-
-    private int splitBalancedIndex(StringBuilder str) {
-        int balance = 0;
-        for (int i = 0; i < str.length(); i++) {
-            balance += str.charAt(i) == '(' ? 1 : -1;
-            if (balance == 0) {
-                return i + 1;
+            String temp = u.substring(1, u.length() - 1);
+            for(int i=0; i<temp.length(); i++) {
+                if(temp.charAt(i) == '(') {
+                    sb.append(")");
+                }
+                else {
+                    sb.append("(");
+                }
             }
         }
-        return str.length();
     }
-
-    private boolean isCorrectString(String str) {
+    //올바른 괄호 문자열인지
+    public boolean isRightSentence(String str) {
         Stack<Character> stack = new Stack<>();
-        for (char c : str.toCharArray()) {
-            if (c == '(') {
-                stack.push(c);
-            } else {
-                if (stack.isEmpty()) return false;
-                stack.pop();
+        for(int i=0; i<str.length(); i++) {
+            if(str.charAt(i) == '(') {
+                stack.push(str.charAt(i));
             }
+            else if(str.charAt(i) == ')') {
+                if(!stack.isEmpty()) {
+                    stack.pop();    // '(' 빼기
+                }
+                else {
+                    return false;
+                }
+            }        
         }
         return stack.isEmpty();
-    }
-
-    private String reverseString(String str) {
-        StringBuilder sb = new StringBuilder();
-        for (char c : str.toCharArray()) {
-            sb.append(c == '(' ? ')' : '(');
-        }
-        return sb.toString();
     }
 }
