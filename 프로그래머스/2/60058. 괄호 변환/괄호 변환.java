@@ -63,12 +63,9 @@ class Solution {
                 stack.push(str.charAt(i));
             }
             else if(str.charAt(i) == ')') {
-                if(!stack.isEmpty()) {
-                    stack.pop();    // '(' 빼기
-                }
-                else {
+                if (stack.isEmpty()) 
                     return false;
-                }
+                stack.pop();
             }        
         }
         return stack.isEmpty();
