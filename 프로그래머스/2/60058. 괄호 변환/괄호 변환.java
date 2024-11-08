@@ -1,73 +1,63 @@
-import java.util.*;
+import java.util.Stack;
 
 class Solution {
     public String solution(String p) {
-        String answer = "";
-        String str = p;
-        if(isRightSentence(p)) {
+        if (isCorrectString(p)) {
             return p;
         }
-        
-        return getCorrectString(p);
+        return convertToCorrectString(new StringBuilder(p)).toString();
     }
     
-    public String getCorrectString(String str) {
-        if(str.isEmpty()) {
-            return "";
+    private StringBuilder convertToCorrectString(StringBuilder str) {
+        if (str.length() == 0) {
+            return new StringBuilder();
         }
-        int left = 0;
-        int right = 0;
-        int index = 0;
-        
-        for(int i=0; i<str.length(); i++) {
-            if(str.charAt(i) == '(') {
-                left++;
-            }
-            else {
-                right++;
-            }
-            if(left == right) {
-                index = i;
-                break;
-            }
-        }
-        index = index + 1;
-        String u = str.substring(0, index);
-        String v = str.substring(index, str.length());
-        
-        if(isRightSentence(u)) {
-            return u + getCorrectString(v);
-        }
-        else {
+
+        int index = splitBalancedIndex(str);
+        StringBuilder u = new StringBuilder(str.substring(0, index));
+        StringBuilder v = new StringBuilder(str.substring(index));
+
+        if (isCorrectString(u.toString())) {
+            return u.append(convertToCorrectString(v));
+        } else {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
-            sb.append(getCorrectString(v));
+            sb.append(convertToCorrectString(v));
             sb.append(")");
-            
-            for(int i=1; i<u.length() - 1; i++) {
-                if(u.charAt(i) == '(') {
-                    sb.append(")");
-                }
-                else {
-                    sb.append("(");
-                }
-            }
-            return sb.toString();
+            sb.append(reverseString(u.substring(1, u.length() - 1)));
+            return sb;
         }
     }
-    //올바른 괄호 문자열인지
-    public boolean isRightSentence(String str) {
-        Stack<Character> stack = new Stack<>();
-        for(int i=0; i<str.length(); i++) {
-            if(str.charAt(i) == '(') {
-                stack.push(str.charAt(i));
+
+    private int splitBalancedIndex(StringBuilder str) {
+        int balance = 0;
+        for (int i = 0; i < str.length(); i++) {
+            balance += str.charAt(i) == '(' ? 1 : -1;
+            if (balance == 0) {
+                return i + 1;
             }
-            else if(str.charAt(i) == ')') {
-                if (stack.isEmpty()) 
-                    return false;
+        }
+        return str.length();
+    }
+
+    private boolean isCorrectString(String str) {
+        Stack<Character> stack = new Stack<>();
+        for (char c : str.toCharArray()) {
+            if (c == '(') {
+                stack.push(c);
+            } else {
+                if (stack.isEmpty()) return false;
                 stack.pop();
-            }        
+            }
         }
         return stack.isEmpty();
+    }
+
+    private String reverseString(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            sb.append(c == '(' ? ')' : '(');
+        }
+        return sb.toString();
     }
 }
