@@ -36,7 +36,6 @@ class Solution {
         index = index + 1;
         String u = str.substring(0, index);
         String v = str.substring(index, str.length());
-        // System.out.println(u +" "+v);
         
         if(isRightSentence(u)) {
             sb.append(u);
@@ -46,9 +45,9 @@ class Solution {
             sb.append("(");
             splitStr(v);
             sb.append(")");
-            String temp = u.substring(1, u.length() - 1);
-            for(int i=0; i<temp.length(); i++) {
-                if(temp.charAt(i) == '(') {
+            
+            for(int i=1; i<u.length() - 1; i++) {
+                if(u.charAt(i) == '(') {
                     sb.append(")");
                 }
                 else {
