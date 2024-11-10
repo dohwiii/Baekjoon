@@ -1,21 +1,16 @@
 class Solution {
-    static int answer;
     public int solution(int[] numbers, int target) {
-        
-        dfs(numbers[0], target, 1, numbers);
-        dfs(-numbers[0], target, 1, numbers);
-        
+        int answer = 0;
+        answer = dfs(numbers, 0, 0, target);
         return answer;
     }
-    public void dfs(int num, int target, int depth, int[] numbers) {
-        if(depth == numbers.length) {  //탐색 끝
-            if(num == target) {
-                answer++;
+    int dfs(int[] numbers, int n, int sum, int target) {
+        if(n == numbers.length) {
+            if(sum == target) {
+                return 1;
             }
-            return;
+            return 0;
         }
-        dfs(num + numbers[depth], target, depth + 1, numbers);
-        dfs(num - numbers[depth], target, depth + 1, numbers);
-        
+        return dfs(numbers, n + 1, sum + numbers[n], target) + dfs(numbers, n + 1, sum - numbers[n], target);
     }
 }
