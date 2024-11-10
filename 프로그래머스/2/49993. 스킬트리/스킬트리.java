@@ -6,7 +6,6 @@ class Solution {
         
         for(int i=0; i<skill_trees.length; i++) {
             String skillTree = skill_trees[i];
-            StringBuilder sb = new StringBuilder(skillTree);
             boolean isPossible = true;
             
             //스킬 큐에 넣기
