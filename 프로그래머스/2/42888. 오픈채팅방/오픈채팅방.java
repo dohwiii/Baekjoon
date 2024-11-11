@@ -2,41 +2,32 @@ import java.util.*;
 
 class Solution {
     public String[] solution(String[] record) {
-        Map<String, String> map = new HashMap<>();
-        List<String> recordList = new ArrayList<>();
+        Map<String, String> userMap = new HashMap<>();
+        List<String[]> messageList = new ArrayList<>();
         
-        for(String re : record) {
+        // 유저 정보 업데이트와 메시지 기록 저장
+        for (String re : record) {
             String[] splitArr = re.split(" ");
-            String type = splitArr[0];
+            String action = splitArr[0];
             String userId = splitArr[1];
             
-            //들어오고 나가는 기록 저장
-            if(type.equals("Leave")) {
-                recordList.add("2"+userId);
-                continue;
-            } 
-            else {  //Enter, Change
-                if(type.equals("Enter")) {
-                    recordList.add("1"+userId);
-                }
-                String nickname = splitArr[2];
-                map.put(userId, nickname);
+            if (action.equals("Enter")) {
+                userMap.put(userId, splitArr[2]);
+                messageList.add(new String[] { userId, "님이 들어왔습니다." });
+            } else if (action.equals("Leave")) {
+                messageList.add(new String[] { userId, "님이 나갔습니다." });
+            } else if (action.equals("Change")) {
+                userMap.put(userId, splitArr[2]);
             }
-            
         }
-        String[] answer = new String[recordList.size()];
-        int index = 0;
         
-        for(String userId : recordList) {
-            char type = userId.charAt(0);
-            String nickname = map.get(userId.substring(1, userId.length()));
-
-            if(type == '1') {
-                answer[index++] = nickname+"님이 들어왔습니다.";
-            }
-            else {
-                answer[index++] = nickname+"님이 나갔습니다.";
-            }
+        // 최종 메시지 생성
+        String[] answer = new String[messageList.size()];
+        int index = 0;
+        for (String[] msg : messageList) {
+            String userId = msg[0];
+            String message = userMap.get(userId) + msg[1];
+            answer[index++] = message;
         }
         
         return answer;
