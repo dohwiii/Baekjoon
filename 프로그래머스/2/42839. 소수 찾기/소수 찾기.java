@@ -1,47 +1,46 @@
 import java.util.*;
 
 class Solution {
-    static Set<Integer> uniquePrimes = new HashSet<>();
+    static StringBuilder sb = new StringBuilder();
     static boolean[] visited;
-
+    static Set<Integer> primes = new HashSet<>();
+    
     public int solution(String numbers) {
         visited = new boolean[numbers.length()];
-
-        // 가능한 모든 조합을 생성하고 소수 여부를 판별합니다.
-        for (int i = 1; i <= numbers.length(); i++) {
-            generatePrimes("", i, numbers);
-        }
         
-        return uniquePrimes.size();
+        for(int i=1; i<=numbers.length(); i++) {
+            solve(0, i, numbers);
+        }
+        return primes.size();
     }
-
-    // 모든 숫자 조합을 생성하여 소수를 판별하는 함수
-    private void generatePrimes(String current, int targetLength, String numbers) {
-        // 현재 길이가 목표 길이에 도달하면 소수 판별을 수행
-        if (current.length() == targetLength) {
-            int num = Integer.parseInt(current);
-            if (isPrime(num)) {
-                uniquePrimes.add(num); // 소수인 경우 Set에 추가하여 중복 제거
+    public void solve(int depth, int length, String numbers) {
+        if(depth == length) {
+            int num = Integer.parseInt(sb.toString());
+            if(isPrime(num)) {
+                primes.add(num);
             }
             return;
         }
         
-        // 각 자릿수를 사용해 조합 생성 (중복 검사 및 방문 여부 확인)
-        for (int i = 0; i < numbers.length(); i++) {
-            if (!visited[i]) {
+        for(int i=0; i<numbers.length(); i++) {
+            if(!visited[i]) {
                 visited[i] = true;
-                generatePrimes(current + numbers.charAt(i), targetLength, numbers);
+                sb.append(numbers.charAt(i));
+                solve(depth + 1, length, numbers);
+                sb.deleteCharAt(sb.length() - 1);
                 visited[i] = false;
             }
         }
     }
-
-    // 소수 판별 함수
     private boolean isPrime(int num) {
         if (num < 2) return false;
-        for (int i = 2; i <= Math.sqrt(num); i++) {
-            if (num % i == 0) return false;
+        if (num == 2 || num == 3) return true; // 2와 3은 소수
+        if (num % 2 == 0 || num % 3 == 0) return false; // 짝수와 3의 배수는 소수가 아님
+
+        // 6k ± 1 패턴으로 검사
+        for (int i = 5; i <= Math.sqrt(num); i += 6) {
+            if (num % i == 0 || num % (i + 2) == 0) return false;
         }
         return true;
     }
-}
+} 
