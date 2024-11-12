@@ -1,41 +1,41 @@
 import java.util.*;
 
 class Solution {
-    static Set<Integer> uniqueNumbers = new HashSet<>();
     static Set<Integer> primes = new HashSet<>();
+    static Set<Integer> uniqueNumbers = new HashSet<>();
     
     public int solution(String numbers) {
-        int answer = 0;
+        generateCombinations("", numbers);
         
-        generatePermutation("", numbers);
-        
-        return primes.size();
-    }
-    public void generatePermutation(String prefix, String remaining) {
-        if(!prefix.isEmpty()) {
-            int num = Integer.parseInt(prefix);
-            if(isPrime(num)) {
-                primes.add(num);
+        int count = 0;
+        for (int num : uniqueNumbers) {
+            if (isPrime(num)) { // 소수로 판별된 경우에만 count를 증가
+                count++;
             }
         }
-        
-        for(int i=0; i<remaining.length(); i++) {
-            generatePermutation(prefix + remaining.charAt(i), remaining.substring(0, i) + remaining.substring(i+1));
+        return count;
+    }
+    
+    // 모든 숫자 조합을 구하는 함수
+    private void generateCombinations(String prefix, String remaining) {
+        if (!prefix.isEmpty()) {
+            uniqueNumbers.add(Integer.parseInt(prefix));
+        }
+        for (int i = 0; i < remaining.length(); i++) {
+            generateCombinations(prefix + remaining.charAt(i), remaining.substring(0, i) + remaining.substring(i + 1));
         }
     }
-    //소수 판별
-    public boolean isPrime(int num) {
-        if(num < 2) {
-            return false;
+
+    // 소수 판별 함수
+    private boolean isPrime(int num) {
+        if (num < 2) return false;
+        if (primes.contains(num)) return true; // 이미 소수로 판별된 경우 빠르게 반환
+
+        for (int i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i == 0) return false;
         }
-        if(primes.contains(num)) {  //이미 판별된 소수
-            return true;
-        }
-        for(int i=2; i<=(int)Math.sqrt(num); i++) {
-            if(num % i == 0) {
-                return false;
-            }
-        }
+        
+        primes.add(num); // 소수로 판별된 경우 primes에 추가
         return true;
     }
-}  
+}
