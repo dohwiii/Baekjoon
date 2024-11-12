@@ -2,25 +2,24 @@ import java.util.*;
 
 class Solution {
     public String solution(int[] numbers) {
-        String answer = "";
+        // 숫자를 문자열로 변환하여 배열에 저장
+        String[] arr = Arrays.stream(numbers)
+                             .mapToObj(String::valueOf)
+                             .toArray(String[]::new);
 
-        List<Integer> list = new ArrayList<>();
-        for(int i = 0; i < numbers.length; i++) {
-            list.add(numbers[i]);
-        }
-        Collections.sort(list, (a, b) -> {
-            String as = String.valueOf(a), bs = String.valueOf(b);
-            return -Integer.compare(Integer.parseInt(as + bs), Integer.parseInt(bs + as));
-        });
-        StringBuilder sb = new StringBuilder();
-        for(Integer i : list) {
-            sb.append(i);
-        }
-        answer = sb.toString();
-        if(answer.charAt(0) == '0') {
+        // Comparator를 사용하여 두 숫자를 결합했을 때 큰 순서대로 정렬
+        Arrays.sort(arr, (a, b) -> (b + a).compareTo(a + b));
+
+        // 모든 숫자가 0인 경우 결과는 "0"
+        if (arr[0].equals("0")) {
             return "0";
-        }else {
-            return answer;
         }
+
+        // 정렬된 숫자들을 순서대로 이어 붙여서 결과 반환
+        StringBuilder sb = new StringBuilder();
+        for (String num : arr) {
+            sb.append(num);
+        }
+        return sb.toString();
     }
 }
