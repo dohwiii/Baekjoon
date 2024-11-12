@@ -2,69 +2,23 @@ import java.util.*;
 
 class Solution {
     public String solution(int[] numbers) {
-        String answer = "";
-        Integer[] arr = Arrays.stream(numbers).boxed().toArray(Integer[]::new);
-        
-        Arrays.sort(arr, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer a, Integer b) {
-                String aStr = String.valueOf(a);
-                String bStr = String.valueOf(b);
-                StringBuilder sb1 = new StringBuilder();
-                StringBuilder sb2 = new StringBuilder();
-                
-                if(a == 0) {
-                    return 1;
-                }
-                else if(b == 0) {
-                    return -1;
-                }
-                if(aStr.length() > bStr.length()) {
-                    sb1.append(aStr).append(bStr);  //긴거 앞에 붙임
-                    sb2.append(bStr).append(aStr);  //짧은거 앞에 붙임
-                    
-                    if(Integer.parseInt(sb1.toString()) > Integer.parseInt(sb2.toString())) {
-                        return -1;   //자리 유지
-                    }
-                    else {
-                        return 1;   //자리변경
-                    }
-                }
-                else if(aStr.length() < bStr.length()) {
-                    sb1.append(aStr).append(bStr);  //짧은거 앞에 붙임
-                    sb2.append(bStr).append(aStr);  //긴거 앞에 붙임
-                    
-                    if(Integer.parseInt(sb1.toString()) > Integer.parseInt(sb2.toString())) {
-                        return -1;   //자리 유지
-                    }
-                    else {
-                        return 1;   //자리변경
-                    }
-                }
-                else {  //길이 같음
-                    for(int i=0; i < aStr.length(); i++) {
-                        if(aStr.charAt(i) > bStr.charAt(i)) {
-                            return -1;  //자리 바뀌지 않음
-                        }
-                        else if(aStr.charAt(i) < bStr.charAt(i)) {
-                            return 1;   //자리 바뀜 b가 앞으로 오도록
-                        }
-                    }
-                }
-                return (bStr.charAt(0) - '0') - (aStr.charAt(0) - '0');
-            }
-        });
-        // System.out.println(Arrays.toString(arr));
-        StringBuilder sb = new StringBuilder();
-        boolean isZero = true;
-        for(int i=0; i<arr.length; i++) {
-            if(arr[i] != 0) {
-                isZero = false;
-            }
-            sb.append(arr[i]);
-        }
-        if(isZero) {
+        // 숫자를 문자열로 변환하여 배열에 저장
+        String[] arr = Arrays.stream(numbers)
+                             .mapToObj(String::valueOf)
+                             .toArray(String[]::new);
+
+        // Comparator를 사용하여 두 숫자를 결합했을 때 큰 순서대로 정렬
+        Arrays.sort(arr, (a, b) -> (b + a).compareTo(a + b));
+
+        // 모든 숫자가 0인 경우 결과는 "0"
+        if (arr[0].equals("0")) {
             return "0";
+        }
+
+        // 정렬된 숫자들을 순서대로 이어 붙여서 결과 반환
+        StringBuilder sb = new StringBuilder();
+        for (String num : arr) {
+            sb.append(num);
         }
         return sb.toString();
     }
