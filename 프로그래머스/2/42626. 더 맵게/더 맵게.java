@@ -13,13 +13,16 @@ class Solution {
             int now = pq.poll();    //가장 맵지 않음
             if(now >= K) {
                 isPossible = true;
-                break;
+                return answer;
             }
             if(!pq.isEmpty()) {
                 int next = pq.poll();   //두번째로 안매운 지수
                 int result = now + 2 * next;
                 pq.offer(result);
                 answer++;
+            }
+            else {
+                return -1;
             }
         }
         if(!isPossible) {
