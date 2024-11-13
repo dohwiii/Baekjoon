@@ -8,27 +8,14 @@ class Solution {
         for(int i=0; i<scoville.length; i++) {
             pq.offer(scoville[i]);
         }
-        boolean isPossible = false;
-        while(!pq.isEmpty()) {
-            int now = pq.poll();    //가장 맵지 않음
-            if(now >= K) {
-                isPossible = true;
-                return answer;
-            }
-            if(!pq.isEmpty()) {
-                int next = pq.poll();   //두번째로 안매운 지수
-                int result = now + 2 * next;
-                pq.offer(result);
-                answer++;
-            }
-            else {
-                return -1;
-            }
-        }
-        if(!isPossible) {
-            return -1;
+        while(pq.size() > 1 && pq.peek() < K) {
+            int least = pq.poll();    //가장 맵지 않음
+            int second = pq.poll(); //두번째로 안매움
+            int newScoville = least + 2 * second;
+            pq.offer(newScoville);
+            answer++;
         }
         
-        return answer;
+        return pq.peek() >= K ? answer : -1;
     }
 } 
