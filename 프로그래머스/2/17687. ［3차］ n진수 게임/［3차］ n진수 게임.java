@@ -19,9 +19,10 @@ class Solution {
         String str = sb.toString().toUpperCase();
         sb = new StringBuilder();
         int cnt = 1;
+        int index = start;
         while(cnt <= t) {
-            int index = m * cnt - m + start;
             sb.append(str.charAt(index));
+            index = index + m;
             cnt++;
         }
 
