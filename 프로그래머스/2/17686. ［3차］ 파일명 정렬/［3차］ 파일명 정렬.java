@@ -1,28 +1,26 @@
 import java.util.*;
+import java.util.regex.*;
 
 class Solution {
     public String[] solution(String[] files) {
-        String[] answer = {};
+        Pattern p = Pattern.compile("([a-z\\s.-]+)([0-9]{1,5})");
+
         Arrays.sort(files, new Comparator<String>() {
             @Override
-            public int compare(String a, String b) {    
-                //대소문자 통일
-                //HEAD와 NUMBER 분리
-                String[] resultA = a.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
-                String[] resultB = b.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
-                String headA = resultA[0].toLowerCase();
-                String numA = resultA[1];
-                String headB = resultB[0].toLowerCase();
-                String numB = resultB[1];
-                if(headA.equals(headB)) { //대소문자 구분 없이 비교
-                    //HEAD같다면 -> NUMBER 비교
-                    int numAA = Integer.parseInt(numA);
-                    int numBB = Integer.parseInt(numB);
-                    return numAA - numBB;
+            public int compare(String s1, String s2) {
+                Matcher m1 = p.matcher(s1.toLowerCase());
+                Matcher m2 = p.matcher(s2.toLowerCase());
+                m1.find();
+                m2.find();
+
+                if(!m1.group(1).equals(m2.group(1))) {
+                    return m1.group(1).compareTo(m2.group(1));
+                } else {
+                    return Integer.parseInt(m1.group(2)) - Integer.parseInt(m2.group(2));
                 }
-                return headA.compareTo(headB);
             }
         });
+
         return files;
     }
 }
