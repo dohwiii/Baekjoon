@@ -2,7 +2,6 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String msg) {
-        int[] answer = {};
         HashMap<String, Integer> map = new HashMap<>();
         char c = 'A';
         for(int i=1; i<=26; i++) {
@@ -32,9 +31,6 @@ class Solution {
         if(sb.length() > 0) {
             list.add(map.get(sb.toString()));
         }
-        // for(int i : list) {
-        //     System.out.println(i);
-        // }
 
         return list.stream().mapToInt(Integer::intValue).toArray();
     }
