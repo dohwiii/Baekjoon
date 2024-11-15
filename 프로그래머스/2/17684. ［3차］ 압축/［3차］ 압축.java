@@ -3,39 +3,42 @@ import java.util.*;
 class Solution {
     public int[] solution(String msg) {
         int[] answer = {};
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Integer> dictionary = new HashMap<>();
+        List<Integer> result = new ArrayList<>();
+
         char c = 'A';
         for(int i=1; i<=26; i++) {
             String s  = String.valueOf(c);
-            map.put(s, i);
+            dictionary.put(s, i);
             c++;
         }
-        List<Integer> list = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        int alpIndex = 27;
+        int dictIndex = 27;
         int index = 0;
         
         while(index < msg.length()) {
-            char now = msg.charAt(index);
-            sb.append(now);
-            // System.out.println(sb.toString());
-            if(!map.containsKey(sb.toString())) {   //사전에 일치하는 문자 없음
-                map.put(sb.toString(), alpIndex++); //새로운 문자열 사전에 입력
-                sb.deleteCharAt(sb.length() - 1);   //일치하지 않은 알파벳 삭제
-                int dicIndex = map.get(sb.toString());  //사전 인덱스
-                list.add(dicIndex); //사전 색인번호 출력
-                sb.setLength(0);
-                sb.append(now);
+            String current = String.valueOf(msg.charAt(index));
+            sb = new StringBuilder(current);
+            int nextIndex = index + 1;
+            
+            while(nextIndex <= msg.length() && dictionary.containsKey(sb.toString())) {
+                if(nextIndex < msg.length()) {
+                    sb.append(msg.charAt(nextIndex));
+                }
+                nextIndex++;
+            }
+            if(!dictionary.containsKey(sb.toString())) {    //마지막 글자가 사전에 없을 경우
+                result.add(dictionary.get(sb.toString().substring(0, sb.length() - 1)));   //색인번호 추출
+                dictionary.put(sb.toString(), dictIndex++); //사전에 입력
+                index = nextIndex - 2;
+            }
+            else {  //사전에 있을 경우
+                result.add(dictionary.get(sb.toString()));
+                index = nextIndex - 1;
             }
             index++;
         }
-        if(sb.length() > 0) {
-            list.add(map.get(sb.toString()));
-        }
-        // for(int i : list) {
-        //     System.out.println(i);
-        // }
 
-        return list.stream().mapToInt(Integer::intValue).toArray();
+        return result.stream().mapToInt(Integer::intValue).toArray();
     }
 }
