@@ -2,8 +2,7 @@ import java.util.*;
 
 class Solution {
     public String solution(String m, String[] musicinfos) {
-        String answer = "";
-        PriorityQueue<Music> pq = new PriorityQueue<>();
+        String answer = "(None)";
         int index = 0;
         m = replaceMelody(m);
         int longestTime = 0;
@@ -30,16 +29,12 @@ class Solution {
                 // 멜로디 비교
                 if (sb.toString().contains(m)) {
                     longestTime = playTime;
-                    pq.offer(new Music(index, playTime, title));
+                    answer = title;
                 }
             }
             index++;
         }
-
-        if (!pq.isEmpty()) {
-            return pq.poll().title;
-        }
-        return "(None)";
+        return answer;
     }
 
     // 멜로디 변환 (C#, D# 등을 한 글자로 변환)
@@ -50,25 +45,5 @@ class Solution {
                      .replaceAll("G#", "K")
                      .replaceAll("A#", "L")
                      .replaceAll("B#", "M");
-    }
-
-    // 음악 정보를 저장할 클래스
-    static class Music implements Comparable<Music> {
-        int playTime, index;
-        String title;
-
-        public Music(int index, int playTime, String title) {
-            this.index = index;
-            this.playTime = playTime;
-            this.title = title;
-        }
-
-        @Override
-        public int compareTo(Music m) {
-            if (this.playTime != m.playTime) {
-                return m.playTime - this.playTime; // 재생 시간이 긴 순
-            }
-            return this.index - m.index; // 입력 순서대로
-        }
     }
 }
