@@ -1,71 +1,43 @@
-import java.util.*;
-
 class Solution {
     public String solution(String m, String[] musicinfos) {
-        String answer = "";
-        PriorityQueue<Music> pq = new PriorityQueue<>();
-        int index = 0;
-        m = replaceMelody(m);
+        String answer = "(None)";
+        int time = 0;
 
-        for (String musicinfo : musicinfos) {
-            String[] info = musicinfo.split(",");
-            int start = Integer.parseInt(info[0].substring(0, 2)) * 60 + Integer.parseInt(info[0].substring(3, 5));
-            int end = Integer.parseInt(info[1].substring(0, 2)) * 60 + Integer.parseInt(info[1].substring(3, 5));
-            String title = info[2];
-            String note = replaceMelody(info[3]);
-            int playTime = end - start;
-            StringBuilder sb = new StringBuilder();
+        m = edit(m);
 
-            // 재생된 멜로디 생성
-            if (playTime >= note.length()) {
-                for (int i = 0; i < playTime / note.length(); i++) {
-                    sb.append(note);
+        for (int inx = 0; inx < musicinfos.length; inx++) {
+
+            String[] info = musicinfos[inx].split(",");
+
+            int start = (60 * Integer.parseInt(info[0].substring(0, 2)) + Integer.parseInt(info[0].substring(3)));
+            int end = (60 * Integer.parseInt(info[1].substring(0, 2)) + Integer.parseInt(info[1].substring(3)));
+            int t = end - start;
+
+            if (t > time) {
+                info[3] = edit(info[3]);
+                StringBuffer sb = new StringBuffer();
+                for (int jnx = 0; jnx < t; jnx++) {
+                    sb.append(info[3].charAt(jnx % (info[3].length())));
                 }
-                sb.append(note.substring(0, playTime % note.length()));
-            } else {
-                sb.append(note.substring(0, playTime));
+                if (sb.toString().indexOf(m) >= 0) {
+                    answer = info[2];
+                    time = t;
+                }
             }
-
-            // 멜로디 비교
-            if (sb.toString().contains(m)) {
-                pq.offer(new Music(index, playTime, title));
-            }
-            index++;
         }
 
-        if (!pq.isEmpty()) {
-            return pq.poll().title;
-        }
-        return "(None)";
+        return answer;
     }
 
-    // 멜로디 변환 (C#, D# 등을 한 글자로 변환)
-    public String replaceMelody(String melody) {
-        return melody.replaceAll("C#", "H")
-                     .replaceAll("D#", "I")
-                     .replaceAll("F#", "J")
-                     .replaceAll("G#", "K")
-                     .replaceAll("A#", "L")
-                     .replaceAll("B#", "M");
-    }
+    public String edit(String m) {
 
-    // 음악 정보를 저장할 클래스
-    static class Music implements Comparable<Music> {
-        int playTime, index;
-        String title;
+        m = m.replaceAll("C#", "V");
+        m = m.replaceAll("D#", "W");
+        m = m.replaceAll("F#", "X");
+        m = m.replaceAll("G#", "Y");
+        m = m.replaceAll("A#", "Z");
+        m = m.replaceAll("B#", "H");
 
-        public Music(int index, int playTime, String title) {
-            this.index = index;
-            this.playTime = playTime;
-            this.title = title;
-        }
-
-        @Override
-        public int compareTo(Music m) {
-            if (this.playTime != m.playTime) {
-                return m.playTime - this.playTime; // 재생 시간이 긴 순
-            }
-            return this.index - m.index; // 입력 순서대로
-        }
+        return m;
     }
 }
