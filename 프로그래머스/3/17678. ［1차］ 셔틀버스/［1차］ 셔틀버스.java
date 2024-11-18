@@ -1,75 +1,41 @@
 import java.util.*;
 
 class Solution {
-    static int[] arriveTime;
     public String solution(int n, int t, int m, String[] timetable) {
         String answer = "";
-        arriveTime = new int[timetable.length];
+        int[] arriveTime = new int[timetable.length];
         
         for(int i=0; i<timetable.length; i++) {
-            String[] arr = timetable[i].split(":");
-            int hour = Integer.parseInt(arr[0]);
-            int min = Integer.parseInt(arr[1]);
+            String[] time = timetable[i].split(":");
+            int hour = Integer.parseInt(time[0]);
+            int min = Integer.parseInt(time[1]);
             arriveTime[i] = hour * 60 + min;
         }
-        Arrays.sort(arriveTime);
+        Arrays.sort(arriveTime);    //도착시간 오름차순 정렬
 
-        int cnt = 0;    //셔틀 도착 횟수 카운트
-        int startTime = 9 * 60; //9시
-        int index = 0;
-        List<Integer> together = new ArrayList<>();
-        int lastIndex = 0;
+        int startTime = 9 * 60; //셔틀 출발시간: 9시
+        int index = 0;  //탑승 대기 인덱스
+        int lastTime = 0;
         
-        while(true) {
-            if(cnt > n) {   //셔틀 운행 끝
-                break;
-            }
-            int people = 0; //탑승 인원
-            // together = new ArrayList<>();
+        for(int cnt=0; cnt<n; cnt++) {
+            int people = 0; //현재 셔틀 탑승 인원
             
-            while(index < arriveTime.length) {
-                int now = arriveTime[index];
-                if(startTime < now) {
-                    break;
-                }
-                if(people >= m) {
-                    break;
-                }
-                //탑승
-                together.add(index);
+            //탑승
+            while(index < arriveTime.length && arriveTime[index] <= startTime && people < m) {
                 people++;
                 index++;
             }
-            if(cnt == n - 1) {  //막차
-                if(people >= m) {  //꽉 찼다면
-                    lastIndex = index - 1;
-                    int lastTime = arriveTime[index - 1];
-                    lastTime = lastTime - 1;
-                    int hour = lastTime / 60;
-                    int min = lastTime % 60;
-                    answer = makeTimeFormat(hour+"", min+"");
+            //막차일 경우
+            if(cnt == n - 1) {  
+                if(people == m) {  //꽉 찼다면
+                    lastTime = arriveTime[index - 1] - 1;
                 }
-                else {  //자리 남아있다면
-                    answer = makeTimeFormat((startTime / 60)+"", (startTime % 60)+"");
+                else {  //자리 남아있다면 -> 셔틀 도착시간
+                    lastTime = startTime;
                 }
-                break;
             }
-            cnt++;
-            startTime += t; //다음 배차
+            startTime += t; //다음 셔틀 배차
         }
-        
-        return answer;
-    }
-    public String makeTimeFormat(String hour, String min) {
-        StringBuilder sb = new StringBuilder();
-        if(hour.length() < 2) {
-            sb.append("0");
-        }
-        sb.append(hour).append(":");
-        if(min.length() < 2) {
-            sb.append("0");
-        }
-        sb.append(min);
-        return sb.toString();
+        return String.format("%02d:%02d", lastTime / 60, lastTime % 60);
     }
 }
