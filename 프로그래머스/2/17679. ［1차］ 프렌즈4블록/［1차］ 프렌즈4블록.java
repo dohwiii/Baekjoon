@@ -20,8 +20,8 @@ class Solution {
             blocksToRemove = new ArrayList<>();  //4칸 완성 좌표 담을 Set
             int cnt = 0;
             //게임 시작
-            for(int i=0; i<N; i++) {
-                for(int j=0; j<M; j++) {
+            for(int i=0; i < N - 1; i++) {
+                for(int j=0; j < M - 1; j++) {
                     if(map[i][j] != '0' && isSame(i, j)) {  //4칸 완성
                         cnt++;
                     }
