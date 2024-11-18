@@ -2,15 +2,15 @@ import java.util.*;
 
 class Solution {
     public int solution(String str1, String str2) {
-        List<String> list1 = new ArrayList<>();
-        List<String> list2 = new ArrayList<>();
+        String[] arr1 = extractValidPairs(str1);
+        String[] arr2 = extractValidPairs(str2);
         
-        // 유효한 2글자 쌍 추출
-        extractValidPairs(str1, list1);
-        extractValidPairs(str2, list2);
+        // 정렬
+        Arrays.sort(arr1);
+        Arrays.sort(arr2);
         
-        // 정렬 및 교집합, 합집합 계산
-        int[] result = mergeAndCalculate(list1, list2);
+        // Merge 과정에서 교집합, 합집합 계산
+        int[] result = mergeAndCalculate(arr1, arr2);
         int intersection = result[0];
         int union = result[1];
         
@@ -24,35 +24,34 @@ class Solution {
         return (int) (similarity * 65536);
     }
     
-    private void extractValidPairs(String str, List<String> list) {
+    // 유효한 2글자 쌍 추출
+    private String[] extractValidPairs(String str) {
         str = str.toLowerCase();
+        List<String> tempList = new ArrayList<>();
         for (int i = 0; i < str.length() - 1; i++) {
             char front = str.charAt(i);
             char back = str.charAt(i + 1);
             if (Character.isLetter(front) && Character.isLetter(back)) {
-                list.add("" + front + back);
+                tempList.add("" + front + back);
             }
         }
+        // 배열로 변환
+        return tempList.toArray(new String[0]);
     }
     
-    private int[] mergeAndCalculate(List<String> list1, List<String> list2) {
-        List<String> sortedList1 = mergeSort(list1);
-        List<String> sortedList2 = mergeSort(list2);
-
+    // 병합하여 교집합과 합집합 계산
+    private int[] mergeAndCalculate(String[] arr1, String[] arr2) {
+        int i = 0, j = 0;
         int intersection = 0;
         int union = 0;
         
-        int i = 0, j = 0;
-        while (i < sortedList1.size() && j < sortedList2.size()) {
-            String elem1 = sortedList1.get(i);
-            String elem2 = sortedList2.get(j);
-            
-            if (elem1.equals(elem2)) {
+        while (i < arr1.length && j < arr2.length) {
+            if (arr1[i].equals(arr2[j])) {
                 intersection++;
                 union++;
                 i++;
                 j++;
-            } else if (elem1.compareTo(elem2) < 0) {
+            } else if (arr1[i].compareTo(arr2[j]) < 0) {
                 union++;
                 i++;
             } else {
@@ -61,53 +60,9 @@ class Solution {
             }
         }
         
-        while (i < sortedList1.size()) {
-            union++;
-            i++;
-        }
-        while (j < sortedList2.size()) {
-            union++;
-            j++;
-        }
+        // 남은 요소 처리
+        union += (arr1.length - i) + (arr2.length - j);
         
         return new int[] {intersection, union};
-    }
-    
-    private List<String> mergeSort(List<String> list) {
-        if (list.size() <= 1) {
-            return list;
-        }
-        
-        int mid = list.size() / 2;
-        List<String> left = mergeSort(list.subList(0, mid));
-        List<String> right = mergeSort(list.subList(mid, list.size()));
-        
-        return merge(left, right);
-    }
-    
-    private List<String> merge(List<String> left, List<String> right) {
-        List<String> result = new ArrayList<>();
-        int i = 0, j = 0;
-        
-        while (i < left.size() && j < right.size()) {
-            if (left.get(i).compareTo(right.get(j)) <= 0) {
-                result.add(left.get(i));
-                i++;
-            } else {
-                result.add(right.get(j));
-                j++;
-            }
-        }
-        
-        while (i < left.size()) {
-            result.add(left.get(i));
-            i++;
-        }
-        while (j < right.size()) {
-            result.add(right.get(j));
-            j++;
-        }
-        
-        return result;
     }
 }
