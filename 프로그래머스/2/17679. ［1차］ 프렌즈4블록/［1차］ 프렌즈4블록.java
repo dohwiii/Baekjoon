@@ -62,7 +62,7 @@ class Solution {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
-            if(nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] != map[x][y]) {
+            if(nx >= N || ny >= M || map[nx][ny] != map[x][y]) {
                 return false;
             }
         }
