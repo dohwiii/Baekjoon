@@ -6,89 +6,77 @@ class Solution {
     static int N, M;
     static int[] dx = {0, 1, 1};
     static int[] dy = {1, 0, 1};
-    static Set<String> set;
+    static List<int[]> blocksToRemove;
     
     public int solution(int m, int n, String[] board) {
         int answer = 0;
-        N = board.length;
-        M = board[0].length();
+        N = m;
+        M = n;
         map = new char[N][M];
 
-        for(int i=0; i<board.length; i++) {
+        for (int i = 0; i < N; i++) {
             map[i] = board[i].toCharArray();
         }
-        while(true) {
+
+        while (true) {
             visited = new boolean[N][M];
-            set = new HashSet<>();  //4칸 완성 좌표 담을 Set
+            blocksToRemove = new ArrayList<>();
             int cnt = 0;
-            //게임 시작
-            for(int i=0; i<N; i++) {
-                for(int j=0; j<M; j++) {
-                    if(!visited[i][j] && map[i][j] != '0') {
-                        if(isSame(i, j)) {  //4칸 완성
-                            cnt += 1;
-                        }
+
+            // 게임 시작: 4칸 완성 찾기
+            for (int i = 0; i < N - 1; i++) {
+                for (int j = 0; j < M - 1; j++) {
+                    if (map[i][j] != '0' && isSame(i, j)) { // 4칸 완성
+                        cnt++;
                     }
                 }
             }
-            if(cnt == 0) {  //게임 종료
+
+            if (cnt == 0) { // 제거할 블록이 없으면 종료
                 break;
             }
-            for(String s : set) {
-                String[] arr = s.split(" ");
-                int x = Integer.parseInt(arr[0]);
-                int y = Integer.parseInt(arr[1]);
-                map[x][y] = '0';
-                answer++;
-                // System.out.println(x + " "+y);
+
+            // 블록 제거
+            for (int[] pos : blocksToRemove) {
+                int x = pos[0];
+                int y = pos[1];
+                if (map[x][y] != '0') { // 중복 제거 방지
+                    map[x][y] = '0';
+                    answer++;
+                }
             }
-            // System.out.println();
-            //빈 공간 채우기(아래로 내리기)
-            Queue<Pos> queue = new ArrayDeque<>();
-            for(int i=0; i<M; i++) {    //열(가로)
-                for(int j=N-1; j>=0; j--) {    //행(세로)
-                    if(map[j][i] != '0') {
-                        queue.offer(new Pos(j, i));
+
+            // 빈 공간 채우기 (아래로 내리기)
+            for (int col = 0; col < M; col++) {
+                int emptyRow = N - 1;
+                for (int row = N - 1; row >= 0; row--) {
+                    if (map[row][col] != '0') {
+                        map[emptyRow--][col] = map[row][col];
                     }
                 }
-                int row = N - 1;
-                while(!queue.isEmpty()) {
-                    Pos now = queue.poll();
-                    map[row--][i] = map[now.x][now.y];
-                }
-                while(row >= 0) {
-                    map[row--][i] = '0';
+                while (emptyRow >= 0) {
+                    map[emptyRow--][col] = '0';
                 }
             }
         }
-        
+
         return answer;
     }
+
     public boolean isSame(int x, int y) {
-        Queue<Pos> queue = new ArrayDeque<>();
-        for(int i=0; i<3; i++) {
+        char c = map[x][y];
+        for (int i = 0; i < 3; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-
-            if(nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] != map[x][y] || visited[nx][ny]) {
+            if (nx >= N || ny >= M || map[nx][ny] != c) {
                 return false;
             }
-            queue.offer(new Pos(nx, ny));
         }
-        queue.offer(new Pos(x, y));
-        while(!queue.isEmpty()) {
-            Pos now = queue.poll();
-            set.add(now.x + " " + now.y);
-        }
-        visited[x][y] = true;
+        // 4칸 완성된 좌표 추가
+        blocksToRemove.add(new int[] {x, y});
+        blocksToRemove.add(new int[] {x + 1, y});
+        blocksToRemove.add(new int[] {x, y + 1});
+        blocksToRemove.add(new int[] {x + 1, y + 1});
         return true;
-        
-    }
-    static class Pos {
-        int x, y;
-        public Pos(int x, int y) {
-            this.x=x;
-            this.y=y;
-        }
     }
 }
