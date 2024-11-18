@@ -2,47 +2,69 @@ import java.util.*;
 
 class Solution {
     public int solution(String str1, String str2) {
-        Map<String, int[]> map = new HashMap<>();
+        List<String> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
         
-        // 소문자로 변환
-        str1 = str1.toLowerCase();
-        str2 = str2.toLowerCase();
-
         // 다중집합 생성
-        for (int i = 0; i < str1.length() - 1; i++) {
-            char front = str1.charAt(i);
-            char back = str1.charAt(i + 1);
-            if (Character.isLetter(front) && Character.isLetter(back)) {
-                String str = "" + front + back;
-                map.putIfAbsent(str, new int[2]);
-                map.get(str)[0]++;
+        extractValidPairs(str1, list1);
+        extractValidPairs(str2, list2);
+        
+        // 리스트 정렬
+        Collections.sort(list1);
+        Collections.sort(list2);
+        
+        // Merge 과정에서 교집합, 합집합 계산
+        int intersection = 0;
+        int union = 0;
+        int i = 0, j = 0;
+        
+        while (i < list1.size() && j < list2.size()) {
+            String elem1 = list1.get(i);
+            String elem2 = list2.get(j);
+            
+            if (elem1.equals(elem2)) {
+                intersection++;
+                union++;
+                i++;
+                j++;
+            } else if (elem1.compareTo(elem2) < 0) {
+                union++;
+                i++;
+            } else {
+                union++;
+                j++;
             }
         }
-        for (int i = 0; i < str2.length() - 1; i++) {
-            char front = str2.charAt(i);
-            char back = str2.charAt(i + 1);
-            if (Character.isLetter(front) && Character.isLetter(back)) {
-                String str = "" + front + back;
-                map.putIfAbsent(str, new int[2]);
-                map.get(str)[1]++;
-            }
+        
+        // 남은 요소 처리
+        while (i < list1.size()) {
+            union++;
+            i++;
         }
-
-        // 교집합과 합집합 계산
-        double intersection = 0;
-        double union = 0;
-        for (int[] counts : map.values()) {
-            intersection += Math.min(counts[0], counts[1]);
-            union += Math.max(counts[0], counts[1]);
+        while (j < list2.size()) {
+            union++;
+            j++;
         }
-
+        
         // 공집합 처리
         if (union == 0) {
             return 65536;
         }
-
+        
         // 유사도 계산
-        double similar = intersection / union;
-        return (int) (similar * 65536);
+        double similarity = (double) intersection / union;
+        return (int) (similarity * 65536);
+    }
+    
+    // 유효한 2글자 쌍을 리스트에 추가하는 메서드
+    private void extractValidPairs(String str, List<String> list) {
+        str = str.toLowerCase();
+        for (int i = 0; i < str.length() - 1; i++) {
+            char front = str.charAt(i);
+            char back = str.charAt(i + 1);
+            if (Character.isLetter(front) && Character.isLetter(back)) {
+                list.add("" + front + back);
+            }
+        }
     }
 }
