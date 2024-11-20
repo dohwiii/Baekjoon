@@ -12,9 +12,6 @@ class Solution {
                 stack.push(c);
             }
         }
-        if(stack.isEmpty()) {
-            return 1;
-        }
-        return 0;
+        return stack.isEmpty() ? 1 : 0;
     }
 } 
