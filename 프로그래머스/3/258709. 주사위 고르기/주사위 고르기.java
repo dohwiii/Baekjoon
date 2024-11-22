@@ -67,10 +67,13 @@ class Solution {
     public double calculateWinRate(List<Integer> aSums, List<Integer> bSums) {
         int totalCase = aSums.size() * bSums.size();
         int winCases = 0;
+        int aIndex = 0;
         
         for(int bSum : bSums) {
-            int index = findFirstGreater(aSums, bSum);
-            winCases += aSums.size() - index;
+            while(aIndex < aSums.size() && aSums.get(aIndex) <= bSum) {
+                aIndex++;
+            }
+            winCases += aSums.size() - aIndex;
         }
         return (double) winCases / totalCase;
     }
