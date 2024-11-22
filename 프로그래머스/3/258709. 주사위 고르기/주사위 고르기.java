@@ -2,15 +2,11 @@ import java.util.*;
 
 class Solution {
     static int N;
-    static boolean[] visited;
-    static boolean[] visitedNum;
     static Map<String, ArrayList<Integer>> map = new HashMap<>();
     
     public int[] solution(int[][] dice) {
         N = dice.length;    //주사위 개수
         int[] answer = new int[(int)N/2];
-        visited = new boolean[N+1];
-        visitedNum = new boolean[N+1];
         int[] current = new int[(int) N/2];
         
         ArrayList<int[]> combinations = new ArrayList<>();
@@ -29,9 +25,6 @@ class Solution {
                     B[index++] = i;
                 }
             }
-            // System.out.println(Arrays.toString(A));
-            // System.out.println(Arrays.toString(B));
-            // System.out.println();
             List<Integer> aSums = calculateAllSum(A, dice);
             List<Integer> bSums = calculateAllSum(B, dice);
             
@@ -50,12 +43,8 @@ class Solution {
             return;
         }
         for(int i=start; i<=N; i++) {
-            if(!visited[i]) {
-                visited[i] = true;
-                current[depth] = i; 
-                combi(i + 1, depth + 1, dice, current, combinations);
-                visited[i] = false;
-            }
+            current[depth] = i; 
+            combi(i + 1, depth + 1, dice, current, combinations);
         }
     }
     public List<Integer> calculateAllSum(int[] arr, int[][] dice) {
