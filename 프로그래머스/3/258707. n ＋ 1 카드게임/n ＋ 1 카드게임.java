@@ -1,81 +1,70 @@
 import java.util.*;
 
 class Solution {
-    static int targetSum;
     public int solution(int coin, int[] cards) {
-        int n = cards.length;
-        targetSum = n + 1;
-        int rounds = 1;
-
-        // 초기 카드 n/3 장 손에 넣기
+        int answer = 0;
         Set<Integer> original = new HashSet<>();
         Set<Integer> additional = new HashSet<>();
+        int N = cards.length;
+        int sum = N + 1;
         
-        for (int i = 0; i < n / 3; i++) {
+        for(int i=0; i<N/3; i++) {
             original.add(cards[i]);
         }
-        // 카드 뭉치에서 나머지 카드 처리
-        int index = n / 3;
-        while (index < n) {
-            // 손에 카드가 부족하면 종료
-            if (original.size() == 0) break;
-            
-            // 카드를 두 장 뽑음
+        int index = N/3;
+        int round = 1;
+        
+        while(index < N) {
             additional.add(cards[index]);
             additional.add(cards[index + 1]);
-            
-            //넣는게 가능한지
             boolean isPossible = false;
-
-            // 1. 현재 상태에서 n+1 조합 되는지 확인
-            if(findSum(original)) {
-                isPossible = true;
+            
+            //가지고 있는 것 중에서 해결
+            for(int a : original) {
+                if(original.contains(sum - a)) {
+                    original.remove(sum - a);
+                    original.remove(a);
+                    isPossible = true;
+                    break;
+                }
             }
             if(!isPossible) {
-                 // 2. 한 장만 추가하고 조합 확인
-                if(coin >= 1) {
-                    for(int o : original) {
-                        if(additional.contains(targetSum - o)) {
-                            original.remove(o);
-                            additional.remove(targetSum - o);
+                if(coin > 0) {
+                    for(int a : original) {
+                        if(additional.contains(sum - a)) {
+                            additional.remove(sum - a);
+                            original.remove(a);
+                            isPossible = true;
                             coin--;
-                            isPossible = true;
                             break;
                         }
                     }
                 }
             }
             if(!isPossible) {
-                if(coin >= 2) {
+                if(coin > 1) {
                     for(int a : additional) {
-                        if(additional.contains(targetSum - a)) {
+                        if(additional.contains(sum - a)) {
+                            additional.remove(sum - a);
                             additional.remove(a);
-                            additional.remove(targetSum - a);
-                            coin -= 2;
                             isPossible = true;
+                            coin -= 2;
                             break;
                         }
                     }
                 }
             }
+            
             if(!isPossible) {
                 break;
             }
-            rounds++;
-            index += 2;
+            
+            round++;
+            index+=2;
         }
-
-        return rounds;
-    }
-    public boolean findSum(Set<Integer> myCards) {
-        for (int card : myCards) {
-            int complement = targetSum - card;
-            if (myCards.contains(complement) && card != complement) {
-                myCards.remove(card);
-                myCards.remove(complement);
-                return true;
-            }
-        }
-        return false;
+        
+        
+        
+        return round;
     }
 }
