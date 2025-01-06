@@ -46,18 +46,6 @@ class Solution {
             time = nextAttackTime + 1;
         }
 
-        // 마지막 공격 이후 남은 시간 동안 회복
-        while (currentHealth > 0 && time <= attacks[attacks.length - 1][0]) {
-            currentHealth = Math.min(health, currentHealth + bandage[1]);
-
-            if (++consecutiveSuccess == bandage[0]) {
-                currentHealth = Math.min(health, currentHealth + bandage[2]);
-                consecutiveSuccess = 0;
-            }
-
-            time++;
-        }
-
         // 체력이 0 이하라면 -1 반환
         return currentHealth > 0 ? currentHealth : -1;
     }
