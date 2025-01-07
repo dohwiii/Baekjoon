@@ -1,59 +1,56 @@
 import java.util.*;
 
 class Solution {
-    static char[][] map;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    
+    static Map<Character, Integer> directionMap = Map.of(
+        'E', 2,
+        'N', 1,
+        'S', 0,
+        'W', 3
+    );
+
     public int[] solution(String[] park, String[] routes) {
-        int[] answer = {};
-        map = new char[park.length][park[0].length()];
         int x = 0, y = 0;
         int n = park.length;
         int m = park[0].length();
-        
-        for(int i=0; i<park.length; i++) {
-            String row = park[i];
-            map[i] = row.toCharArray();
-            for(int j=0; j<row.length(); j++) {
-                if(map[i][j] == 'S') {
-                    x = i;
-                    y = j;
-                }
+
+        // 시작 위치 찾기
+        for (int i = 0; i < n; i++) {
+            if (park[i].contains("S")) {
+                x = i;
+                y = park[i].indexOf('S');
+                break;
             }
         }
-        
-        for(String route : routes) {
-            int dIndex = getDirectionIndex(route.charAt(0));
+
+        // 경로 처리
+        for (String route : routes) {
+            char direction = route.charAt(0);
             int move = route.charAt(2) - '0';
-            boolean isPossible = true;
+            int dIndex = directionMap.get(direction);
+
             int nx = x, ny = y;
-            
-            while(move-- > 0) {
-                nx = nx + dx[dIndex];
-                ny = ny + dy[dIndex];
-                
-                if(nx < 0 || nx >= n || ny < 0 || ny >= m || map[nx][ny] == 'X') {
-                    isPossible = false;
+
+            // 이동 가능 여부 확인
+            for (int i = 1; i <= move; i++) {
+                int tx = x + dx[dIndex] * i;
+                int ty = y + dy[dIndex] * i;
+
+                if (tx < 0 || tx >= n || ty < 0 || ty >= m || park[tx].charAt(ty) == 'X') {
+                    nx = x; // 이동 취소
+                    ny = y;
                     break;
-                } 
+                }
+
+                nx = tx;
+                ny = ty;
             }
-            if(isPossible) {
-                x = nx;
-                y = ny;
-            }
+
+            x = nx;
+            y = ny;
         }
-        
-        answer = new int[]{x, y};
-        return answer;
-    }
-    public int getDirectionIndex(char d) {
-        switch(d) {
-            case 'E': return 2;
-            case 'N': return 1;
-            case 'S': return 0;
-            case 'W': return 3;
-        }
-        return 0;
+
+        return new int[]{x, y};
     }
 }
