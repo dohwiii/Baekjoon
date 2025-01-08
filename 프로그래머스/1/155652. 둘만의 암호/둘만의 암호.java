@@ -1,37 +1,40 @@
+import java.util.HashSet;
+import java.util.Set;
+
 class Solution {
     public String solution(String s, String skip, int index) {
-        String answer = "";
-        StringBuilder sb = new StringBuilder();
-        
-        for(char c : s.toCharArray()) {
-            int skipCnt = 0;
-            for(int i = 1; i <= index; i++) {
-                char n = nextChar(c, i);
-                if(skip.indexOf(n) != -1) { //skip에 해당되는 알파벳
-                    skipCnt++;
-                }
-            }
-            char next = nextChar(c, index);
-            // System.out.println(next + " "+skipCnt);
-            if(skipCnt > 0) {
-                next = nextChar(next, 1);
-            }
-            while(skipCnt > 0) {
-                if(skip.indexOf(next) == -1) { //skip에 포함되지 않을 때
-                    skipCnt--;
-                    if(skipCnt == 0) {
-                        break;
-                    }
-                }
-                next = nextChar(next, 1);
-
-            }
-            sb.append(next);
+        // Skip 문자열을 Set으로 변환하여 검색 속도를 최적화
+        Set<Character> skipSet = new HashSet<>();
+        for (char c : skip.toCharArray()) {
+            skipSet.add(c);
         }
-        
-        return sb.toString();
+
+        // 결과 문자열을 저장할 StringBuilder
+        StringBuilder result = new StringBuilder();
+
+        // 문자열 변환
+        for (char c : s.toCharArray()) {
+            result.append(shiftChar(c, index, skipSet));
+        }
+
+        return result.toString();
     }
-    public char nextChar(char currentChar, int plus) {
-        return (char) (((currentChar - 'a' + plus) % 26) + 'a');
+
+    // 특정 문자를 index만큼 이동, skipSet에 포함된 문자 건너뛰기
+    private char shiftChar(char start, int index, Set<Character> skipSet) {
+        int count = 0; // 유효한 이동 횟수
+        char current = start;
+
+        while (count < index) {
+            current++; // 다음 문자로 이동
+            if (current > 'z') {
+                current = 'a'; // 'z'를 넘어가면 'a'로 순환
+            }
+            if (!skipSet.contains(current)) {
+                count++; // 유효한 이동
+            }
+        }
+
+        return current;
     }
 }
