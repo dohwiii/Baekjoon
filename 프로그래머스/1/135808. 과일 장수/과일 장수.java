@@ -1,28 +1,31 @@
-import java.util.*;
-
 class Solution {
     public int solution(int k, int m, int[] score) {
         int answer = 0;
 
-        // 최대값 우선 순위 큐
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
-
-        // 배열 값을 힙에 추가
+        // 점수 카운트 배열 (1 ≤ score[i] ≤ k)
+        int[] count = new int[k + 1];
         for (int s : score) {
-            maxHeap.add(s);
+            count[s]++;
         }
 
-        // m개씩 묶음 계산
-        while (maxHeap.size() >= m) {
-            int minInBundle = Integer.MAX_VALUE;
+        // 총 사과 개수
+        int totalApples = score.length;
 
-            // 묶음 중 최소값 찾기
-            for (int i = 0; i < m; i++) {
-                minInBundle = Math.min(minInBundle, maxHeap.poll());
+        // m으로 나누어떨어지지 않는 사과는 버림
+        int validApples = (totalApples / m) * m;
+
+        // 역순으로 점수 계산
+        int currentBundleCount = 0;
+        for (int i = k; i > 0; i--) {
+            while (count[i] > 0 && currentBundleCount < validApples) {
+                currentBundleCount++;  // 묶음에 추가
+                count[i]--;            // 사과 사용
+
+                // 묶음이 완성될 때마다 이익 계산
+                if (currentBundleCount % m == 0) {
+                    answer += i * m;  // 최소 점수 * m 추가
+                }
             }
-
-            // 묶음 점수 합산
-            answer += minInBundle * m;
         }
 
         return answer;
