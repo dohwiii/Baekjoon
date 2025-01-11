@@ -9,8 +9,8 @@ class Solution {
 
         int remain = appleAmount % m;   //남는 사과(버림)
             
-        for(int i=score.length - 1; i>remain; i-=m) {
-            int start = score[i - m + 1];
+        for(int i=score.length; i>=m; i-=m) {
+            int start = score[i - m];
             answer += (start * m);
         }
         
