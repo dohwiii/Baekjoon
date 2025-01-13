@@ -5,19 +5,19 @@ class Solution {
         List<String> list = Arrays.asList("aya", "ye", "woo", "ma");
         
         for(String word : babbling) {
-            String tempWord = word;
-            
-            for(String sound : list) {
-                if(tempWord.contains(sound + sound)) {
-                    tempWord = "INVALID";
-                    break;
-                }
-                tempWord = tempWord.replace(sound, " ");
+            if(word.contains("ayaaya") || word.contains("yeye") || word.contains("woowoo") || word.contains("mama") ) {
+                continue;
             }
-            if(tempWord.trim().isEmpty()) {
+            word = word.replace("aya", " ");
+            word = word.replace("ye", " ");
+            word = word.replace("woo", " ");
+            word = word.replace("ma", " ");
+            
+            if(word.trim().length() == 0) {
                 answer++;
             }
         }
+            
         return answer;
     }
 }
