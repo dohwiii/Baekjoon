@@ -26,13 +26,8 @@ class Solution {
         if(sb.length() == 0) {
             return "-1";
         }
-        String result = sb.toString();
-        int index = 0;
-        while(index < sb.length() - 1) {
-            if(sb.charAt(index) != '0') {
-                break;
-            }
-            sb.deleteCharAt(index);
+        if(sb.charAt(0) == '0') {
+            return "0";
         }
         return sb.toString();
     }
