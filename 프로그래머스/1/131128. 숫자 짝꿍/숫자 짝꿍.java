@@ -3,8 +3,8 @@ import java.util.*;
 class Solution {
     public String solution(String X, String Y) {
         String answer = "";        
-        long[] xArr = new long[10];
-        long[] yArr = new long[10];
+        int[] xArr = new int[10];
+        int[] yArr = new int[10];
         
         for(char c : X.toCharArray()) {
             xArr[c - '0']++;
@@ -12,28 +12,21 @@ class Solution {
         for(char c : Y.toCharArray()) {
             yArr[c - '0']++;
         }
-        PriorityQueue<Long> pq = new PriorityQueue<>(Collections.reverseOrder());
+        StringBuilder sb = new StringBuilder();
         
-        for(int i=0; i<10; i++) {
+        for(int i=9; i>=0; i--) {
             if(xArr[i] > 0 && yArr[i] > 0) {
-                long cnt = Math.min(xArr[i], yArr[i]);
+                int cnt = Math.min(xArr[i], yArr[i]);
                 while(cnt-- > 0) {
-                    pq.offer((long)i);
+                    sb.append(i);
                 }
                 
             }
         }
-        StringBuilder sb = new StringBuilder();
-        while(!pq.isEmpty()) {
-            long now = pq.poll();
-            sb.append(now);
-        }
         if(sb.length() == 0) {
             return "-1";
         }
-        // long result = Long.parseLong(sb.toString());
         String result = sb.toString();
-        // StringBuilder temp = new Stringbuilder(result);
         int index = 0;
         while(index < sb.length() - 1) {
             if(sb.charAt(index) != '0') {
