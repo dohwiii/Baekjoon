@@ -18,12 +18,12 @@ class Solution {
             
             reports[idMap.get(reporter)][idMap.get(reported)] = true;
         }
-        int[] reportCount = new int[n];
+        int[] reportCount = new int[n]; //신고당한사람 횟수 카운트
         
-        for(int i=0; i<n; i++) {    //신고한사람
-            for(int j=0; j<n; j++) {    //신고당한사람
-                if(reports[i][j]) {
-                    reportCount[j]++;
+        for(int i=0; i<n; i++) {    //신고 당한 사람
+            for(int j=0; j<n; j++) {    //신고 한 사람
+                if(reports[j][i]) {
+                    reportCount[i]++;
                 }  
             }
         }
@@ -37,7 +37,7 @@ class Solution {
             }
         }
         
-        
+
         return answer;
     }
 }
