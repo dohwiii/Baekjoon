@@ -7,41 +7,13 @@ class Solution {
             int w = size[0];    //가로
             int h = size[1];    //세로
             
-            wMax = Math.max(wMax, w);
-            hMax = Math.max(hMax, h);
-        }
-        int ww = 0, hh = 0;
-        
-        if(wMax < hMax) {
-            for(int[] size : sizes) {
-                int w = size[0];    //가로
-                int h = size[1];    //세로
-
-                if(w > h) {
-                    size[0] = h;
-                    size[1] = w;
-                }
-            }
-        }
-        else {
-            for(int[] size : sizes) {
-                int w = size[0];    //가로
-                int h = size[1];    //세로
-
-                if(w < h) {
-                    size[0] = h;
-                    size[1] = w;
-                }
-            }
-        }
-        for(int[] size : sizes) {
-            int w = size[0];    //가로
-            int h = size[1];    //세로
-
-            ww = Math.max(ww, w);
-            hh = Math.max(hh, h);
-        }
-        answer = ww * hh;
+            int maxSide = Math.max(w, h);   //더 긴 쪽
+            int minSide = Math.min(w, h);   //더 짧은 쪽
+            
+            wMax = Math.max(wMax, maxSide);
+            hMax = Math.max(hMax, minSide);
+        }        
+        answer = wMax * hMax;
         return answer;
     }
 }
