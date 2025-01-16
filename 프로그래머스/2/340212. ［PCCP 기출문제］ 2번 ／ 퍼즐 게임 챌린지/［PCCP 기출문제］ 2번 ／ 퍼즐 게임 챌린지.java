@@ -1,7 +1,7 @@
 import java.util.*;
 class Solution {
     public int solution(int[] diffs, int[] times, long limit) {
-        int answer = 100_001;
+        int answer = 0;
         int low = 1;
         int high = 100_000;
         
