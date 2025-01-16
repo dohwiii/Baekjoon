@@ -1,24 +1,28 @@
+import java.util.HashSet;
+
 class Solution {
     public int[] solution(int[] lottos, int[] win_nums) {
-        int[] answer = new int[2];
-        int[] number = new int[46];
-        int[] rank = {6, 6, 5, 4, 3, 2, 1};
-        int same = 0;
-        
-        for(int lotto : lottos) {
-            number[lotto]++;
+        // 당첨 번호를 Set에 저장
+        HashSet<Integer> winSet = new HashSet<>();
+        for (int win : win_nums) {
+            winSet.add(win);
         }
-        for(int win : win_nums) {
-            if(number[win] > 0) {
-                same++;
-                number[win]--;
+
+        int zeroCount = 0; // 0의 개수
+        int matchCount = 0; // 맞힌 번호 개수
+
+        for (int lotto : lottos) {
+            if (lotto == 0) {
+                zeroCount++; // 0의 개수 증가
+            } else if (winSet.contains(lotto)) {
+                matchCount++; // 당첨 번호와 일치하는 경우
             }
         }
-        answer[1] = rank[same];
-        same += number[0];
-        answer[0] = rank[same];
-        
-        
-        return answer;
+
+        // 순위 계산 (맞힌 개수가 6이면 1등, 5면 2등, ... 0개면 6등)
+        int maxRank = Math.min(7 - (matchCount + zeroCount), 6);
+        int minRank = Math.min(7 - matchCount, 6);
+
+        return new int[] {maxRank, minRank};
     }
 }
