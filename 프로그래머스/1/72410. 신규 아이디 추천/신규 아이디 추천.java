@@ -1,38 +1,39 @@
-import java.util.*;
-
 class Solution {
     public String solution(String new_id) {
-        String answer = "";
-        new_id = new_id.toLowerCase();  //소문자 변환
+        StringBuilder sb = new StringBuilder();
         
-        new_id = new_id.replaceAll("[^a-z0-9._-]", ""); //소문자, 숫자, 빼기, 밑줄, 마침표 제외
-        new_id = new_id.replaceAll("\\.{2,}", ".");
-        new_id = new_id.replaceAll("^\\.|\\.$", "");
-        
-        StringBuilder sb = new StringBuilder(new_id);
-        int length = sb.length();
-        
-        if(length == 0) {
-            sb.append("a");
-        }
-        if(length >= 16) {
-            sb.delete(15, length);
-            
-            if(sb.charAt(14) == '.') {
-                sb.deleteCharAt(14);
+        // 1단계 ~ 4단계: 대문자 -> 소문자, 불필요한 문자 제거, 연속 마침표 제거, 앞뒤 마침표 제거
+        boolean lastWasDot = false;
+        for (char c : new_id.toLowerCase().toCharArray()) {
+            if (Character.isLowerCase(c) || Character.isDigit(c) || c == '-' || c == '_' || c == '.') {
+                if (c == '.') {
+                    if (lastWasDot) continue; // 연속된 마침표 건너뜀
+                    lastWasDot = true;
+                } else {
+                    lastWasDot = false;
+                }
+                sb.append(c);
             }
         }
-    
-        
-        if(sb.length() <= 2) {
-            int l2 = sb.length();
-            char last = sb.charAt(l2 - 1);
-            
-            while(l2++ < 3) {
-                sb.append(last);
-            }
+
+        // 4단계: 앞뒤 마침표 제거
+        if (sb.length() > 0 && sb.charAt(0) == '.') sb.deleteCharAt(0);
+        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '.') sb.deleteCharAt(sb.length() - 1);
+
+        // 5단계: 빈 문자열 처리
+        if (sb.length() == 0) sb.append("a");
+
+        // 6단계: 길이 제한 처리
+        if (sb.length() >= 16) {
+            sb.setLength(15); // 첫 15자만 남김
+            if (sb.charAt(sb.length() - 1) == '.') sb.deleteCharAt(sb.length() - 1); // 끝 마침표 제거
         }
-        
+
+        // 7단계: 길이 보정
+        while (sb.length() < 3) {
+            sb.append(sb.charAt(sb.length() - 1)); // 마지막 문자 반복 추가
+        }
+
         return sb.toString();
     }
 }
