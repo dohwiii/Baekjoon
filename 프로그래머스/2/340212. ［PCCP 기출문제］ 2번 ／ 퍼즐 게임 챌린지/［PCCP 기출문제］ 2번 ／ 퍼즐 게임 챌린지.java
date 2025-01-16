@@ -1,19 +1,7 @@
 import java.util.*;
 class Solution {
-    static class Puzzle {
-        int diff, time;
-        public Puzzle(int diff, int time) {
-            this.diff=diff;
-            this.time=time;
-        }
-    }
     public int solution(int[] diffs, int[] times, long limit) {
         int answer = 100_001;
-        Map<Integer, Puzzle> map = new HashMap<>();
-        
-        for(int i=0; i<diffs.length; i++) {
-            map.put(i, new Puzzle(diffs[i], times[i]));
-        }
         int low = 1;
         int high = 100_000;
         
