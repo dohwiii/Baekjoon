@@ -1,32 +1,38 @@
 import java.util.*;
 class Solution {
     public int solution(int[] diffs, int[] times, long limit) {
-        int answer = 100_001;
-        int low = 1;
-        int high = 100_000;
+        int answer = Integer.MAX_VALUE; //최소 숙련도
+        int left = 1;
+        int right = 100000;
+        long time = 0;  //걸리는 시간
         
-        while(low <= high) {
-            int level = (low + high) / 2;
-            long time = 0;
+        while(left <= right) {
+            int level = (int) (left + right) / 2;
+            time = 0;
 
             for(int i=0; i<diffs.length; i++) {
-                if(diffs[i] <= level) {
+                int diff = diffs[i];
+                
+                if(level >= diff) {
                     time += times[i];
                 }
-                else if(diffs[i] > level) {
-                    int useTime = times[i-1] + times[i];
-                    time += ((diffs[i] - level) * useTime + times[i]);
+                else if(level < diff) {
+                    int wrongCnt = diff - level;    //틀린 횟수
+                    int result = (times[i] + times[i - 1]) * wrongCnt + times[i];
+                    time += result;
                 }
             }
-            if(time <= limit) { //시간 안에 만들 수 있으니까 숙련도 낮춰보기
-                high = level - 1;
+
+            //현재 걸리는 시간이 제한시간을 초과한다면 -> 숙련도 증가
+            if(time > limit) {
+                left = level + 1;
+            }
+            else {  //제한시간 내에 들어오지만 최소 숙련도를 구해야하므로 숙련도 감소
+                right = level - 1;
                 if(answer <= level) {
                     continue;
                 }
                 answer = level;
-            }
-            else {  //시간 초과니깐 숙련도 높이기
-                low = level + 1;
             }
         }
         
