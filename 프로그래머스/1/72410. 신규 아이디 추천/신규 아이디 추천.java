@@ -13,7 +13,7 @@ class Solution {
         int length = sb.length();
         
         if(length == 0) {
-            sb.append("a", 0, 1);
+            sb.append("a");
         }
         if(length >= 16) {
             sb.delete(15, length);
