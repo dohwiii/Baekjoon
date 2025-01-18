@@ -1,70 +1,102 @@
 import java.util.*;
 
 class Solution {
-    public int solution(int[][] points, int[][] routes) {
-        int answer = 0;
-        Queue<Pos> queue = new ArrayDeque<>();
-        int[] targetIndex = new int[routes.length + 1];
-        
-        for(int i=0; i<routes.length; i++) {
-            int pointNum = routes[i][0];
-            queue.offer(new Pos(points[pointNum - 1][0], points[pointNum - 1][1], i));
-        }
-                        
-        while(!queue.isEmpty()) {
-            int size = queue.size();
-            Map<String, Integer> collisions = new HashMap<>();   //충돌 횟수 체크
-            System.out.println("사이즈 "+size);
-                
-            while(size-- > 0) {
-                Pos now = queue.poll();
-                int robotId = now.robotId;
-                int targetPoint = routes[robotId][targetIndex[robotId]];    //4
-                Pos target = new Pos(points[targetPoint - 1][0], points[targetPoint - 1][1]);
-                int nx = now.x, ny = now.y;
-                
-                if(targetIndex[robotId] < routes[robotId].length) { //아직 가야할 포인트가 남았다면  
-                    if(targetIndex[robotId] == routes[robotId].length - 1) {
-                        if(nx == target.x && ny == target.y) {    //도달했다면 
-                            continue;
-                        }
-                    }
-                    if(nx != target.x) {
-                        nx += (nx > target.x) ? -1 : 1;
-                    }
-                    else if(ny != target.y) {
-                        ny += (ny > target.y) ? -1 : 1;
-                    }
-                    if(targetIndex[robotId] != routes[robotId].length - 1) {
-                        if(nx == target.x && ny == target.y) {
-                            targetIndex[robotId]++; //타겟 인덱스 증가(다음 타켓을 가리키도록)
-                        }
-                    }
-                    queue.offer(new Pos(nx, ny, robotId));
-                    String key = nx + " " + ny;
-                    collisions.put(key, collisions.getOrDefault(key, 0) + 1);     
-                }
-            }
-            for(String key : collisions.keySet()) {
-                int value = collisions.get(key);
-                if(value > 1) {
-                    answer++;
-                }
-            }
-            
-        }
-        return answer;
-    }
-    static class Pos {
-        int x, y, robotId;
-        public Pos(int x, int y, int robotId) {
+    static Queue<Point> queue = new ArrayDeque<>();
+    static Map<Integer, int[]> pointMap = new HashMap<>();
+    static Map<String, Integer> routeMap = new HashMap<>();
+    static int answer = 0;
+    
+    static class Point {
+        int robot, x, y, nextIndex;
+        public Point(int robot, int x, int y, int nextIndex) {
+            this.robot=robot;
             this.x=x;
             this.y=y;
-            this.robotId=robotId;
+            this.nextIndex=nextIndex;
         }
+    }
+    static class Pos {
+        int x, y;
         public Pos(int x, int y) {
             this.x=x;
             this.y=y;
         }
+    }
+    public int solution(int[][] points, int[][] routes) {
+       
+        //포인트 좌표 저장
+        for(int i=0; i<points.length; i++) {
+            pointMap.put(i + 1, new int[]{points[i][0], points[i][1]});
+        }
+        for(int i=0; i<routes.length; i++) {
+            int num = routes[i][0]; //현재 로봇의 출발 포인트 번호
+            int x = points[num - 1][0];
+            int y = points[num - 1][1];
+            queue.offer(new Point(i + 1, x, y, 1));
+            String newPos = x+" "+y;
+            routeMap.put(newPos, routeMap.getOrDefault(newPos, 0) + 1);
+        }
+        for(String p : routeMap.keySet()) {
+            int value = routeMap.get(p);
+            if(value > 1) {
+                answer++;
+            }
+        }
+        solve(routes);
+        return answer;
+    }
+    public void solve(int[][] routes) {
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            routeMap = new HashMap<>();
+            
+            while(size-- > 0) {
+                int nx = 0, ny = 0;
+                Point now = queue.poll();
+                int robotNum = now.robot;
+                int nextIndex = now.nextIndex;
+                int[] nextPoint = pointMap.get(routes[robotNum - 1][nextIndex]);    //다음 가야 할 포인트 넘버의 좌표
+                //목적 포인트에 도착했는지
+                if(now.x == nextPoint[0] && now.y == nextPoint[1]) {
+                    if(nextIndex == routes[0].length - 1) { //현재 로봇의 가고자 하는 목적지 없어서 끝남
+                        continue;
+                    }
+                    nextIndex++;
+                    nextPoint = pointMap.get(routes[robotNum - 1][nextIndex]);
+                }
+                if(nextPoint[0] - now.x > 0 && isBound(now.x + 1, now.y)) {  //행으로 이동할 거리가 있다면 우선 이동
+                    nx = now.x + 1;
+                    ny = now.y;
+                }
+                else if(nextPoint[0] - now.x < 0 && isBound(now.x - 1, now.y)) {
+                    nx = now.x - 1;
+                    ny = now.y;
+                }
+                else if(nextPoint[1] - now.y > 0 && isBound(now.x, now.y + 1)) { //열
+                    nx = now.x;
+                    ny = now.y + 1;
+                }
+                else if(nextPoint[1] - now.y < 0 && isBound(now.x, now.y - 1)) {
+                    nx = now.x;
+                    ny = now.y - 1;
+                }
+                
+                String newPos = nx + " " + ny;
+                queue.offer(new Point(robotNum, nx, ny, nextIndex));
+                routeMap.put(newPos, routeMap.getOrDefault(newPos, 0) + 1);
+            }
+            for(String p : routeMap.keySet()) {
+                int value = routeMap.get(p);
+                if(value > 1) {
+                    answer++;
+                }
+            }
+        }
+    }
+    public boolean isBound(int x, int y) {
+        if(x <= 0 || x > 100 && y <= 0 || y > 100) {
+            return false;
+        }
+        return true;
     }
 }
