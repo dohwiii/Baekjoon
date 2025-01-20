@@ -2,61 +2,58 @@ import java.util.*;
 
 class Solution {
     static int N, M;
-    static int[] dx = {1, -1, 0 ,0};
-    static int[] dy = {0, 0, 1, -1};
-    static int[] oil;
+    static int[] dp;
     static boolean[][] visited;
     static boolean[] visitedCol;
-    static int area = 0;
+    static int[] dx = {1, -1, 0, 0};
+    static int[] dy = {0, 0, 1, -1};
+    static int[][] area;
     
     public int solution(int[][] land) {
         int answer = 0;
-        N = land.length;    //행
-        M = land[0].length; //열
-        oil = new int[M];
+        N = land.length;
+        M = land[0].length;
+        dp = new int[M];
+        area = new int[N][M];
         visited = new boolean[N][M];
-        visitedCol = new boolean[M];
-        
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<M; j++) {
-                if(land[i][j] == 1 && !visited[i][j]) {
+        int cnt = 0;
+
+        for(int i=0; i<M; i++) {    //열
+            for(int j=0; j<N; j++) {    //행
+                if(land[j][i] == 1 && !visited[j][i]) {   //석유
+                    cnt = 0;
                     visitedCol = new boolean[M];
-                    area = 0;
-                    dfs(i, j, land);
-                    solve();
-                }                
+                    cnt += getOil(j, i, land);
+                    
+                    for(int k=0; k<M; k++) {
+                        if(visitedCol[k]) {
+                            dp[k] += cnt;
+                        }
+                    }
+                } 
+                
             }
+            
         }
-        int max = Arrays.stream(oil).max().getAsInt();
+        // System.out.println(Arrays.toString(dp));
+        answer = Arrays.stream(dp).max().getAsInt();
         
-        return max;
+        return answer;
     }
-    public static void solve() {
-        for(int i=0; i<M; i++) {
-            if(visitedCol[i]) {
-                oil[i] += area;
-            }
-        }
-    }
-    public static void dfs(int x, int y, int[][] land) {
-        if(land[x][y] != 1) {   //석유 아니라면
-            return;
-        }
-        if(visited[x][y]) {
-            return;
-        }
-        area++;
+    public int getOil(int x, int y, int[][] land) {
         visited[x][y] = true;
         visitedCol[y] = true;
+        area[x][y] = 1;
         
         for(int i=0; i<4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
             
-            if(nx < 0 || nx >= N || ny < 0 || ny >= M || land[nx][ny] == 0 || visited[nx][ny]) {
+            if(nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny] || land[nx][ny] == 0) {
                 continue;
-            } 
-            dfs(nx, ny, land);
+            }
+            area[x][y] += getOil(nx, ny, land);
         }
+        return area[x][y];
     }
 }
