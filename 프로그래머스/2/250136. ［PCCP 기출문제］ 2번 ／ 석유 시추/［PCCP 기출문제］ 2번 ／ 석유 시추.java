@@ -1,67 +1,71 @@
 import java.util.*;
 
 class Solution {
-    static int N, M;
-    static int[] dp;
-    static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static Map<Integer, Integer> islandSizes; // 섬 크기 캐싱
-    static int islandId; // 섬 ID
-    static int[][] landId; // 각 셀의 섬 ID 기록
-    
+    static int N, M;
+    static boolean[][] visited;
+    static int[][] landId;
+    static Map<Integer, Integer> oilSizes;
+
     public int solution(int[][] land) {
-        int answer = 0;
         N = land.length;
         M = land[0].length;
-        dp = new int[M];
         visited = new boolean[N][M];
         landId = new int[N][M];
-        islandSizes = new HashMap<>();
-        islandId = 1;
-        
-        // 섬 크기 계산
+        oilSizes = new HashMap<>();
+        int islandId = 1;
+
+        // 모든 석유 덩어리를 탐색하여 크기 계산
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                if (land[i][j] == 1 && !visited[i][j]) {
-                    int size = calculateIslandSize(i, j, land);
-                    islandSizes.put(islandId++, size);
+                if (!visited[i][j] && land[i][j] == 1) {
+                    int size = calculateOilSize(i, j, land, islandId);
+                    oilSizes.put(islandId, size);
+                    islandId++;
                 }
             }
         }
-        
-        // 열 단위 석유 크기 누적
+
+        // 열 단위로 석유량 계산
+        int maxOil = 0;
         for (int j = 0; j < M; j++) {
             Set<Integer> uniqueIslands = new HashSet<>();
+            int totalOil = 0;
+
             for (int i = 0; i < N; i++) {
                 if (land[i][j] == 1) {
-                    uniqueIslands.add(landId[i][j]); // 해당 열에서 섬 ID 추가
+                    int id = landId[i][j];
+                    if (!uniqueIslands.contains(id)) {
+                        uniqueIslands.add(id);
+                        totalOil += oilSizes.get(id);
+                    }
                 }
             }
-            for (int id : uniqueIslands) {
-                dp[j] += islandSizes.get(id); // 해당 섬 크기 누적
-            }
+            maxOil = Math.max(maxOil, totalOil);
         }
-        
-        // 최대값 계산
-        answer = Arrays.stream(dp).max().getAsInt();
-        return answer;
+
+        return maxOil;
     }
-    
-    private int calculateIslandSize(int x, int y, int[][] land) {
+
+    private int calculateOilSize(int x, int y, int[][] land, int islandId) {
         Queue<int[]> queue = new LinkedList<>();
         queue.add(new int[] {x, y});
         visited[x][y] = true;
         landId[x][y] = islandId;
-        
+
         int size = 0;
+
         while (!queue.isEmpty()) {
-            int[] curr = queue.poll();
+            int[] current = queue.poll();
+            int cx = current[0];
+            int cy = current[1];
             size++;
+
             for (int i = 0; i < 4; i++) {
-                int nx = curr[0] + dx[i];
-                int ny = curr[1] + dy[i];
-                
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+
                 if (nx >= 0 && nx < N && ny >= 0 && ny < M && !visited[nx][ny] && land[nx][ny] == 1) {
                     visited[nx][ny] = true;
                     landId[nx][ny] = islandId;
@@ -69,6 +73,7 @@ class Solution {
                 }
             }
         }
+
         return size;
     }
 }
