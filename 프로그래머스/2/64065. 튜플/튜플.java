@@ -1,26 +1,28 @@
 import java.util.*;
 class Solution {
     public int[] solution(String s) {
+        // 1. 양 끝 {{, }} 제거 및 그룹화
         s = s.substring(2, s.length() - 2);
         String[] arr = s.split("},\\{");
-        Arrays.sort(arr, new Comparator<String>(){
-            @Override
-            public int compare(String s1, String s2) {
-                return s1.length() - s2.length();
-            }
-        });
-        List<Integer> list = new ArrayList<>();
-        
-        for(int i=0; i<arr.length; i++) {
-            String[] str = arr[i].split(",");
-            for(String temp : str) {
-                int num = Integer.parseInt(temp);
-                if(!list.contains(num)) {
-                    list.add(num);
+
+        // 2. 길이 기준으로 정렬
+        Arrays.sort(arr, Comparator.comparingInt(String::length));
+
+        // 3. 숫자 중복 확인용 Set 및 결과 저장용 List
+        Set<Integer> set = new HashSet<>();
+        List<Integer> result = new ArrayList<>();
+
+        // 4. 그룹별 숫자 처리
+        for (String group : arr) {
+            for (String num : group.split(",")) {
+                int value = Integer.parseInt(num);
+                if (set.add(value)) { // Set에 없으면 추가 및 결과에 저장
+                    result.add(value);
                 }
             }
         }
-        
-        return list.stream().mapToInt(i -> i).toArray();
+
+        // 5. 결과 변환
+        return result.stream().mapToInt(Integer::intValue).toArray();
     }
 }
