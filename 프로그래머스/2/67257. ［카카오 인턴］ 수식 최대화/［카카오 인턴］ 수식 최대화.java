@@ -1,106 +1,80 @@
 import java.util.*;
 
 class Solution {
-    static String[] operators = {"+", "-", "*"};
+    static List<Character> ops = new ArrayList<>(); //연산자
+    static List<Long> nums = new ArrayList<>(); //숫자
+    static boolean[] visited = new boolean[3];
+    static List<char[]> priorityList = new ArrayList<>();
+    static char[] operator = {'+', '*', '-'};
     static long max = 0;
 
     public long solution(String expression) {
-        // 모든 연산자 우선순위 조합 생성
-        List<String[]> permutations = generatePermutations(operators);
-        max = 0;
-
-        // 수식 파싱
-        List<Long> numbers = new ArrayList<>();
-        List<Character> ops = new ArrayList<>();
-        parseExpression(expression, numbers, ops);
-
-        for (String[] priority : permutations) {
-            // 파싱 결과를 복사해 사용
-            List<Long> numCopy = new ArrayList<>(numbers);
-            List<Character> opsCopy = new ArrayList<>(ops);
-
-            // 우선순위에 따라 계산
-            long result = Math.abs(calculate(numCopy, opsCopy, priority));
-            max = Math.max(max, result);
-        }
-
-        return max;
-    }
-
-    private void parseExpression(String expression, List<Long> numbers, List<Character> ops) {
-        int n = expression.length();
+        char[] priority = new char[3];
+        long answer = 0;
         int start = 0;
-
-        for (int i = 0; i < n; i++) {
+        
+        for(int i=0; i<expression.length(); i++) {
             char c = expression.charAt(i);
-
-            if (c == '+' || c == '-' || c == '*') {
-                // 숫자 추출
-                numbers.add(Long.parseLong(expression.substring(start, i)));
-                ops.add(c); // 연산자 저장
-                start = i + 1; // 다음 숫자 시작점
+            if(c == '*' || c == '-' || c == '+') {
+                long number = Long.parseLong(expression.substring(start, i));
+                nums.add(number);   //숫자 추가
+                start = i + 1;  //인덱스 초기화
+                ops.add(c); //연산자 추가
             }
         }
-        // 마지막 숫자 추가
-        numbers.add(Long.parseLong(expression.substring(start)));
-    }
-
-    private List<String[]> generatePermutations(String[] operators) {
-        List<String[]> result = new ArrayList<>();
-        permute(operators, 0, result);
-        return result;
-    }
-
-    private void permute(String[] operators, int depth, List<String[]> result) {
-        if (depth == operators.length) {
-            result.add(operators.clone());
-            return;
+        nums.add(Long.parseLong(expression.substring(start)));  //마지막 숫자 추가
+        permutation(0, priority);   //조합 
+        
+        for(char[] p : priorityList) {
+            List<Character> opsCopy = new ArrayList<>(ops);
+            List<Long> numsCopy = new ArrayList<>(nums);
+            long result = Math.abs(calc(opsCopy, numsCopy, p));
+            max = Math.max(max, result);
         }
-
-        for (int i = depth; i < operators.length; i++) {
-            swap(operators, i, depth);
-            permute(operators, depth + 1, result);
-            swap(operators, i, depth);
-        }
+    
+        return max;
     }
-
-    private void swap(String[] operators, int i, int j) {
-        String temp = operators[i];
-        operators[i] = operators[j];
-        operators[j] = temp;
-    }
-
-    private long calculate(List<Long> numbers, List<Character> ops, String[] priority) {
-        for (String op : priority) {
-            char operator = op.charAt(0);
+    public long calc(List<Character> op, List<Long> num, char[] priority) {
+        for(char c : priority) {    //연산자 조합
             int i = 0;
-
-            while (i < ops.size()) {
-                if (ops.get(i) == operator) {
-                    // 좌우 피연산자 계산
-                    long left = numbers.get(i);
-                    long right = numbers.get(i + 1);
-                    long result = applyOperation(left, right, operator);
-
-                    // 리스트 갱신
-                    numbers.set(i, result); // 결과 저장
-                    numbers.remove(i + 1); // 우측 피연산자 제거
-                    ops.remove(i); // 연산자 제거
-                } else {
+            
+            while(i < op.size()) {
+                if(c == op.get(i)) {    //연산자 일치
+                    long left = num.get(i);
+                    long right = num.get(i + 1);
+                    long result = applyOperator(left, right, c);
+                    
+                    num.set(i, result);
+                    num.remove(i+1);
+                    op.remove((Object) c);
+                }
+                else {
                     i++;
                 }
             }
         }
-
-        return numbers.get(0);
+        return num.get(0);
     }
-
-    private long applyOperation(long a, long b, char op) {
-        switch (op) {
+    public long applyOperator(long a, long b, char op) {
+        switch(op) {
             case '+': return a + b;
             case '-': return a - b;
             case '*': return a * b;
         }
         return 0;
+    }
+    public void permutation(int depth, char[] priority) {
+        if(depth == 3) {
+            priorityList.add(priority.clone());
+            return;
+        }
+        for(int i=0; i<3; i++) {
+            if(!visited[i]) {
+                visited[i] = true;
+                priority[depth] = operator[i];
+                permutation(depth + 1, priority);
+                visited[i] = false;
+            }
+        }
     }
 }
