@@ -7,17 +7,12 @@ class Solution {
         for(int s : scoville) {
             pq.offer(s);
         }
-        while(pq.size() >= 2) {
+        while(pq.size() >= 2 && pq.peek() < K) {
             int first = pq.poll();
-            if(first >= K) {
-                break;
-            }
             int second = pq.poll();
             int score = first + second * 2;
             pq.offer(score);
             answer++;   //섞음
-            
-            
         }
         if(pq.poll() < K) {
             return -1;
