@@ -1,31 +1,31 @@
 import java.util.*;
+
 class Solution {
     public String solution(int n, int t, int m, int p) {
-        String answer = "";
-        int start = p - 1;
-        int lastIndex = m * t - m + start;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder total = new StringBuilder();
+        StringBuilder answer = new StringBuilder();
         int num = 0;
+        int cnt = 0;
+        int order = p;  //튜브의 순서
         int length = 0;
-        while(true) {
-            String radixNum = Integer.toString(num, n);
-            length += radixNum.length();
-            sb.append(radixNum);
-            if(length > lastIndex) {
-                break;
+        
+        while(cnt < t) {
+            String trans = Integer.toString(num, n);    //num을 n진수로 변환
+            length += trans.length();
+            total.append(trans);
+            
+            while(order <= length) {    //내 순서가 포함되어 있다면
+                char c = Character.toUpperCase(total.charAt(order - 1));
+                answer.append(c);
+                order += m; //다음 차례
+                cnt++;  //구한 숫자의 개수 추가
+                if(cnt == t) {
+                    break;
+                }
             }
             num++;
         }
-        String str = sb.toString().toUpperCase();
-        sb = new StringBuilder();
-        int cnt = 1;
-        int index = start;
-        while(cnt <= t) {
-            sb.append(str.charAt(index));
-            index = index + m;
-            cnt++;
-        }
-
-        return sb.toString();
+    
+        return answer.toString();
     }
-} 
+}
