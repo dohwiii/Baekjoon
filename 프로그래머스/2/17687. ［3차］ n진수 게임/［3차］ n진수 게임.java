@@ -15,8 +15,7 @@ class Solution {
             total.append(trans);
             
             while(order <= length) {    //내 순서가 포함되어 있다면
-                char c = Character.toUpperCase(total.charAt(order - 1));
-                answer.append(c);
+                answer.append(total.charAt(order - 1));
                 order += m; //다음 차례
                 cnt++;  //구한 숫자의 개수 추가
                 if(cnt == t) {
@@ -26,6 +25,6 @@ class Solution {
             num++;
         }
     
-        return answer.toString();
+        return answer.toString().toUpperCase();
     }
 }
