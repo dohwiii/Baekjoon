@@ -9,14 +9,14 @@ class Solution {
         number[0] = 0;
         number[1] = 1;
         
-        answer = fibonacci(n) % 1234567;
-        return answer;
+        answer = fibonacci(n, n);
+        return number[n];
     }
-    public int fibonacci(int n) {
+    public int fibonacci(int n, int target) {
         if(number[n] != -1) {
             return number[n];
         }
-        number[n] = (fibonacci(n-1) % 1234567 + fibonacci(n-2) % 1234567);
-        return (fibonacci(n-1) % 1234567 + fibonacci(n-2) % 1234567);
+        number[n] = (fibonacci(n-1, target) + fibonacci(n-2, target)) % 1234567;
+        return number[n];
     }
 }
