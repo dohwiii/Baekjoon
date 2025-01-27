@@ -1,30 +1,29 @@
 class Solution {
     public int solution(int[][] land) {
         int N = land.length;
-        int[] prev = new int[4];
+        int[][] dp = new int[N][4];
 
         // 첫 번째 행 초기화
         for (int i = 0; i < 4; i++) {
-            prev[i] = land[0][i];
+            dp[0][i] = land[0][i];
         }
 
-        // DP 계산
+        // DP 테이블 갱신
         for (int row = 1; row < N; row++) {
-            int[] curr = new int[4];
             for (int col = 0; col < 4; col++) {
+                dp[row][col] = 0;
                 for (int prevCol = 0; prevCol < 4; prevCol++) {
-                    if (prevCol != col) {
-                        curr[col] = Math.max(curr[col], prev[prevCol] + land[row][col]);
+                    if (prevCol != col) { // 같은 열 제외
+                        dp[row][col] = Math.max(dp[row][col], dp[row - 1][prevCol] + land[row][col]);
                     }
                 }
             }
-            prev = curr; // 이전 행 갱신
         }
 
         // 마지막 행에서 최댓값 선택
         int answer = 0;
         for (int i = 0; i < 4; i++) {
-            answer = Math.max(answer, prev[i]);
+            answer = Math.max(answer, dp[N - 1][i]);
         }
 
         return answer;
