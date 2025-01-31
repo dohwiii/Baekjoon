@@ -2,66 +2,35 @@ import java.util.*;
 
 class Solution {
     public int solution(String str1, String str2) {
-        int answer = 0;
         Map<String, Integer> map1 = new HashMap<>();
         Map<String, Integer> map2 = new HashMap<>();
         
-        for(int i=0; i<str1.length() - 1; i++) {
-            String str = str1.substring(i, i+2).toLowerCase();    //두 글자
-            if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
-                continue;
-            }
-            map1.put(str, map1.getOrDefault(str, 0) + 1);
-        }
-        for(int i=0; i<str2.length() - 1; i++) {
-            String str = str2.substring(i, i+2).toLowerCase();    //두 글자
-            if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
-                continue;
-            }
-            map2.put(str, map2.getOrDefault(str, 0) + 1);
+        // 다중집합 생성
+        addElements(map1, str1);
+        addElements(map2, str2);
+
+        int intersection = 0, union = 0;
+        
+        // 합집합 & 교집합 계산
+        Set<String> keySet = new HashSet<>(map1.keySet());
+        keySet.addAll(map2.keySet());  // 두 개의 키를 합침
+
+        for (String key : keySet) {
+            int count1 = map1.getOrDefault(key, 0);
+            int count2 = map2.getOrDefault(key, 0);
+            
+            intersection += Math.min(count1, count2);
+            union += Math.max(count1, count2);
         }
 
-        int union = 0;
-        int intersection = 0;
-        for(String key : map1.keySet()) {
-            int value = map1.get(key);
-            boolean isPossible = false;
-            
-            for(String key2 : map2.keySet()) {
-                int value2 = map2.get(key2);
-                
-                if(key.equals(key2)) {
-                    intersection += Math.min(value, value2);
-                    union += Math.max(value, value2);
-                    isPossible = true;
-                    break;
-                }
-            }
-            if(!isPossible) {
-                union += value;
-            }
-        }
-        for(String key : map2.keySet()) {
-            int value = map2.get(key);
-            boolean isPossible = false;
-            
-            for(String key2 : map1.keySet()) {
-                int value2 = map1.get(key2);
-                
-                if(key.equals(key2)) {
-                    isPossible = true;
-                    break;
-                }
-            }
-            if(!isPossible) {
-                union += value;
-            }
-        }
+        return (union == 0) ? 65536 : (int) ((double) intersection / union * 65536);
+    }
 
-        if(union == 0) {
-            return 65536;
+    private void addElements(Map<String, Integer> map, String str) {
+        for (int i = 0; i < str.length() - 1; i++) {
+            String sub = str.substring(i, i + 2).toLowerCase();
+            if (sub.matches(".*[^a-z].*")) continue; // 특수문자 포함 시 제외
+            map.put(sub, map.getOrDefault(sub, 0) + 1);
         }
-        double tmp = (double) intersection / union;
-        return (int) (tmp * 65536);
     }
 }
