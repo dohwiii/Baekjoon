@@ -5,14 +5,12 @@ class Solution {
         int answer = 0;
         Map<String, Integer> map1 = new HashMap<>();
         Map<String, Integer> map2 = new HashMap<>();
-        Set<String> set = new HashSet<>();
         
         for(int i=0; i<str1.length() - 1; i++) {
             String str = str1.substring(i, i+2).toLowerCase();    //두 글자
             if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
                 continue;
             }
-            set.add(str);
             map1.put(str, map1.getOrDefault(str, 0) + 1);
         }
         for(int i=0; i<str2.length() - 1; i++) {
@@ -20,12 +18,9 @@ class Solution {
             if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
                 continue;
             }
-            set.add(str);
             map2.put(str, map2.getOrDefault(str, 0) + 1);
         }
-        // for(String key : set) {
-        //     System.out.println(key);
-        // }
+
         int union = 0;
         int intersection = 0;
         for(String key : map1.keySet()) {
@@ -63,7 +58,7 @@ class Solution {
             }
         }
 
-        if(set.size() == 0) {
+        if(union == 0) {
             return 65536;
         }
         double tmp = (double) intersection / union;
