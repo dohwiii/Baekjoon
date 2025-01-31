@@ -2,47 +2,71 @@ import java.util.*;
 
 class Solution {
     public int solution(String str1, String str2) {
-        Map<String, int[]> map = new HashMap<>();
+        int answer = 0;
+        Map<String, Integer> map1 = new HashMap<>();
+        Map<String, Integer> map2 = new HashMap<>();
+        Set<String> set = new HashSet<>();
         
-        // 소문자로 변환
-        str1 = str1.toLowerCase();
-        str2 = str2.toLowerCase();
-
-        // 다중집합 생성
-        for (int i = 0; i < str1.length() - 1; i++) {
-            char front = str1.charAt(i);
-            char back = str1.charAt(i + 1);
-            if (Character.isLetter(front) && Character.isLetter(back)) {
-                String str = "" + front + back;
-                map.putIfAbsent(str, new int[2]);
-                map.get(str)[0]++;
+        for(int i=0; i<str1.length() - 1; i++) {
+            String str = str1.substring(i, i+2).toLowerCase();    //두 글자
+            if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
+                continue;
+            }
+            set.add(str);
+            map1.put(str, map1.getOrDefault(str, 0) + 1);
+        }
+        for(int i=0; i<str2.length() - 1; i++) {
+            String str = str2.substring(i, i+2).toLowerCase();    //두 글자
+            if(str.matches(".*[^a-z].*")) { //특수문자라면 건너뜀
+                continue;
+            }
+            set.add(str);
+            map2.put(str, map2.getOrDefault(str, 0) + 1);
+        }
+        // for(String key : set) {
+        //     System.out.println(key);
+        // }
+        int union = 0;
+        int intersection = 0;
+        for(String key : map1.keySet()) {
+            int value = map1.get(key);
+            boolean isPossible = false;
+            
+            for(String key2 : map2.keySet()) {
+                int value2 = map2.get(key2);
+                
+                if(key.equals(key2)) {
+                    intersection += Math.min(value, value2);
+                    union += Math.max(value, value2);
+                    isPossible = true;
+                    break;
+                }
+            }
+            if(!isPossible) {
+                union += value;
             }
         }
-        for (int i = 0; i < str2.length() - 1; i++) {
-            char front = str2.charAt(i);
-            char back = str2.charAt(i + 1);
-            if (Character.isLetter(front) && Character.isLetter(back)) {
-                String str = "" + front + back;
-                map.putIfAbsent(str, new int[2]);
-                map.get(str)[1]++;
+        for(String key : map2.keySet()) {
+            int value = map2.get(key);
+            boolean isPossible = false;
+            
+            for(String key2 : map1.keySet()) {
+                int value2 = map1.get(key2);
+                
+                if(key.equals(key2)) {
+                    isPossible = true;
+                    break;
+                }
+            }
+            if(!isPossible) {
+                union += value;
             }
         }
 
-        // 교집합과 합집합 계산
-        double intersection = 0;
-        double union = 0;
-        for (int[] counts : map.values()) {
-            intersection += Math.min(counts[0], counts[1]);
-            union += Math.max(counts[0], counts[1]);
-        }
-
-        // 공집합 처리
-        if (union == 0) {
+        if(set.size() == 0) {
             return 65536;
         }
-
-        // 유사도 계산
-        double similar = intersection / union;
-        return (int) (similar * 65536);
+        double tmp = (double) intersection / union;
+        return (int) (tmp * 65536);
     }
 }
