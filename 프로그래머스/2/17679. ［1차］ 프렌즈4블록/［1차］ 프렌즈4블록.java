@@ -1,77 +1,58 @@
 import java.util.*;
 
 class Solution {
-    static char[][] map;
-    static int N, M;
-    static int[] dx = {0, 1, 1};
-    static int[] dy = {1, 0, 1};
-    static List<int[]> blocksToRemove;
-    
     public int solution(int m, int n, String[] board) {
         int answer = 0;
-        N = m;
-        M = n;
-        map = new char[N][M];
-
-        for(int i=0; i<board.length; i++) {
+        char[][] map = new char[m][n];
+        for (int i = 0; i < m; i++) {
             map[i] = board[i].toCharArray();
         }
-        while(true) {
-            blocksToRemove = new ArrayList<>();  //4칸 완성 좌표 담을 Set
-            int cnt = 0;
-            //게임 시작
-            for(int i=0; i < N - 1; i++) {
-                for(int j=0; j < M - 1; j++) {
-                    if(map[i][j] != '0' && isSame(i, j)) {  //4칸 완성
-                        cnt++;
+        
+        while (true) {
+            boolean[][] visited = new boolean[m][n];
+            boolean hasBlockToRemove = false;
+            
+            // 1. 제거할 블록 찾기
+            for (int i = 0; i < m - 1; i++) {
+                for (int j = 0; j < n - 1; j++) {
+                    if (map[i][j] != ' ' && 
+                        map[i][j] == map[i][j + 1] && 
+                        map[i][j] == map[i + 1][j] && 
+                        map[i][j] == map[i + 1][j + 1]) {
+                        visited[i][j] = visited[i][j + 1] = visited[i + 1][j] = visited[i + 1][j + 1] = true;
+                        hasBlockToRemove = true;
                     }
                 }
             }
-            if(cnt == 0) {  //게임 종료
-                break;
-            }
             
-            //블록 제거
-            for(int[] pos : blocksToRemove) {
-                int x = pos[0];
-                int y = pos[1];
-                if(map[x][y] != '0') {  //중복 제거 방지
-                    map[x][y] = '0';
-                    answer++;
-                }
-            }
+            if (!hasBlockToRemove) break;
             
-            //빈 공간 채우기 (아래로 내리기)
-            for(int i=0; i<M; i++) {    //열(가로)
-                int emptyRow = N - 1;
-                for(int j=N-1; j>=0; j--) {    //행(세로)
-                    if(map[j][i] != '0') {
-                        map[emptyRow--][i] = map[j][i];
+            // 2. 블록 제거 및 개수 세기
+            int removedBlocks = 0;
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (visited[i][j]) {
+                        map[i][j] = ' ';
+                        removedBlocks++;
                     }
                 }
-                while(emptyRow >= 0) {
-                    map[emptyRow--][i] = '0';
-                }  
+            }
+            answer += removedBlocks;
+            
+            // 3. 블록 내리기 (열별로 처리)
+            for (int j = 0; j < n; j++) {
+                int writeIdx = m - 1;
+                for (int i = m - 1; i >= 0; i--) {
+                    if (map[i][j] != ' ') {
+                        map[writeIdx--][j] = map[i][j];
+                    }
+                }
+                while (writeIdx >= 0) {
+                    map[writeIdx--][j] = ' ';
+                }
             }
         }
         
         return answer;
-    }
-    public boolean isSame(int x, int y) {
-        for(int i=0; i<3; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-
-            if(nx >= N || ny >= M || map[nx][ny] != map[x][y]) {
-                return false;
-            }
-        }
-        // 4칸 완성된 좌표 추가
-        blocksToRemove.add(new int[] {x, y});
-        blocksToRemove.add(new int[] {x + 1, y});
-        blocksToRemove.add(new int[] {x, y + 1});
-        blocksToRemove.add(new int[] {x + 1, y + 1});
-        return true;
-        
     }
 }
