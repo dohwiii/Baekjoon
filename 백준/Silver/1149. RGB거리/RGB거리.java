@@ -1,43 +1,52 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
     static int N;
-    static int[][] colors;
-    static int[][] D;
+    static int[][] house;
+    static int[][] dp;
+    static int answer = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        colors = new int[N + 1][3];
-        D = new int[N + 1][3];
-        int ans = Integer.MAX_VALUE;
+        N = Integer.parseInt(br.readLine());   //집의 수
+        house = new int[N][3];
+        dp = new int[N][3];
 
-        for (int i = 1; i <= N; i++) {
+        for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for (int j = 0; j < 3; j++) {
-                colors[i][j] = Integer.parseInt(st.nextToken());
+                house[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        for (int i = 1; i <= N; i++) { //집
-            for (int j = 0; j < 3; j++) { //i번째 집의 빨, 초, 파
-                int min = Integer.MAX_VALUE;
+        dp[0][0] = house[0][0];
+        dp[0][1] = house[0][1];
+        dp[0][2] = house[0][2];
 
-                for (int k = 0; k < 3; k++) { //빨, 초, 파
-                    if (j != k) {
-                        min = Math.min(min, D[i - 1][k]); //이전의 비용 중 최소
-                    }
-                }
-                D[i][j] = min + colors[i][j];
-
+        for (int i = 1; i < N; i++) {
+            for (int j = 0; j < 3; j++) {
+                dp[i][j] = house[i][j] + Math.min(dp[i - 1][(j + 1) % 3], dp[i - 1][(j + 2) % 3]);
             }
         }
-        for (int i = 0; i < 3; i++) { //마지막 행의 최솟값
-            ans = Math.min(ans, D[N][i]);
-        }
-        System.out.println(ans);
+//        for (int i = 0; i < N; i++) {
+//            System.out.println(Arrays.toString(dp[i]));
+//        }
+        answer = Math.min(dp[N - 1][0], Math.min(dp[N - 1][1], dp[N - 1][2]));
+        System.out.println(answer);
+
     }
+
+    public static void solve(int depth, int prev, int cost) {
+        if (depth == N) {   //모든 집 끝
+            answer = Math.min(answer, cost);
+            return;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            if (i != prev) {
+                solve(depth + 1, i, house[depth][i] + cost);
+            }
+        }
+    }
+
 }
