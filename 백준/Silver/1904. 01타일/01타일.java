@@ -6,15 +6,23 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        long[] dp = new long[N + 1];
-        dp[1] = 1;
-        if (N >= 2) {
-            dp[2] = 2;
+        if (N == 1) {
+            System.out.println(1);
+            return;
+        } else if (N == 2) {
+            System.out.println(2);
+            return;
         }
+        int val1 = 1;
+        int val2 = 2;
+        int sum = 0;
+
         for (int i = 3; i <= N; i++) {
-            dp[i] = (dp[i - 1] + dp[i - 2]) % 15746;
+            sum = (val1 + val2) % 15746;
+            val1 = val2;
+            val2 = sum;
         }
-        System.out.println(dp[N]);
+        System.out.println(sum);
 
     }
 
