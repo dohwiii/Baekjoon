@@ -5,15 +5,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String str1 = br.readLine();
-        String str2 = br.readLine();
-        int l1 = str1.length();
-        int l2 = str2.length();
+        char[] c1 = br.readLine().toCharArray();
+        char[] c2 = br.readLine().toCharArray();
+        int l1 = c1.length;
+        int l2 = c2.length;
         int[][] dp = new int[l1 + 1][l2 + 1];
 
         for (int i = 1; i <= l1; i++) {
             for (int j = 1; j <= l2; j++) {
-                if (str1.charAt(i-1) == str2.charAt(j-1)) {
+                if (c1[i - 1] == c2[j - 1]) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
                 }
                 else {
@@ -21,12 +21,6 @@ public class Main {
                 }
             }
         }
-
         System.out.println(dp[l1][l2]);
-
-
-
-
-
     }
 }
