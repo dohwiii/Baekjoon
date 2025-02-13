@@ -2,17 +2,19 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        long[][] D = new long[N + 1][2];
-        D[1][0] = 0;
-        D[1][1] = 1;
+        long[] dp = new long[91];
 
-        for (int i = 2; i <= N; i++) {
-            D[i][0] = D[i - 1][0] + D[i - 1][1];
-            D[i][1] = D[i - 1][0];
+        dp[1] = 1;
+        dp[2] = 1;
+        for (int i = 3; i <= N; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
         }
-        System.out.println(D[N][0] + D[N][1]);
+        System.out.println(dp[N]);
+
+
     }
 }
