@@ -22,9 +22,6 @@ public class Main {
                     stickers[i][j] = Integer.parseInt(st.nextToken());
                 }
             }
-            for (int i = 0; i < 2; i++) {
-                Arrays.fill(dp[i], Integer.MIN_VALUE - 1);
-            }
             dp[0][0] = stickers[0][0];
             dp[1][0] = stickers[1][0];
 
