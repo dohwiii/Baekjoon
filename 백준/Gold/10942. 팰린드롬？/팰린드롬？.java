@@ -1,48 +1,50 @@
-import java.io.*;
-import java.util.*;
+class Main {
 
-public class Main {
-    static int N;
-    static int[] arr;
-    static int[][] dp;
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        N = Integer.parseInt(br.readLine());
-        arr = new int[N + 1];
-        dp = new int[N + 1][N + 1];
-        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        int N = read();
+        int[] seq = new int[N + 1];
+        boolean[][] dp = new boolean[N + 1][N + 1];
+
         for (int i = 1; i <= N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+            seq[i] = read();
+            dp[i][i] = true;
+            if (seq[i - 1] == seq[i]) dp[i - 1][i] = true;
         }
-        for (int i = 1; i <= N; i++) {
-            dp[i][i] = 1;   //팰린드롬 true
-        }
-        for (int i = 1; i < N; i++) {
-            if (arr[i] == arr[i + 1]) {
-                dp[i][i + 1] = 1;
-            }
-        }
-        for (int i = 2; i < N; i++) {
-            for (int j = 1; j + i <= N; j++) {
-                int end = j + i;
-                if (arr[j] == arr[end]) {
-                    if (dp[j + 1][end - 1] == 1) {
-                        dp[j][end] = 1;
-                    }
+
+        for (int i = N - 2; i >= 1; i--) {
+            for (int j = i + 2; j <= N; j++) {
+                if (seq[i] == seq[j] && dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
                 }
             }
         }
-        int M = Integer.parseInt(br.readLine());    //질문 개수
-        for (int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int S = Integer.parseInt(st.nextToken());
-            int E = Integer.parseInt(st.nextToken());
-            bw.write(dp[S][E] + "\n");
-        }
-        bw.flush();
-        bw.close();
 
+        int M = read();
+        while (M-- > 0) write(dp[read()][read()]);
+
+        flush();
 
     }
+
+    static int index, SIZE = 1 << 13;
+    static byte[] buffer = new byte[SIZE];
+
+    static void write(boolean isPpalindrome) {
+        if (index + 2 == SIZE) flush();
+        buffer[index++] = (byte) (isPpalindrome ? 49 : 48);
+        buffer[index++] = 10;
+    }
+
+    static void flush() {
+        System.out.write(buffer, 0, index);
+        index = 0;
+    }
+
+    static int read() throws Exception {
+        int c, n = System.in.read() & 15;
+        while ((c = System.in.read()) > 32) n = (n << 3) + (n << 1) + (c & 15);
+        return n;
+    }
+
 }
