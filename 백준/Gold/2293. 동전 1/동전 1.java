@@ -2,27 +2,29 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, K;
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());   //물품 개수
-        K = Integer.parseInt(st.nextToken());   //버틸 수 있는 무게
-        int[] dp = new int[K + 1];
-        int[] coins = new int[N + 1];
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int[] coins = new int[N];
+        int[] dp = new int[10001];
 
         for (int i = 0; i < N; i++) {
-            coins[i] = Integer.parseInt(br.readLine());
+            int num = Integer.parseInt(br.readLine());
+            coins[i] = num;
         }
         dp[0] = 1;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = coins[i]; j <= K; j++) {
-                dp[j] = dp[j] + dp[j - coins[i]];
+        for (int coin : coins) {
+            for (int i = coin; i <= K; i++) {
+                dp[i] += dp[i - coin];
             }
         }
         System.out.println(dp[K]);
-    }
 
+
+
+
+    }
 }
