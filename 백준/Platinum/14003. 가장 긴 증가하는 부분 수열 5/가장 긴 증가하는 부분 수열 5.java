@@ -2,9 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int[] arr, parent, dp;
+    static int[] arr;
+    static int[] dp, parent;
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int N = Integer.parseInt(br.readLine());
         arr = new int[N];
         dp = new int[N];
@@ -30,27 +32,29 @@ public class Main {
             }
 
         }
-        int[] answer = new int[len];
         int index = dp[len - 1];    //마지막 인덱스
-        for (int i = len - 1; i >= 0; i--) {
-            answer[i] = arr[index];
+        ArrayList<Integer> lis = new ArrayList<>();
+        while (index != -1) {
+            lis.add(arr[index]);
             index = parent[index];
         }
-
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        Collections.reverse(lis);  // 리스트를 뒤집어서 올바른 순서로 만들기
         bw.write(len + "\n");
-        for (int i = 0; i < len; i++) {
-            bw.write(answer[i] + " ");
+
+        for (int num : lis) {
+            bw.write(num + " ");
         }
+
+
         bw.flush();
         bw.close();
     }
 
-    public static int lowerBound(int num, int len) {
+    public static int lowerBound(long num, int len) {
         int left = 0, right = len;
 
         while (left < right) {
-            int mid = (left + right) / 2;
+            int mid = left + ((right - left) >> 1);
             if (arr[dp[mid]] >= num) {
                 right = mid;
             }
