@@ -21,34 +21,22 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        for (long[] d : dp) {
-            Arrays.fill(d, -1);
-        }
-        solve(0, 0);
-        System.out.println(dp[0][0]);
-
-    }
-
-    public static long solve(int x, int y) {
-        if (x == N - 1 && y == N - 1) {
-            return 1;
-        }
-        if (dp[x][y] != -1) {
-            return dp[x][y];
-        }
-        dp[x][y] = 0;
-        int step = map[x][y];   //갈 수 있는 거리
-
-        for (int i = 0; i < 2; i++) {   //오른쪽 or 아래
-            int nx = x + dx[i] * step;
-            int ny = y + dy[i] * step;
-
-            if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
-                continue;
+        dp[0][0] = 1;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (i == N - 1 && j == N - 1) {
+                    break;
+                }
+                if (i + map[i][j] < N) {
+                    dp[i + map[i][j]][j] += dp[i][j];
+                }
+                if (j + map[i][j] < N) {
+                    dp[i][j + map[i][j]] += dp[i][j];
+                }
             }
-            dp[x][y] += solve(nx, ny);
-
         }
-        return dp[x][y];
+        System.out.println(dp[N - 1][N - 1]);
+
     }
+
 }
