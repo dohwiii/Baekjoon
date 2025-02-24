@@ -39,11 +39,10 @@ public class Main {
                 dp[i][j] = (dp[i - j][n1] + dp[i - j][n2]) % mod;
                 total += dp[i][j];
             }
-            sum[i] = total % mod;
         }
         StringBuilder sb = new StringBuilder();
         for (int a : q) {
-            sb.append(sum[a] + "\n");
+            sb.append((dp[a][1] + dp[a][2] + dp[a][3]) % mod + "\n");
         }
         System.out.println(sb.toString());
 
