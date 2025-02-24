@@ -14,15 +14,11 @@ public class Main {
         }
 
         long[][] dp = new long[100001][4];
-        long[] sum = new long[100001];
         dp[1][1] = 1;
         dp[2][2] = 1;
         dp[3][3] = 1;
         dp[3][1] = 1;
         dp[3][2] = 1;
-        sum[1] = 1;
-        sum[2] = 1;
-        sum[3] = 3;
 
         for (int i = 4; i <= 100000; i++) {
             long total = 0;
