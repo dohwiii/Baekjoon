@@ -4,33 +4,17 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
-        int[] dp = new int[N + 1];
-
-        Arrays.fill(dp, -1);
-        if (N >= 2) {
-            dp[2] = 1;
-        }
-        if (N >= 4) {
-            dp[4] = 2;
-        }
-        if (N >= 5) {
-            dp[5] = 1;
-        }
-        for (int i = 6; i <= N; i++) {
-            if (dp[i - 2] == -1 && dp[i - 5] == -1) {
-                continue;
-            } else if (dp[i - 2] == -1) {
-                dp[i] = dp[i - 5] + 1;
-                continue;
-            } else if (dp[i - 5] == -1) {
-                dp[i] = dp[i - 2] + 1;
-                continue;
+        int n = Integer.parseInt(br.readLine());
+        int answer = -1;
+        
+        // 가능한 5원 동전의 최대 개수부터 0까지 탐색
+        for (int i = n / 5; i >= 0; i--) {
+            int remain = n - i * 5;
+            if (remain % 2 == 0) { // 남은 금액이 2원으로 딱 맞게 떨어지면
+                answer = i + (remain / 2);
+                break;
             }
-            dp[i] = Math.min(dp[i - 2] + 1, dp[i - 5] + 1);
         }
-        System.out.println(dp[N]);
-
-
+        System.out.println(answer);
     }
 }
