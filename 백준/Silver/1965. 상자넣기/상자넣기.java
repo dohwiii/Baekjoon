@@ -1,5 +1,4 @@
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 
 public class Main {
@@ -7,23 +6,38 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         int[] arr = new int[N];
-        long[] dp = new long[N];
+        int[] dp = new int[N];
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-        long max = 1;
-        dp[0] = 1;
+        int len = 1;
+        dp[0] = arr[0];
         for (int i = 1; i < N; i++) {
-            dp[i] = 1;
-            for (int j = 0; j < i; j++) {
-                if (arr[i] > arr[j] && dp[i] < dp[j] + 1) {  //상자 크기가 더 크다면
-                    dp[i] = dp[j] + 1;
-                }
+            if (dp[len - 1] < arr[i]) { //가장 마지막에 넣은 값보다 크다면 맨 마지막에 추가
+                dp[len++] = arr[i];
             }
-            max = Math.max(max, dp[i]);
+            else {
+                int index = getLIS(arr[i], len, dp);
+                dp[index] = arr[i];
+            }
         }
-        System.out.println(max);
+        System.out.println(len);
 
+    }
+
+    public static int getLIS(int num, int len, int[] dp) {
+        int left = 0, right = len - 1;
+
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (dp[mid] >= num) {
+                right = mid;
+            }
+            else {
+                left = mid + 1;
+            }
+        }
+        return right;
     }
 }
