@@ -18,14 +18,16 @@ public class Main {
             dp[5] = 1;
         }
         for (int i = 6; i <= N; i++) {
-            int min = 500000;
-            for (int j = 2; j <= i / 2; j++) {
-                if (dp[j] == -1 || dp[i - j] == -1) {
-                    continue;
-                }
-                min = Math.min(min, dp[i - j] + dp[j]);
+            if (dp[i - 2] == -1 && dp[i - 5] == -1) {
+                continue;
+            } else if (dp[i - 2] == -1) {
+                dp[i] = dp[i - 5] + 1;
+                continue;
+            } else if (dp[i - 5] == -1) {
+                dp[i] = dp[i - 2] + 1;
+                continue;
             }
-            dp[i] = min;
+            dp[i] = Math.min(dp[i - 2] + 1, dp[i - 5] + 1);
         }
         System.out.println(dp[N]);
 
