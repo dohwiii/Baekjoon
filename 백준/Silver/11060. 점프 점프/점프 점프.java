@@ -6,12 +6,12 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         int[] arr = new int[N];
-        long[] dp = new long[N];
+        int[] dp = new int[N];
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-        Arrays.fill(dp, Integer.MAX_VALUE);
+        Arrays.fill(dp, 1001);
         dp[0] = 0;
 
         for (int i = 0; i < N; i++) {
@@ -20,7 +20,7 @@ public class Main {
                 dp[j] = Math.min(dp[j], dp[i] + 1);
             }
         }
-        if (dp[N - 1] == Integer.MAX_VALUE) {
+        if (dp[N - 1] == 1001) {
             System.out.println(-1);
         }
         else {
