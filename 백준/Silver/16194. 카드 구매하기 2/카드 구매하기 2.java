@@ -14,7 +14,7 @@ public class Main {
         }
 
         for (int i = 2; i <= N; i++) {
-            for (int j = 1; j < i; j++) {
+            for (int j = 1; j <= i / 2; j++) {
                 dp[i] = Math.min(dp[i], dp[j] + dp[i - j]);
             }
         }
