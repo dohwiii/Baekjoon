@@ -18,11 +18,12 @@ public class Main {
         }
         dp[0] = 1;
         for (int i = 0; i < N; i++) {
-            for (int j = X; j >= 0; j--) {
+            for (int j = X; j >= L[i]; j--) {
                 for (int k = 1; k <= C[i]; k++) {    //수량
-                    if (j + k * L[i] <= X) {
-                        dp[j + k * L[i]] += dp[j];
+                    if (j - k * L[i] < 0) {
+                        break;
                     }
+                    dp[j] += dp[j - k * L[i]];
                 }
 
             }
