@@ -32,12 +32,9 @@ public class Main {
         double maxPercent = 0.0;
 
         for (int i = M; i >= 1; i--) {
-            int weight = bags[i];
-            int maxValue = 0;
-            for (int j = 1; j <= weight; j++) {
-                maxValue = Math.max(maxValue, dp[j]);
-            }
-            double p = maxValue / (double) weight;
+            int weight = bags[i];   //무게
+            long value = dp[weight]; //무게의 최대 가치
+            double p = value / (double) weight;
             if (maxPercent <= p) {
                 maxPercent = p;
                 answer = i;
