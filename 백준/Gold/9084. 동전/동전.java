@@ -4,30 +4,31 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int T = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+
         while (T-- > 0) {
-            int N = Integer.parseInt(br.readLine());    //동전 가지수
+            int N = Integer.parseInt(br.readLine());
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int[] coin = new int[N];
-            int[] dp = new int[10001];
+            int[] coins = new int[N];
             for (int i = 0; i < N; i++) {
-                coin[i] = Integer.parseInt(st.nextToken());
+                coins[i] = Integer.parseInt(st.nextToken());
             }
-            int M = Integer.parseInt(br.readLine());
+            int M = Integer.parseInt(br.readLine());    //만들어야 할 금액
+            int[] dp = new int[M + 1];
             dp[0] = 1;
 
             for (int i = 0; i < N; i++) {
-                for (int j = coin[i]; j <= M; j++) {
-                    dp[j] += dp[j - coin[i]];
+                for (int j = coins[i]; j <= M; j++) {
+                    dp[j] += dp[j - coins[i]];
                 }
             }
 
-            bw.write(dp[M] + "\n");
-
+            sb.append(dp[M] + "\n");
         }
-        bw.flush();
-        bw.close();
+
+        System.out.println(sb);
+
 
     }
 }
