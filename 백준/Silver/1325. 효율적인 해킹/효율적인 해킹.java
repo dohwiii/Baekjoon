@@ -2,57 +2,86 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static List<Integer>[] graph;
     static int N;
+    static int[] count;
+    static List<Integer>[] list;
+    static boolean[][] visited; // 방문 여부 배열
+    static int max;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine());
+        StringBuilder sb = new StringBuilder();
+
         N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
 
-        graph = new ArrayList[N + 1];
-        for (int i = 1; i <= N; i++) {
-            graph[i] = new ArrayList<>();
+        list = new ArrayList[N + 1];
+        visited = new boolean[N + 1][N + 1];
+        count = new int[N + 1];
+
+        for (int i = 0; i <= N; i++) {
+            list[i] = new ArrayList<>();
         }
 
-        // B를 해킹하면 A도 해킹 가능하므로, B -> A 방향으로 저장
+        // 간선 입력 (B를 해킹하면 A도 해킹 가능)
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int A = Integer.parseInt(st.nextToken());
             int B = Integer.parseInt(st.nextToken());
-            graph[B].add(A);
+            list[B].add(A);
         }
 
-        int[] counts = new int[N + 1];
-        int maxCount = 0;
-        
-        // 각 노드를 시작점으로 독립적인 DFS 실행
+        int maxHacked = 0;
+
+        // 모든 노드에 대해 BFS 실행
         for (int i = 1; i <= N; i++) {
-            boolean[] visited = new boolean[N + 1];
-            counts[i] = dfs(i, visited);
-            maxCount = Math.max(maxCount, counts[i]);
+            bfs(i);
         }
-        
-        StringBuilder sb = new StringBuilder();
+
+        // 최대 해킹 가능한 개수를 가진 노드 찾기
         for (int i = 1; i <= N; i++) {
-            if (counts[i] == maxCount) {
-                sb.append(i).append(" ");
+            if (count[i] == max) {
+                sb.append(i + " ");
             }
         }
-        
-        System.out.println(sb);
+        bw.write(sb.toString());
+        bw.close();
     }
 
-    // DFS: start 노드에서 해킹할 수 있는 컴퓨터의 수를 반환
-    static int dfs(int node, boolean[] visited) {
-        visited[node] = true;
-        int count = 0;
-        for (int next : graph[node]) {
-            if (!visited[next]) {
-                count += dfs(next, visited) + 1;
+    public static void bfs(int node) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.offer(node);
+
+        while (!queue.isEmpty()) {
+            int now = queue.poll();
+            if (visited[node][now]) {
+                continue;
+            }
+            visited[node][now] = true;
+            count[node]++;
+
+            for (int next : list[now]) {
+                if (visited[node][next]) {
+                    continue;
+                }
+                if (next > node) {
+                    queue.offer(next);
+                }
+                else {  //이미 탐색이 끝난 노드라면
+                    for (int i = 1; i <= N; i++) {
+                        if (visited[node][i]) {
+                            continue;
+                        }
+                        if (visited[next][i]) {
+                            visited[node][i] = true;
+                            count[node]++;
+                        }
+                    }
+                }
             }
         }
-        return count;
+        max = Math.max(max, count[node]);
     }
 }
