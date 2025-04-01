@@ -1,45 +1,36 @@
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int N, K;
-    static int[] arr;
-    static int result = Integer.MIN_VALUE;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        N = Integer.parseInt(st.nextToken());   //전체 날짜 수
-        K = Integer.parseInt(st.nextToken());   //연속 날짜 수
-        arr = new int[N + 1];
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int[] arr = new int[N];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) {
+        for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        solve();
-        System.out.println(result);
-
-    }
-
-    public static void solve() {
-        int left = 0;
-        int right = 0;
-        int sum = 0;
-        int size = 0;
-
-        for (int i = 1; i <= K; i++) {
+        long sum = 0;
+        for (int i = 0; i < K; i++) {
             sum += arr[i];
         }
-        result = sum;
+        long max = sum;
 
-        for (int i = K + 1, j = 1; i <= N; i++, j++) {
-            sum += arr[i] - arr[j];
-            if (result < sum) result = sum;
+        for (int i = 1; i < N - K + 1; i++) {
+            sum -= arr[i - 1];
+            sum += arr[i + K - 1];
+            max = Math.max(max, sum);
         }
+        System.out.println(max);
+
+
     }
 
 }
