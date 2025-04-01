@@ -5,43 +5,27 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int[] arr;
-    static int N, X;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        arr = new int[N];
+        int N = Integer.parseInt(br.readLine());
+        int[] arr = new int[N];
+        boolean[] cnt = new boolean[1000001];
 
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
+            cnt[arr[i]] = true;
         }
-        X = Integer.parseInt(br.readLine());
-        Arrays.sort(arr);
-        System.out.println(solve());
-
-
-    }
-
-    public static int solve() {
-        int s = 0;
-        int e = N - 1;
-        int cnt = 0;
-
-        while (s < e) {
-            int result = arr[s] + arr[e];
-
-            if (result == X) {
-                cnt++;
-                s++;
-                e--;
-            } else if (result > X) {
-                e--;
-            } else {
-                s++;
+        int X = Integer.parseInt(br.readLine());
+        int answer = 0;
+        for (int i = 0; i < N; i++) {
+            int pair = X - arr[i];
+            if (pair >= 1 && pair <= 1000000 && cnt[pair]) {
+                answer++;
             }
         }
-        return cnt;
+        System.out.println(answer / 2);
+
     }
+
 }
