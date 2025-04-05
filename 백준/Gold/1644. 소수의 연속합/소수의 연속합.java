@@ -8,67 +8,51 @@ import java.util.StringTokenizer;
 
 public class Main {
     static int N;
+    static int numOfPrimeNumbers;
+    static int[] primeNumbers = new int[400000];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        List<Integer> primeList = new ArrayList<>();
-        for (int i = 2; i <= N; i++) {
-            if (isPrime(i)) {
-                primeList.add(i);
-            }
-        }
-        int answer = 0;
-        if (N == 1) {
-            answer = 0;
-        } else {
-            answer = solve(primeList);
-        }
-        
+        findPrimeNumbers();
+        int answer = solve();
 
         System.out.println(answer);
 
 
     }
+    public static void findPrimeNumbers() {
+        boolean[] isNoPrime = new boolean[N + 1];  // 소수가 아닌 수를 true로 표시
+        int prevPrimeNumber = primeNumbers[numOfPrimeNumbers++] = 2;  // 2는 소수니까 먼저 추가
 
-    public static int solve(List<Integer> primeList) {
-        int s = 0, e = 0;
-        int[] arr = primeList.stream().mapToInt(i -> i).toArray();
-        long sum = arr[0];
-        int ans = 0;
+        for (int i = 3; i <= N; i += 2) {  // 홀수만 검사
+            if (isNoPrime[i]) continue;  // 이미 소수가 아니라고 체크된 수는 패스
 
-        while (s <= e && e < arr.length) {
-            if (sum <= N) {
-                if (sum == N) {
-                    ans++;
-                }
-                e++;
-                if (e >= arr.length) {
-                    break;
-                }
-                sum += arr[e];
+            // 현재 소수 i를 배열에 추가
+            primeNumbers[numOfPrimeNumbers++] = prevPrimeNumber = i;
+
+            // i의 배수들을 소수가 아니라고 표시
+            for (int j = i * 2; j <= N; j += i) {
+                isNoPrime[j] = true;
+            }
+        }
+
+    }
+
+    public static int solve() {
+        int s = 0, e = 0, ans = 0;
+        long sum = 0;
+
+        while (true) {
+            if (sum >= N) {
+                if (sum == N) ans++;
+                sum -= primeNumbers[s++];
             } else {
-                sum -= arr[s];
-                s++;
+                if (e == numOfPrimeNumbers) break;
+                sum += primeNumbers[e++];
             }
         }
         return ans;
     }
-
-    public static boolean isPrime(int n) {
-        if (n < 2) {
-            return false;
-        }
-        if (n == 2 || n == 3) {
-            return true;
-        }
-        for (int i = 2; i <= (int) Math.sqrt(n); i++) {
-            if (n % i == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
 }
