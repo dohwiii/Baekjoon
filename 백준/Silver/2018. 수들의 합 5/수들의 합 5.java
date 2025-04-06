@@ -1,45 +1,38 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
+public class Main {
+    static int[] sushi;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(br.readLine());
+        int s = 1, e = 1;
+        long sum = 1;
+        int ans = 0;
 
-public class Main
-{
-    public static void main(String[] args) 
-    {
-        Scanner sc = new Scanner(System.in);
-        
-        int N = sc.nextInt();
-        int[] arr = new int[N];
-
-        int count = 1;
-        int start = 1;
-        int end = 1;
-        int sum = 1;
-
-        
-        while(end != N)
-        {
-            if(sum == N)
-            {
-                count++;
-                end++;
-                sum = sum + end;
-
+        while (s <= e && e <= N) {
+            if (sum > N) {
+                sum -= s;
+                s++;
             }
-            else if(sum > N)
-            {
-                sum = sum - start;
-                start++;
+            else {
+                if (sum == N) {
+                    ans++;
+                }
+                e++;
+                sum += e;
+            }
 
-            }
-            else
-            {
-                end++;
-                sum = sum + end;
-                
-            }
 
         }
-        System.out.println(count);
-        
+        if (N == 1) {
+            ans = 1;
+        }
+        System.out.println(ans);
+
     }
+
 }
