@@ -42,18 +42,19 @@ public class Main {
 
     public static int solve(int fish, int[] B, int M) {
         int s = 0;
-        int e = 0;
+        int e = M;
         int eat = 0;
 
-        while (e < B.length) {
-            if (B[e] >= fish) {
-                break;
-            } else if (B[e] < fish) {   //잡아먹힘
-                e++;
-                eat++;
+        while (s < e) {
+            int mid = (s + e) / 2;
+            if (fish > B[mid]) {    //잡아 먹음 (정답후보)
+                s = mid + 1;
+            }
+            else if (fish <= B[mid]) {  //못 먹음
+                e = mid;
             }
         }
-        return eat;
+        return s;
     }
 
 }
