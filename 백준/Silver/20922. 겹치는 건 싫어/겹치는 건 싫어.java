@@ -27,22 +27,16 @@ public class Main {
 
         while (s < n && e < n) {
             if (cnt[arr[e]] >= K) {  //이미 K 횟수 초과
-                int length = e - s;
-                maxLength = Math.max(maxLength, length);
-                while (cnt[arr[e]] >= K) {  //길이 조정
-                    cnt[arr[s]]--;
-                    s++;
-                }
+                cnt[arr[s]]--;
+                s++;
 
             } else {
                 cnt[arr[e]]++;
                 e++;
             }
-
-        }
-        if (s <= arr.length && e <= arr.length) {
             maxLength = Math.max(maxLength, e - s);
         }
+
         return maxLength;
     }
 
