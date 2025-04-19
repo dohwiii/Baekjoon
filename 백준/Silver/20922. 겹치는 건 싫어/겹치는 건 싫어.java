@@ -23,7 +23,7 @@ public class Main {
         int s = 0, e = 0;
         int n = arr.length;
         int maxLength = 0;
-        int[] cnt = new int[200001];    //숫자 등장 횟수
+        int[] cnt = new int[100001];    //숫자 등장 횟수
 
         while (s < n && e < n) {
             if (cnt[arr[e]] >= K) {  //이미 K 횟수 초과
