@@ -22,12 +22,6 @@ public class Main {
             for (int i = 0; i < M; i++) {
                 B[i] = Integer.parseInt(br.readLine());
             }
-//            st = new StringTokenizer(br.readLine());
-//            int z1 = Integer.parseInt(st.nextToken());
-//            int z2 = Integer.parseInt(st.nextToken());
-//            if (z1 == 0 && z2 == 0) {
-//                break;
-//            }
             int ans = 0;
             int p1 = 0, p2 = 0;
             while (p1 < N && p2 < M) {
@@ -35,12 +29,11 @@ public class Main {
                     p1++;
                     p2++;
                     ans++;
-                } else {
-                    if (A[p1] > B[p2]) {
-                        p2++;
-                    } else {
-                        p1++;
-                    }
+                } else if (A[p1] > B[p2]) {
+                    p2++;
+                }
+                else {
+                    p1++;
                 }
             }
             sb.append(ans + "\n");
