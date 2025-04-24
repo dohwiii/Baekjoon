@@ -1,47 +1,42 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.io.*;
+import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        final int MAX = 2_000_002;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        int[] ice = new int[4_000_002];
+
+        int[] ice = new int[MAX + 1];
         int maxX = 0;
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int g = Integer.parseInt(st.nextToken());   //얼음 양
-            int x = Integer.parseInt(st.nextToken());   //좌표
-            ice[x] = g; //x좌표에 있는 얼음
+            int g = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
+            ice[x] += g;
             maxX = Math.max(maxX, x);
         }
-        int size = 2 * K + 1;
+
+        int range = 2 * K + 1;
         long sum = 0;
 
-        for (int i = 0; i < size; i++) {
+        // 초기 구간 합 계산
+        for (int i = 0; i < range && i <= MAX; i++) {
             sum += ice[i];
         }
-        long maxIce = sum;
-        if (N > 1) {
-            for (int i = 1; i < maxX - size + 1; i++) {
-                int end = i + size - 1;
-                sum -= ice[i - 1];
-                sum += ice[end];
-                maxIce = Math.max(maxIce, sum);
-            }
-        }
-        else {
-            maxIce = maxX;
+
+        long answer = sum;
+
+        // 슬라이딩 윈도우로 오른쪽 이동하며 최대값 갱신
+        for (int i = range; i <= maxX; i++) {
+            sum = sum - ice[i - range] + ice[i];
+            answer = Math.max(answer, sum);
         }
 
-
-        System.out.println(maxIce);
-
-
+        System.out.println(answer);
     }
-
 }
