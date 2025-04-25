@@ -26,11 +26,11 @@ public class Main {
             for (int j = 0; j < N; j++) {
                 int need = d - arr[j];  //sum2에 존재하는지 검사
                 if (Arrays.binarySearch(sum2, need) >= 0) {
-                    max = Math.max(max, d);
+                    System.out.println(d);
+                    return;
                 }
             }
         }
-        System.out.println(max);
 
     }
 }
