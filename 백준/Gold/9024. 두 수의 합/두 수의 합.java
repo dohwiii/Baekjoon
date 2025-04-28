@@ -23,7 +23,6 @@ public class Main {
             while (s < e) {
                 int sum = arr[s] + arr[e];
                 int diff = Math.abs(K - sum);
-
                 if (diff < minDiff) {
                     minDiff = diff;
                     ans = 1;
@@ -31,9 +30,12 @@ public class Main {
                     ans++;
                 }
 
-                if (sum < K) {
+                if (sum > K) {
+                    e--;
+                } else if (sum < K) {
                     s++;
                 } else {
+                    s++;
                     e--;
                 }
             }
