@@ -1,44 +1,38 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
         int N = Integer.parseInt(br.readLine());
-        int[] arr = new int[N * 2 + 1]; //N=5라면 11까지
-        int[] sum = new int[N * 2 + 1]; //N=5라면 11까지
-        int total = 0;
+        int[] arr = new int[N * 2];
+        long[] sum = new long[N * 2 + 1]; // 누적합 배열
+        long total = 0;
+
         for (int i = 0; i < N; i++) {
-            arr[i] = arr[i + N] = Integer.parseInt(br.readLine());
+            arr[i] = arr[i + N] = Integer.parseInt(br.readLine()); // 원형이니까 2배로 복붙
             total += arr[i];
         }
+
+        // 누적합
         for (int i = 0; i < 2 * N; i++) {
             sum[i + 1] = sum[i] + arr[i];
         }
-        int left = 0, right = 1;
-        int maxDist = 0;
 
-        while (left < N && right < N) {
-            int clockwise = sum[right] - sum[left];
-            if (clockwise <= total / 2) {   //이 길이가 더 짧은 거리
+        int right = 0;
+        long max = 0;
+
+        for (int left = 0; left < N; left++) {
+            while (right + 1 < left + N && sum[right + 1] - sum[left] <= total / 2) {
                 right++;
-                int counterclockwise = total - clockwise;   //반시계 방향
-                maxDist = Math.max(maxDist, clockwise);
             }
-            else {
-                left++;
-                int counterclockwise = total - clockwise;   //반시계 방향
-                maxDist = Math.max(maxDist, counterclockwise);
-            }
-
+            long clockwise = sum[right] - sum[left];
+            long counterclockwise = total - clockwise;
+            max = Math.max(max, Math.min(clockwise, counterclockwise));
         }
-        System.out.println(maxDist);
 
-
-
+        System.out.println(max);
     }
 }
