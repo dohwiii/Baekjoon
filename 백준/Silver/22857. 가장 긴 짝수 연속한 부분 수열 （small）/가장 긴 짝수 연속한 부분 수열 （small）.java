@@ -17,7 +17,6 @@ public class Main {
         }
         int s = 0, e = 0;
         int deletedCnt = 0;
-        int[] cnt = new int[1_000_001]; //등장 횟수
         int maxLen = 0;
 
         while (s < N && e < N) {
@@ -25,31 +24,22 @@ public class Main {
                 if (deletedCnt >= K) {    //더 삭제할 수 없음
                     if (arr[s] % 2 == 0) {
                         s++;
-                    }
-                    else {
-                        cnt[arr[s]]--;
+                    } else {
                         deletedCnt--;
                         s++;
                     }
 
-                }
-                else {  //삭제 가능
+                } else {  //삭제 가능
                     deletedCnt++;
-                    cnt[arr[e]]++;
                     e++;
                 }
-            }
-            else {  //짝수라면
+            } else {  //짝수라면
                 e++;
             }
             maxLen = Math.max(maxLen, e - s - deletedCnt);
         }
 
         System.out.println(maxLen);
-
-
-
-
 
 
     }
