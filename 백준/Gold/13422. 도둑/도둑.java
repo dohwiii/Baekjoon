@@ -1,53 +1,73 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        int T = Integer.parseInt(br.readLine());
-        while (T-- > 0) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int N = Integer.parseInt(st.nextToken());   //집의 개수
-            int M = Integer.parseInt(st.nextToken());   //M개의 집 털음
-            int K = Integer.parseInt(st.nextToken());   //최소 돈 K
-            int len = N + M;    //8 + 3 = 11
-            int[] money = new int[len];
-            int ans = 0;
-            int total = 0;
-            st = new StringTokenizer(br.readLine());
-            for (int i = 0; i < N; i++) {
-                money[i] = Integer.parseInt(st.nextToken());
-                total += money[i];
+    static class FastReader {
+        final private int BS = 1 << 16;
+        private DataInputStream din = new DataInputStream(System.in);
+        private byte[] buffer = new byte[BS];
+        private int bufferPointer = 0, bytesRead = 0;
+
+        public int nextInt() throws IOException {
+            int c, x = 0;
+            do {
+                c = din.read();
+            } while (c <= ' ');
+            boolean neg = (c == '-');
+            if (neg) c = din.read();
+            for (; c >= '0' && c <= '9'; c = din.read()) {
+                x = x * 10 + (c - '0');
             }
+            return neg ? -x : x;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FastReader fr = new FastReader();
+        StringBuilder sb = new StringBuilder();
+
+        int T = fr.nextInt();
+        while (T-- > 0) {
+            int N = fr.nextInt();
+            int M = fr.nextInt();
+            int K = fr.nextInt();
+
+            int len = N + M;
+            // 누적합 배열
+            int[] money = new int[len];
+            int total = 0, ans = 0;
+
+            // 1) 원형 마을 입력 + 총합
+            for (int i = 0; i < N; i++) {
+                int v = fr.nextInt();
+                money[i] = v;
+                total += v;
+            }
+            // 2) 뒤에 복제
             for (int i = N; i < len; i++) {
                 money[i] = money[i - N];
             }
+            // 3) 누적합
             for (int i = 1; i < len; i++) {
-                money[i] += money[i - 1];   //누적합
+                money[i] += money[i - 1];
             }
 
+            // M == N ⇒ 한 번만 검사
             if (N == M) {
-                if (total >= K) {
-                    ans = 0;
-                } else {
-                    ans = 1;
-                }
+                ans = (total < K ? 1 : 0);
             } else {
-                int r = M;
-                while (r < len) {
+                // 슬라이딩 윈도우: r = M ... len-1
+                for (int r = M; r < len; r++) {
                     if (money[r] - money[r - M] < K) {
                         ans++;
                     }
-                    r++;
                 }
             }
-            
-            sb.append(ans + "\n");
+
+            sb.append(ans).append('\n');
         }
-        System.out.println(sb);
 
-
+        // 출력
+        System.out.print(sb);
     }
 }
