@@ -11,26 +11,34 @@ public class Main {
         int N = Integer.parseInt(br.readLine());
         int[] arr = new int[N * 2 + 1]; //N=5라면 11까지
         int[] sum = new int[N * 2 + 1]; //N=5라면 11까지
-        for (int i = 1; i <= N; i++) {
-            arr[i] = Integer.parseInt(br.readLine());
+        int total = 0;
+        for (int i = 0; i < N; i++) {
+            arr[i] = arr[i + N] = Integer.parseInt(br.readLine());
+            total += arr[i];
         }
-        for (int i = 2; i <= N + N; i++) {
-            if (i >= N + 2) {
-                sum[i] = sum[i - 1] + arr[(i - 1) % N];
-                continue;
-            }
-            sum[i] = sum[i - 1] + arr[(i - 1)];
+        for (int i = 0; i < 2 * N; i++) {
+            sum[i + 1] = sum[i] + arr[i];
         }
+        int left = 0, right = 1;
         int maxDist = 0;
-        for (int i = 1; i <= N - 1; i++) {
-            for (int j = i + 1; j <= N; j++) {
-                //탑 i와 j를 세운다면
-                int clockwise = sum[j] - sum[i];
-                int counterclockwise = sum[i + N] - sum[j];
-                maxDist = Math.max(maxDist, Math.min(clockwise, counterclockwise));
+
+        while (left < N && right < N) {
+            int clockwise = sum[right] - sum[left];
+            if (clockwise <= total / 2) {   //이 길이가 더 짧은 거리
+                right++;
+                int counterclockwise = total - clockwise;   //반시계 방향
+                maxDist = Math.max(maxDist, clockwise);
             }
+            else {
+                left++;
+                int counterclockwise = total - clockwise;   //반시계 방향
+                maxDist = Math.max(maxDist, counterclockwise);
+            }
+
         }
         System.out.println(maxDist);
+
+
 
     }
 }
