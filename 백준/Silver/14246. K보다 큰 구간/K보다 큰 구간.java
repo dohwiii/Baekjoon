@@ -12,23 +12,20 @@ public class Main {
             arr[i] = Integer.parseInt(st.nextToken());
         }
         int K = Integer.parseInt(br.readLine());
-        long[] sum = new long[N + 1];
-        for (int i = 1; i <= N; i++) {
-            sum[i] = sum[i - 1] + arr[i];
-        }
 
+        long sum = 0;
         int s = 1, e = 1;
         long ans = 0;
 
-        for (int i = 1; i <= N; i++) {
-            for (int j = i; j <= N; j++) {
-                if (sum[j] - sum[i - 1] > K) {
-                    ans += (N - j + 1);
-                    break;
-                }
+        while (s <= N && e <= N) {
+            while (e <= N && sum + arr[e] <= K) {
+                sum += arr[e];
+                e++;
             }
+            ans += (N - e + 1);
+            sum -= arr[s];
+            s++;
         }
-
 
         System.out.println(ans);
 
