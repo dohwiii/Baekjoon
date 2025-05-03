@@ -31,7 +31,7 @@ public class Main {
             else {  //두 개만으로 부족한 경우
                 int diff = C - arr[s] - arr[e];
 
-                if (diff != arr[s] && diff != arr[e] && Arrays.binarySearch(arr, s, e + 1, diff) > 0) {
+                if (diff != arr[s] && diff != arr[e] && Arrays.binarySearch(arr, s + 1, e + 1, diff) > 0) {
                     System.out.println(1);
                     return;
                 }
