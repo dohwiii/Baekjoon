@@ -6,43 +6,43 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        PriorityQueue<Integer> menShort = new PriorityQueue<>();   // 남자: 키 작은 여자 선호
-        PriorityQueue<Integer> menTall = new PriorityQueue<>();    // 남자: 키 큰 여자 선호
-        PriorityQueue<Integer> womenShort = new PriorityQueue<>(); // 여자: 키 작은 남자 선호
-        PriorityQueue<Integer> womenTall = new PriorityQueue<>();  // 여자: 키 큰 남자 선호
+        int[] men = new int[N];
+        int[] women = new int[N];
         StringTokenizer st = new StringTokenizer(br.readLine());
-        // 남자 입력
         for (int i = 0; i < N; i++) {
-            int h = Integer.parseInt(st.nextToken());
-            if (h < 0) menShort.add(-h);  // 키 작은 여자 선호
-            else menTall.add(h);         // 키 큰 여자 선호
+            men[i] = Integer.parseInt(st.nextToken());
         }
         st = new StringTokenizer(br.readLine());
-        // 여자 입력
         for (int i = 0; i < N; i++) {
-            int h = Integer.parseInt(st.nextToken());
-            if (h < 0) womenShort.add(-h);  // 키 작은 남자 선호
-            else womenTall.add(h);         // 키 큰 남자 선호
+            women[i] = Integer.parseInt(st.nextToken());
         }
-
+        Arrays.sort(men);
+        Arrays.sort(women);
+        int s = 0, e = N - 1;
         int ans = 0;
-        //키 작은 여자 선호 & 키 큰 남자 선호
-        while (!menShort.isEmpty() && !womenTall.isEmpty()) {
-            if (menShort.poll() > womenTall.peek()) {
-                ans++;
-                womenTall.poll();
-            }
-        }
-        //키가 큰 여자 선호 & 키가 작은 남자 선호
-        while (!menTall.isEmpty() && !womenShort.isEmpty()) {
-            if (menTall.peek() < womenShort.poll()) {
-                ans++;
-                menTall.poll();
-            }
-        }
 
+        while (s < N && e >= 0) {
+            //키가 큰 여성 선호 & 키가 작은 남자 선호
+            if (men[s] > 0 && women[e] < 0) {
+                if (men[s] < Math.abs(women[e])) {
+                    ans++;
+                    s++;
+                }
+                e--;
+
+            } else if (men[s] < 0 && women[e] > 0) {  //키가 작은 여성 선호 & 키가 큰 남성 선호
+                if (Math.abs(men[s]) > women[e]) {
+                    ans++;
+                    s++;
+                }
+                e--;
+            } else if (men[s] < 0 && women[e] < 0) {  //키가 작은 여성 선호 & 키가 작은 남성 선호
+                s++;
+            } else if (men[s] > 0 && women[e] > 0) {  //키가 큰 여성 선호 & 키가 큰 남성 선호
+                e--;
+            }
+        }
         System.out.println(ans);
-
 
     }
 }
