@@ -1,53 +1,39 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.time.Year;
+import java.util.*;
 
 public class Main {
-    static List<Integer> list = new ArrayList<>();
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        int[] arr = new int[N];
-
         StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] arr = new int[N];
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
         Arrays.sort(arr);
-        int[] answer = solve(N, arr);
-        Arrays.sort(answer);
-        System.out.println(answer[0]+" "+answer[1]);
-
-    }
-
-    public static int[] solve(int N, int[] arr) {
-        int s = 0;
-        int e = N - 1;
-        int a = 0, b = 0;
-        long min = Long.MAX_VALUE;
-
+        int minDiff = 2_000_000_000;
+        int s = 0, e = N - 1;
+        int[] liquid = new int[2];
         while (s < e) {
-            long sum = arr[s] + arr[e];
-            long result = Math.abs(sum);
-            if (min > result) {
-                min = result;
-                a = arr[s];
-                b = arr[e];
+            int sum = arr[s] + arr[e];
+
+            if (minDiff > Math.abs(sum)) {
+                minDiff = Math.abs(sum);
+                liquid[0] = arr[s];
+                liquid[1] = arr[e];
             }
             if (sum < 0) {
                 s++;
-            }
-            else {
+            } else if (sum == 0) {
+                System.out.println(arr[s] + " " + arr[e]);
+                return;
+            } else {
                 e--;
             }
-
         }
-        return new int[]{a, b};
-    }
+        System.out.println(liquid[0] + " " + liquid[1]);
 
+    }
 }
