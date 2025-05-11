@@ -9,7 +9,7 @@ public class Main {
         int[] sum = new int[2 * N + 1];
         int total = 0;
         for (int i = 0; i < N; i++) {
-            arr[i] = arr[i + N] = Integer.parseInt(br.readLine());
+            arr[i] = Integer.parseInt(br.readLine());
             total += arr[i];
         }
         for (int i = 0; i < N; i++) {
