@@ -1,38 +1,41 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         int N = Integer.parseInt(br.readLine());
-        int[] arr = new int[N * 2];
-        long[] sum = new long[N * 2 + 1]; // 누적합 배열
-        long total = 0;
-
+        int[] arr = new int[2 * N];
+        int[] sum = new int[2 * N + 1];
+        int total = 0;
         for (int i = 0; i < N; i++) {
-            arr[i] = arr[i + N] = Integer.parseInt(br.readLine()); // 원형이니까 2배로 복붙
+            arr[i] = arr[i + N] = Integer.parseInt(br.readLine());
             total += arr[i];
         }
-
-        // 누적합
-        for (int i = 0; i < 2 * N; i++) {
+        for (int i = 0; i < N; i++) {
             sum[i + 1] = sum[i] + arr[i];
         }
-
-        int right = 0;
-        long max = 0;
-
-        for (int left = 0; left < N; left++) {
-            while (right + 1 < left + N && sum[right + 1] - sum[left] <= total / 2) {
+        int maxDist = 0;
+        int left = 0, right = 1;
+        while (left < N && right < N) {
+            int dist = sum[right] - sum[left];
+            if (dist <= total / 2) {
                 right++;
+                maxDist = Math.max(maxDist, dist);
             }
-            long clockwise = sum[right] - sum[left];
-            long counterclockwise = total - clockwise;
-            max = Math.max(max, Math.min(clockwise, counterclockwise));
+            else {  //반시계 방향이 더 작음
+                left++;
+                maxDist = Math.max(maxDist, total - dist);
+            }
         }
+        System.out.println(maxDist);
 
-        System.out.println(max);
+
+
+
+
+
+
+
     }
 }
