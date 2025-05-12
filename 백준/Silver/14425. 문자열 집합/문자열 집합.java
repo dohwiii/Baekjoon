@@ -1,54 +1,36 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 
 public class Main {
-    static int N, M;
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        Node root = new Node();
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        String[] standard = new String[N];
+        Set<String> set = new HashSet<>();
+        String[] compare = new String[M];
 
         for (int i = 0; i < N; i++) {
-            String str = br.readLine();
-            Node now = root;
-            for (int j = 0; j < str.length(); j++) {
-                char c = str.charAt(j);
-                if (now.node[c - 'a'] == null) {
-                    now.node[c - 'a'] = new Node();
-                }
-                now = now.node[c - 'a'];
-                if (j == str.length() - 1) {
-                    now.isEnd = true;
-                }
-            }
+            standard[i] = br.readLine();
+            set.add(standard[i]);
         }
-        int count = 0;
+        int ans = 0;
         for (int i = 0; i < M; i++) {
-            String str = br.readLine();
-            Node now = root;
-            for (int j = 0; j < str.length(); j++) {
-                char c = str.charAt(j);
-                if (now.node[c - 'a'] == null) {
-                    break;
-                }
-                now = now.node[c - 'a'];
-                if (j == str.length() - 1 && now.isEnd == true) {
-                    count++;
-                }
+            compare[i] = br.readLine();
+            if (set.contains(compare[i])) {
+                ans++;
             }
         }
-        System.out.println(count);
+
+        System.out.println(ans);
+
+
 
     }
-}
-class Node
-{
-    Node[] node = new Node[26];
-    boolean isEnd;
 }
