@@ -1,31 +1,30 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
+
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//        StringTokenizer st = new StringTokenizer(br.readLine());
+        StringBuilder sb = new StringBuilder();
         String str = br.readLine();
-        String[] strSplit = str.split("-");
-        ArrayList<Integer> list = new ArrayList<>();
-        
-        for (String s : strSplit) {
-            String[] plusSplit = s.split("\\+");
-            int sum = 0;
-            if (plusSplit.length > 0) {
-                for (String s2 : plusSplit) {
-                    int x = Integer.parseInt(s2);
-                    sum += x;
-                }
-            }
-            else
-                sum = Integer.parseInt(s);
-            list.add(sum);
+        long result = 0;
+        String[] minusSplit = str.split("-");
+        String[] first = minusSplit[0].split("\\+");
+        for (String s : first) {
+            result += Integer.parseInt(s);
         }
-        int result = list.get(0);
-        for (int i = 1; i < list.size(); i++) {
-            result -= list.get(i);
+
+        for (int i = 1; i < minusSplit.length; i++) {
+            String[] plus = minusSplit[i].split("\\+");
+            int sum = 0;
+            for (String num : plus) {
+                sum += Integer.parseInt(num);
+            }
+            result -= sum;
         }
         System.out.println(result);
+
+
     }
 }
