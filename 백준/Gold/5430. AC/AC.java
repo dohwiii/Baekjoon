@@ -13,9 +13,19 @@ public class Main {
             String str = br.readLine();
             Deque<String> queue = new ArrayDeque<>();
             if (str.length() > 2) {
-                String[] strArr = str.substring(1, str.length() - 1).split(",");
-                for (String s : strArr) {
-                    queue.offer(s);
+                StringBuilder num = new StringBuilder();
+                for (int i = 1; i < str.length() - 1; i++) {
+                    char ch = str.charAt(i);
+                    if (ch == ',') {
+                        queue.offer(num.toString());
+                        num.setLength(0); // 초기화
+                    } else {
+                        num.append(ch);
+                    }
+                }
+                // 마지막 숫자 추가
+                if (num.length() > 0) {
+                    queue.offer(num.toString());
                 }
             }
 
