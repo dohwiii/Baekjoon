@@ -2,66 +2,67 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine());
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < T; i++) {
-            String command = br.readLine(); //수행할 함수
-            int n = Integer.parseInt(br.readLine()); //배열에 들어있는 수의 개수
-
-            String numStr = br.readLine(); //[ , , , ] 형태로 입력
-
-            Deque<Integer> queue = new ArrayDeque<>();
-            boolean direction = true; //true : 정방향 / 역방향 : false
+        int T = Integer.parseInt(br.readLine());
+        while (T-- > 0) {
             boolean isPossible = true;
-
-            numStr = numStr.substring(1, numStr.length() - 1); //양괄호 빼기
-            StringTokenizer st = new StringTokenizer(numStr, ",");
-            for (int j = 0; j < n; j++) {
-                queue.addLast(Integer.parseInt(st.nextToken()));
-            }
-            for (int j = 0; j < command.length(); j++) {
-                if (command.charAt(j) == 'R') { //뒤집기
-                    direction = !direction;
+            String p = br.readLine();
+            int N = Integer.parseInt(br.readLine());
+            String str = br.readLine();
+            Deque<String> queue = new ArrayDeque<>();
+            if (str.length() > 2) {
+                String[] strArr = str.substring(1, str.length() - 1).split(",");
+                for (String s : strArr) {
+                    queue.offer(s);
                 }
-                else if (command.charAt(j) == 'D') { //첫번째 수 버리기
+            }
+
+            boolean direction = true;  //true: 왼쪽 -> 오른쪽 / false: 오른쪽 -> 왼쪽
+            for (char c : p.toCharArray()) {
+                if (c == 'R') {
+                    direction = !direction; //방향 전환
+                }
+                else if (c == 'D') {
                     if (queue.isEmpty()) {
                         isPossible = false;
                         break;
-                    } else {
-                        if (direction) {
-                            queue.pollFirst();
-                        } else {
-                            queue.pollLast();
-                        }
+                    }
+                    if (direction) {    //정방향
+                        queue.removeFirst();
+                    }
+                    else {
+                        queue.removeLast();
                     }
                 }
             }
             if (!isPossible) {
                 sb.append("error\n");
-            } else {
-                sb.append("[");
+                continue;
+            }
+            if (queue.isEmpty()) {
+                sb.append("[]\n");
+                continue;
+            }
+            sb.append("[");
+            if (direction) {
                 while (queue.size() > 1) {
-                    if (direction) {
-                        sb.append(queue.pollFirst());
-                    } else if (!direction) {
-                        sb.append(queue.pollLast());
-                    }
-                    sb.append(",");
+                    sb.append(queue.pollFirst() + ",");
                 }
-                if (queue.size() == 0) {
-                    sb.append("]\n");
+                sb.append(queue.pollFirst() + "]");
+            }
+            else {
+                while (queue.size() > 1) {
+                    sb.append(queue.pollLast() + ",");
                 }
-                else
-                {
-                    sb.append(queue.pollFirst()).append("]\n");
-                }
-           }
+                sb.append(queue.pollLast() + "]");
+            }
+
+            sb.append("\n");
+
         }
         System.out.println(sb);
     }
+
 }
