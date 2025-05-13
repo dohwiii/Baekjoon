@@ -1,38 +1,37 @@
 import java.io.*;
 import java.util.*;
 
-public class Main
-{
-    static int N, M;
-
-    public static void main(String[] args) throws IOException
-    {
+public class Main {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        Map<String, Integer> map = new HashMap<>();
-        List<String> list = new ArrayList<>();
-
-        for (int i = 0; i < N; i++)
-        {
-            String str = br.readLine();
-            map.put(str, map.getOrDefault(str, 0) + 1);
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < N; i++) {
+            set.add(br.readLine());
         }
-        for (int i = 0; i < M; i++)
-        {
+        int ans = 0;
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < M; i++) {
             String str = br.readLine();
-            if (map.containsKey(str))
-            {
+            if (set.contains(str)) {
+                ans++;
                 list.add(str);
             }
         }
-        Collections.sort(list);
-        System.out.println(list.size());
-        for (String str : list)
-        {
-            System.out.println(str);
+        StringBuilder sb = new StringBuilder();
+        Collections.sort(list); //사전순 정렬
+        sb.append(ans + "\n");
+        for (String s : list) {
+            sb.append(s + "\n");
         }
-        br.close();
+        System.out.println(sb);
+
+
+
+
+
     }
+
 }
