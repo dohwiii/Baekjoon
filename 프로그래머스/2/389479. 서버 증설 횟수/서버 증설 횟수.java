@@ -1,31 +1,41 @@
 import java.util.*;
 
 class Solution {
+    static int cnt;
+    static class Server {
+        int deadline, idx;
+        public Server(int deadline, int idx) {
+            this.deadline = deadline;
+            this.idx = idx;
+        }
+    }
     public int solution(int[] players, int m, int k) {
-        int answer = 0;
-        int server = 0;
-        int buildCnt = 0;
-        int[] endTimes = new int[25];
+        Queue<Server> queue = new ArrayDeque<>();  //증설된 서버
         
-        for(int i=0; i<24; i++) {   //i는 시작시간 i ~ i+1 운영시간
-            int p = players[i];
+        for(int i=0; i<players.length; i++) {
+            int p = players[i]; //현재 접속 이용자 수
             
-            if(p >= m) {
-                int need = (int) (p / m);   //필요한 서버 개수
-                // System.out.println(need);
-                if(server < need) { //기존에 있는 서버보다 더 필요한 경우
-                    buildCnt += (need - server);    //서버 증축
-                    if(i + k < 25) {
-                        endTimes[i + k] += (need - server);
+            if(p >= m) {    //서버 증설 필요
+                if(p / m > queue.size()) { //현재 서버로 감당 불가능 
+                    int need = p/m - queue.size();  //필요한 증설 서버 개수
+                    while(need-- > 0) {
+                        queue.offer(new Server(i+k, cnt++));
                     }
-                    server = need;
+                    
                 }
             }
-            server -= endTimes[i + 1];
+            while(!queue.isEmpty()) {
+                if(queue.peek().deadline == i + 1) {
+                    queue.poll();
+                }
+                else {
+                    break;
+                }
+            }
             
         }
+        return cnt;
         
         
-        return buildCnt;
     }
 }
