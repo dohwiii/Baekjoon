@@ -1,50 +1,56 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Array;
 import java.util.*;
 
-public class Main
-{
-    public static void main(String[] args) throws IOException
-    {
+public class Main {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
-        while ((input = br.readLine()) != null)
-        {
-            int X = Integer.parseInt(input) * 10000000;
+        StringBuilder sb = new StringBuilder();
+
+        String str;
+        while (true) {
+            str = br.readLine();
+            if (str == null || str.equals("")) {
+                break;
+            }
+            int X = Integer.parseInt(str) * 10_000_000;    //센티미터
             int N = Integer.parseInt(br.readLine());
-            int[] length = new int[N];
             boolean isPossible = false;
-
-            for (int i = 0; i < N; i++)
-            {
-                length[i] = Integer.parseInt(br.readLine());
+            int[] arr = new int[N];
+            for (int i = 0; i < N; i++) {   //나노미터
+                arr[i] = Integer.parseInt(br.readLine());
             }
-            Arrays.sort(length);
-            int s = 0;
-            int e = N - 1;
-
-            while (s < e)
-            {
-                int sum = length[s] + length[e];
-
-                if (sum == X)
-                {
+            //1 센티미터 = 10_000_000 나노미터
+            Arrays.sort(arr);   //오름차순 정렬
+            int s = 0, e = N - 1;
+            while (s < e) {
+                long sum = arr[s] + arr[e];
+                if (sum == X) {
                     isPossible = true;
+                    sb.append("yes ").append(arr[s] + " " + arr[e]).append("\n");
                     break;
-                } else if (sum > X)
-                {
-                    e--;
-                } else
+                } else if (sum < X) {
                     s++;
+                } else if (sum > X) {
+                    e--;
+                }
             }
-            if (isPossible)
-            {
-                System.out.println("yes " + length[s] + " " + length[e]);
-            } else
-            {
-                System.out.println("danger");
+            if (isPossible) {
+                continue;
             }
+            sb.append("danger\n");
+
         }
-        
+
+        System.out.println(sb);
+
+
+
+
+
+
 
     }
 }
