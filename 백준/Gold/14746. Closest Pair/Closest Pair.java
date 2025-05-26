@@ -31,39 +31,24 @@ public class Main {
         while (s1 < N && s2 < M) {
             int p = P[s1];
             int q = Q[s2];
-            int result = Math.abs(p - q);
-            if (minDiff > result) {
-                minDiff = result;
-            }
-            if (minDiff == 0) {
-                break;
-            }
-            if (p > q) {
-                s2++;
-            }
-            else if (p < q) {
-                s1++;
-            }
-
-        }
-        s1 = 0;
-        s2 = 0;
-        while (s1 < N && s2 < M) {
-            int p = P[s1];
-            int q = Q[s2];
             int diff = Math.abs(p - q);
 
-            if (diff == minDiff) {
+            if (minDiff == diff) {
                 pair++;
-                if (p < q) s1++;
-                else s2++;
+            }
+            else if (diff < minDiff) {
+                minDiff = diff;
+                pair = 1;
+            }
+            if (p >= q) {
+                s2++;
             }
             else if (p < q) {
                 s1++;
-            } else {
-                s2++;
             }
+
         }
+
         StringBuilder sb = new StringBuilder();
         sb.append(dist + minDiff + " " + pair);
 
