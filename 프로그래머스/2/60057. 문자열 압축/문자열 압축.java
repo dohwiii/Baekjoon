@@ -1,39 +1,30 @@
 class Solution {
     public int solution(String s) {
-        int answer = 0;
-        int minLen = s.length();
-        
-        for(int size = 1; size <= s.length() / 2; size++) {   //최대 압축 길이까지
+        int n = s.length();
+        if (n == 0) return 0;
+        int answer = n; // worst case: no compression
+        // try each possible unit size
+        for (int size = 1; size <= n / 2; size++) {
             StringBuilder compressed = new StringBuilder();
             String prev = s.substring(0, size);
             int count = 1;
-            
-            for(int j = size; j < s.length(); j += size) {
-                int end = Math.min(j + size, s.length());
-                String current = s.substring(j, end);
-                
-                if(prev.equals(current)) {  //연속된 문자열
+            for (int i = size; i < n; i += size) {
+                int end = Math.min(i + size, n);
+                String curr = s.substring(i, end);
+                if (prev.equals(curr)) {
                     count++;
-                }
-                else {  //다르다면
-                    if(count > 1) { //이전에 연속한적이 있다면
-                        compressed.append(count).append(prev);
-                    }
-                    else {
-                        compressed.append(prev);
-                    }
-                    prev = current;
+                } else {
+                    if (count > 1) compressed.append(count);
+                    compressed.append(prev);
+                    prev = curr;
                     count = 1;
                 }
             }
-            if(count > 1) {
-                compressed.append(count).append(prev);
-            }
-            else {
-                compressed.append(prev);
-            }
-            minLen = Math.min(minLen, compressed.length());
+            // last group
+            if (count > 1) compressed.append(count);
+            compressed.append(prev);
+            answer = Math.min(answer, compressed.length());
         }
-        return minLen;
+        return answer;
     }
 }
