@@ -1,30 +1,43 @@
+import java.util.*;
+
 class Solution {
     public int solution(String s) {
-        int n = s.length();
-        if (n == 0) return 0;
-        int answer = n; // worst case: no compression
-        // try each possible unit size
-        for (int size = 1; size <= n / 2; size++) {
-            StringBuilder compressed = new StringBuilder();
+        int len = s.length();
+        int size = len / 2;    //최대 자른 단위
+        StringBuilder sb = new StringBuilder();
+        int length = 0;
+        int minLen = len;
+        
+        while(size > 0) {
+            sb.setLength(0);
             String prev = s.substring(0, size);
-            int count = 1;
-            for (int i = size; i < n; i += size) {
-                int end = Math.min(i + size, n);
+            int sameCnt = 1;
+            
+            for(int i=size; i<len; i+=size) {
+                int end = Math.min(i + size, len);
                 String curr = s.substring(i, end);
-                if (prev.equals(curr)) {
-                    count++;
-                } else {
-                    if (count > 1) compressed.append(count);
-                    compressed.append(prev);
+                if(prev.equals(curr)) {
+                    sameCnt++;
+                }
+                else {  //다르다면
+                    if(sameCnt > 1) {   //숫자 붙이기
+                        sb.append(sameCnt);
+                    }
+                    sb.append(prev);
                     prev = curr;
-                    count = 1;
+                    sameCnt = 1;
                 }
             }
-            // last group
-            if (count > 1) compressed.append(count);
-            compressed.append(prev);
-            answer = Math.min(answer, compressed.length());
+            if(sameCnt > 1) {   //숫자
+                sb.append(sameCnt);
+            }
+            sb.append(prev);
+            minLen = Math.min(minLen, sb.length());
+            size--;
         }
-        return answer;
+        
+        
+        
+        return minLen;
     }
 }
