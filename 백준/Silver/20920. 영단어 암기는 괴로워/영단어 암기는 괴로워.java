@@ -31,7 +31,7 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
-        Map<String, Integer> map = new HashMap<>();
+        Map<String, Dict> map = new HashMap<>();
         int max = 0;
 
         for (int i = 0; i < N; i++) {
@@ -41,19 +41,15 @@ public class Main {
                 continue;
             }
             //M 이상
-            map.put(word, map.getOrDefault(word, 0) + 1);
-            max = Math.max(max, map.get(word));
+            Dict dict = map.getOrDefault(word, new Dict(word, 0));
+            dict.cnt++;
+            map.put(word, dict);
         }
 
         StringBuilder sb = new StringBuilder();
-        Dict[] arr = new Dict[map.size()];
-        int index = 0;
-        for (String key : map.keySet()) {
-            arr[index++] = new Dict(key, map.get(key));
-        }
-        Arrays.sort(arr);
-        for (int i = 0; i < index; i++) {
-            sb.append(arr[i].word + "\n");
+        PriorityQueue<Dict> pq = new PriorityQueue<>(map.values());
+        while (!pq.isEmpty()) {
+            sb.append(pq.poll().word + "\n");
         }
 
         System.out.println(sb);
