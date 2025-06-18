@@ -1,78 +1,61 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
         int T = Integer.parseInt(br.readLine());
+        a:
         while (T-- > 0) {
-            boolean isPossible = true;
-            String p = br.readLine();
-            int N = Integer.parseInt(br.readLine());
-            String str = br.readLine();
-            Deque<String> queue = new ArrayDeque<>();
-            if (str.length() > 2) {
-                StringBuilder num = new StringBuilder();
-                for (int i = 1; i < str.length() - 1; i++) {
-                    char ch = str.charAt(i);
-                    if (ch == ',') {
-                        queue.offer(num.toString());
-                        num.setLength(0); // 초기화
-                    } else {
-                        num.append(ch);
-                    }
-                }
-                // 마지막 숫자 추가
-                if (num.length() > 0) {
-                    queue.offer(num.toString());
+            String p = br.readLine();   //함수
+            int N = Integer.parseInt(br.readLine());    //수의 개수
+            String arr = br.readLine();
+            boolean isLeft = true;
+            ArrayDeque<String> queue = new ArrayDeque<>();
+            if (N > 0) {
+                String[] tempArr = arr.substring(1, arr.length() - 1).split(",");    //1,2,3,4
+                for (String s : tempArr) {
+                    queue.offer(s);
                 }
             }
 
-            boolean direction = true;  //true: 왼쪽 -> 오른쪽 / false: 오른쪽 -> 왼쪽
             for (char c : p.toCharArray()) {
-                if (c == 'R') {
-                    direction = !direction; //방향 전환
+                if (c == 'R') { //뒤집기
+                    isLeft = !isLeft;
                 }
-                else if (c == 'D') {
+                else if (c == 'D') {    //첫 번째 수 버리기
                     if (queue.isEmpty()) {
-                        isPossible = false;
-                        break;
+                        sb.append("error\n");
+                        continue a;
                     }
-                    if (direction) {    //정방향
-                        queue.removeFirst();
-                    }
-                    else {
-                        queue.removeLast();
+                    if (isLeft) {
+                        queue.pollFirst();
+                    } else {
+                        queue.pollLast();
                     }
                 }
-            }
-            if (!isPossible) {
-                sb.append("error\n");
-                continue;
-            }
-            if (queue.isEmpty()) {
-                sb.append("[]\n");
-                continue;
             }
             sb.append("[");
-            if (direction) {
-                while (queue.size() > 1) {
-                    sb.append(queue.pollFirst() + ",");
+            if (!queue.isEmpty()) {
+                if (isLeft) {
+                    while (queue.size() > 1) {
+                        sb.append(queue.poll());
+                        sb.append(",");
+                    }
+                    sb.append(queue.poll());
+                } else {
+                    while (queue.size() > 1) {
+                        sb.append(queue.pollLast());
+                        sb.append(",");
+                    }
+                    sb.append(queue.poll());
                 }
-                sb.append(queue.pollFirst() + "]");
             }
-            else {
-                while (queue.size() > 1) {
-                    sb.append(queue.pollLast() + ",");
-                }
-                sb.append(queue.pollLast() + "]");
-            }
-
-            sb.append("\n");
-
+            sb.append("]\n");
         }
         System.out.println(sb);
     }
-
 }
