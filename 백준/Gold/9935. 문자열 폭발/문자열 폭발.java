@@ -7,31 +7,35 @@ import java.util.Stack;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        char[] arr = br.readLine().toCharArray();
-        char[] bomb = br.readLine().toCharArray();
-        StringBuilder sb = new StringBuilder();
+        String input = br.readLine();
+        String bomb = br.readLine();
+        char[] stack = new char[input.length()];  // N = input.length()
+        int top = 0;
+        int M = bomb.length();
+        char[] bombArr = bomb.toCharArray();
 
-        for (char c : arr) {
-            sb.append(c);
-            boolean isMatch = true;
-            if (sb.length() >= bomb.length) {
-                for (int i = 0; i < bomb.length; i++) {
-                    if (sb.charAt(sb.length() - bomb.length + i) != bomb[i]) {
-                        isMatch = false;
+        for (char c : input.toCharArray()) {
+            stack[top++] = c;   // push
+            // M글자 이상 쌓였고, 끝에서부터 bombArr와 일치하면
+            if (top >= M) {
+                boolean match = true;
+                for (int i = 0; i < M; i++) {
+                    if (stack[top - M + i] != bombArr[i]) {
+                        match = false;
                         break;
                     }
                 }
-                if (isMatch) {
-                    sb.delete(sb.length() - bomb.length, sb.length());
+                if (match) {
+                    top -= M;   // pop M번
                 }
             }
         }
 
-        if (sb.length() == 0) {
+// 결과는 stack[0..top-1]
+        if (top == 0) {
             System.out.println("FRULA");
-        }
-        else {
-            System.out.println(sb);
+        } else {
+            System.out.println(new String(stack, 0, top));
         }
     }
 }
