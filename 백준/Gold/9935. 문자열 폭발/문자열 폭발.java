@@ -1,35 +1,37 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Stack;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String str = br.readLine();
-        String bomb = br.readLine();
-        int bombLen = bomb.length();
-        char[] bombArr = bomb.toCharArray();
-
-        // 문자들을 차례로 쌓는 스택 역할
+        char[] arr = br.readLine().toCharArray();
+        char[] bomb = br.readLine().toCharArray();
         StringBuilder sb = new StringBuilder();
 
-        for (char c : str.toCharArray()) {
+        for (char c : arr) {
             sb.append(c);
-
-            // 스택 끝에서 폭발 문자열과 비교
-            if (sb.length() >= bombLen) {
-                boolean isMatch = true;
-                for (int i = 0; i < bombLen; i++) {
-                    if (sb.charAt(sb.length() - bombLen + i) != bombArr[i]) {
+            boolean isMatch = true;
+            if (sb.length() >= bomb.length) {
+                for (int i = 0; i < bomb.length; i++) {
+                    if (sb.charAt(sb.length() - bomb.length + i) != bomb[i]) {
                         isMatch = false;
                         break;
                     }
                 }
                 if (isMatch) {
-                    sb.delete(sb.length() - bombLen, sb.length());
+                    sb.delete(sb.length() - bomb.length, sb.length());
                 }
             }
         }
 
-        System.out.println(sb.length() == 0 ? "FRULA" : sb.toString());
+        if (sb.length() == 0) {
+            System.out.println("FRULA");
+        }
+        else {
+            System.out.println(sb);
+        }
     }
 }
