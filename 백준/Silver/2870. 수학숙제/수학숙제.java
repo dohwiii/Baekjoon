@@ -12,7 +12,7 @@ public class Main {
         for (int i = 0; i < N; i++) {
             arr[i] = br.readLine();
         }
-        List<String> list = new ArrayList<>();
+        List<BigInteger> list = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int numCheck = 0;
 
@@ -22,58 +22,25 @@ public class Main {
             numCheck = 0;
             for (int i = 0; i < temp.length; i++) {
                 if (Character.isDigit(temp[i])) {
-                    if (temp[i] != '0') {
-                        numCheck++;
-                    }
                     sb.append(temp[i]);
+                    if (i == str.length() - 1) {
+                        list.add(new BigInteger(sb.toString()));
+                        sb.setLength(0);
+                    }
                 }
                 else {  //알파벳이라면
                     if (sb.length() > 0) {
-                        if (numCheck == 0) {
-                            list.add("0");
-                        }
-                        else {
-                            int index = -1;
-                            for (int j = 0; j < sb.length(); j++) {
-                                if (sb.charAt(j) != '0') {
-                                    index = j;
-                                    break;
-                                }
-                            }
-                            if (index >= 0) {
-                                list.add(sb.substring(index));
-                            }
-                        }
-                    }
-                    sb.setLength(0);    //초기화
-                    numCheck = 0;
-                }
-            }
-            if (sb.length() > 0) {
-                if (numCheck == 0) {
-                    list.add("0");
-                }
-                else {
-                    int index = -1;
-                    for (int j = 0; j < sb.length(); j++) {
-                        if (sb.charAt(j) != '0') {
-                            index = j;
-                            break;
-                        }
-                    }
-                    if (index >= 0) {
-                        list.add(sb.substring(index));
+                        list.add(new BigInteger(sb.toString()));
+                        sb.setLength(0);
                     }
                 }
             }
 
         }
-        list.sort((s1, s2) ->
-                new BigInteger(s1).compareTo(new BigInteger(s2))
-        );
+        Collections.sort(list);
         sb.setLength(0);
 
-        for (String a : list) {
+        for (BigInteger a : list) {
             sb.append(a + "\n");
         }
         System.out.println(sb);
