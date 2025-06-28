@@ -1,57 +1,55 @@
-
 import java.io.*;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String str = br.readLine();
-        StringBuilder sb = new StringBuilder(str);
+        char[] arr = br.readLine().toCharArray();
+        StringBuilder sb = new StringBuilder();
+        int cnt = 0;    //'X' 카운트
 
-        int startIndex = 0;
-        int cnt = 0;
-
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '.') {
-                if (cnt % 2 != 0) {  //불가능
-                    System.out.println(-1);
-                    System.exit(0);
-                }
-                else {  //cnt가 짝수
-                    while (cnt != 0) {
-                        if (cnt / 4 > 0) {
-                            sb.replace(i - cnt, i - cnt + 4, "AAAA");
-                            cnt = cnt - 4;
-                        }
-                        else if (cnt / 2 > 0) {
-                            sb.replace(i - cnt, (i - cnt + 2), "BB");
-                            cnt = cnt - 2;
-                        }
-                    }
-                }
-            } else if (str.charAt(i) == 'X') {
-                //X를 만났을 때
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 'X') {
                 cnt++;
-                if (i == str.length() - 1) {    //마지막 인덱스가 'X'
-                    if (cnt % 2 == 0) {
-                        while (cnt != 0) {
-                            if (cnt / 4 > 0) {
-                                sb.replace(Math.abs(cnt - i - 1), Math.abs(cnt - i - 1) + 4, "AAAA");
-                                cnt = cnt - 4;
-                            }
-                            else if (cnt / 2 > 0) {
-                                sb.replace(Math.abs(cnt - i - 1), (Math.abs(cnt - i - 1) + 2), "BB");
-                                cnt = cnt - 2;
+            } else {  //'.'일 때
+                if (cnt > 0) {
+                    if (cnt % 2 == 0) { //짝수라면
+                        while (cnt > 0) {
+                            if (cnt >= 4) {
+                                sb.append("AAAA");
+                                cnt -= 4;
+                            } else if (cnt >= 2) {
+                                sb.append("BB");
+                                cnt -= 2;
                             }
                         }
-                    }
-                    else {
+                    } else {
                         System.out.println(-1);
-                        System.exit(0);
+                        return;
                     }
+                }
+                sb.append(".");
+                cnt = 0;    //초기화
+            }
+        }
+        //남은 Cnt
+        if (cnt % 2 == 0) {
+            while (cnt > 0) {
+                if (cnt >= 4) {
+                    sb.append("AAAA");
+                    cnt -= 4;
+                } else if (cnt >= 2) {
+                    sb.append("BB");
+                    cnt -= 2;
                 }
             }
         }
-        System.out.println(sb);
+        else {
+            System.out.println(-1);
+            return;
+        }
+        System.out.println(sb.toString());
+
 
     }
 }
