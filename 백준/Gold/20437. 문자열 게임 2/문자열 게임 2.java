@@ -1,63 +1,62 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class Main {
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        int T = Integer.parseInt(br.readLine());    //게임 진행 횟수
-
-        for (int t = 0; t < T; t++) {
-            char[] word = br.readLine().toCharArray();
-            int K = Integer.parseInt(br.readLine());
-            
-            int[] cntArr = new int[26]; //알파벳 빈도 체크배열
-            int[] prevK = new int[26];
-            int[] next = new int[word.length];
-            int[] prev = new int[26];
-            int max = -1;
-            int min = Integer.MAX_VALUE;
+        int T = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        while (T-- > 0) {
+            String W = br.readLine();
+            int K = Integer.parseInt(br.readLine());    //횟수
+            char[] arr = W.toCharArray();
+            int[] prev = new int[26];   //이전 인덱스
+            int[] prevK = new int[26];   //이전 인덱스
+            int[] next = new int[W.length()];   //다음 인덱스
+            int[] cntArr = new int[26];   //다음 인덱스
+            int min = 10_001, max = 0;
 
             if (K == 1) {
-                bw.write("1 1\n");
+                sb.append("1 1\n");
                 continue;
             }
 
-            for (int i = 0; i < word.length; i++) {
-                int index = word[i] - 'a';
+            for (int i = 0; i < arr.length; i++) {
+                int index = arr[i] - 'a';
                 cntArr[index]++;
 
-                if (cntArr[index] == 1) {   //처음 나오는 알파벳
+                if (cntArr[index] == 1) {   //처음 등장
                     prevK[index] = i;
-                } else if (cntArr[index] >= 2) {
-                    next[prev[index]] = i;  //지금 알파벳의 이전 위치의 인덱스 값 현재로 갱신
                 }
-                prev[index] = i;    //현재 위치로 갱신
+                else {  //이미 등장한 적 있음
+                    next[prev[index]] = i;  //이전에 등장한 인덱스의 다음 출현 인덱스는 지금 여기!
+                }
+                prev[index] = i;
 
-                //K개를 포함한다면
                 if (cntArr[index] == K) {
-                    max = Math.max(max, i - prevK[index] + 1);
-                    min = Math.min(min, i - prevK[index] + 1);
+                    int len = i - prevK[index] + 1;
+                    min = Math.min(min, len);
+                    max = Math.max(max, len);
                 }
                 else if (cntArr[index] > K) {
-                    prevK[index] = next[prevK[index]];
-                    max = Math.max(max, i - prevK[index] + 1);
-                    min = Math.min(min, i - prevK[index] + 1);
+                    prevK[index] = next[prevK[index]];  //한칸 뒤로 땡기기
+                    int len = i - prevK[index] + 1;
+                    min = Math.min(min, len);
+                    max = Math.max(max, len);
                 }
             }
-            if (max == -1 || min == Integer.MAX_VALUE) {
-                bw.write("-1");
-                bw.write("\n");
-                continue;
+
+            if (max == 0 || min == 10_001) {
+                sb.append("-1");
             }
-            bw.write(min + " " + max);
-            bw.write("\n");
+            else {
+                sb.append(min + " " + max);
+            }
+            sb.append("\n");
 
         }
-
-        bw.flush();
-
+        System.out.println(sb);
     }
+
 }
