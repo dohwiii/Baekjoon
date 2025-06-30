@@ -6,28 +6,28 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String str = br.readLine();
-        Stack<Character> stack = new Stack<>();
+        int cntP = 0;
+        boolean isPreA = false;
 
         for (char c : str.toCharArray()) {
-            stack.push(c);
-
-            if (stack.size() >= 4) {
-                int n = stack.size();
-                if (stack.get(n - 4) == 'P' && stack.get(n - 3) == 'P' && stack.get(n - 2) == 'A' && stack.get(n - 1) == 'P') {
-                    for (int i = 0; i < 4; i++) {
-                        stack.pop();
-                    }
-                    stack.push('P');
-
+            if (c == 'P') {
+                cntP++;
+                if (isPreA) {
+                    cntP -= 2;
+                    isPreA = false;
+                }
+            }
+            else if (c == 'A') {
+                if (cntP > 1 && !isPreA) {
+                    isPreA = true;
+                }
+                else {
+                    System.out.println("NP");
+                    return;
                 }
             }
         }
-        if (stack.size() == 1 && stack.peek() == 'P') {
-            System.out.println("PPAP");
-        }
-        else {
-            System.out.println("NP");
-        }
+        System.out.println(cntP == 1 ? "PPAP" : "NP");
 
 
     }
