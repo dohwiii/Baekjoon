@@ -7,38 +7,26 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        ArrayDeque<String> entrance = new ArrayDeque<>();
-        ArrayDeque<String> exit = new ArrayDeque<>();
+        String[] cars = new String[N];
+        for (int i = 0; i < N; i++) {
+            cars[i] = br.readLine();
+        }
+        Set<String> seen = new HashSet<>();
+        int pointer = 0;
+        int ans = 0;
 
         for (int i = 0; i < N; i++) {
-            entrance.offer(br.readLine());
-        }
-        for (int i = 0; i < N; i++) {
-            exit.offer(br.readLine());
-        }
-        int ans = 0;
-        while (!exit.isEmpty() && !entrance.isEmpty()) {
-            Stack<String> stack = new Stack<>();
-            boolean isRight = true;
-            String out = exit.poll();
-            while (!entrance.isEmpty() && !exit.isEmpty()) {
-                String in = entrance.poll();
-                if (in.equals(out)) {
-                    break;
-                }
-                isRight = false;
-                stack.push(in);
+            String out = br.readLine();
+            seen.add(out);  //나간 차량 방문기록
+            if (out.equals(cars[pointer])) {    //순서가 맞는 차량
+                pointer++;
             }
-            while (!stack.isEmpty()) {
-                entrance.addFirst(stack.pop());
-            }
-            if (!isRight) {
+            while (pointer < N && seen.contains(cars[pointer])) {
+                pointer++;
                 ans++;
             }
         }
         System.out.println(ans);
-
-
 
 
     }
