@@ -1,47 +1,26 @@
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        char[] arr = br.readLine().toCharArray();
+        char[] seats = br.readLine().toCharArray();
 
-        int cup = 0, people = 0;
-        for (int i = 0; i < N; i++) {
-            if (arr[i] == 'S') {
-                if ((cup == 0 && people == 0)) {
-                    cup += 2;
-                    people++;
-                }
-                else {
-                    cup++;
-                    people++;
-                }
+        int cupHolder = 1;
+        int index = 0;
+        while (index < N) {
+            char curr = seats[index];
+
+            if (curr == 'L') {  //커플석
+                index += 2;
+                cupHolder++;
             }
-            else if (arr[i] == 'L') {
-                if (cup == 0 && people == 0) {
-                    cup += 2;
-                    people += 2;
-                }
-                else {
-                    if (cup >= people) {
-                        cup++;
-                        people += 2;
-                    }
-                    else {
-                        cup++;
-                        people += 2;
-                    }
-                }
-                i++;
+            else {  //싱글석
+                index++;
+                cupHolder++;
             }
         }
-
-        System.out.println(Math.min(cup, people));
-
-
+        System.out.println(Math.min(N, cupHolder));
     }
 }
