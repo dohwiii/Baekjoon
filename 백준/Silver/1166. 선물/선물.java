@@ -31,13 +31,12 @@ public class Main {
             if (total >= N) {
                 answer = Math.max(answer, mid);
                 if (low == mid) {   // double 정밀도 한계로 더 이상 좁힐 수 없으면 종료
-                    answer = low;
+                    answer = mid;
                     break;
                 }
-
-
                 low = mid;
-            } else {
+            }
+            else {
                 if (high == mid) {  // 역시 더 이상 좁힐 수 없으면 종료
                     answer = mid;
                     break;
@@ -45,6 +44,6 @@ public class Main {
                 high = mid;
             }
         }
-        System.out.println(String.format("%.10f", low));
+        System.out.println(answer);
     }
 }
