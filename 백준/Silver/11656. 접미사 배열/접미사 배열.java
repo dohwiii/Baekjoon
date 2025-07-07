@@ -6,14 +6,14 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String str = br.readLine();
-        List<String> list = new ArrayList<>();
+        String[] arr = new String[str.length()];
 
         for (int i = 0; i < str.length(); i++) {
-            list.add(str.substring(i));
+            arr[i] = (str.substring(i));
         }
-        Collections.sort(list);
+        Arrays.sort(arr);
         StringBuilder sb = new StringBuilder();
-        for (String s : list) {
+        for (String s : arr) {
             sb.append(s + "\n");
         }
         System.out.println(sb);
