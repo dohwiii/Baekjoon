@@ -23,10 +23,10 @@ public class Main {
             if (line.isEmpty()) {
                 break;
             }
-            st = new StringTokenizer(line);
-            String[] t = st.nextToken().split(":");
-            String nickname = st.nextToken();
-            long time = Integer.parseInt(t[0]) * 60 + Integer.parseInt(t[1]);
+            int h = (line.charAt(0) - '0') * 10 + (line.charAt(1) - '0');
+            int m = (line.charAt(3) - '0') * 10 + (line.charAt(4) - '0');
+            String nickname = line.substring(6);
+            long time = h * 60 + m;
 
             if (time <= start) {    //시작시간까지 채팅을 쳤다면
                 enterSet.add(nickname);
@@ -39,6 +39,13 @@ public class Main {
             }
         }
         System.out.println(cnt);
+
+
+
+
+
+
+
 
 
 
