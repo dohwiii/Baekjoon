@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main {
@@ -8,25 +9,29 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
-        int[] arr = new int[N];
+
         st = new StringTokenizer(br.readLine());
+        int[] arr = new int[N];
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-        long max = 0;
+        int s = 0, e = 0;
         long sum = 0;
-        int l = 0;
+        long maxSum = 0;
 
-        for (int r = 0; r < N; r++) {
-            sum += arr[r];
+        while (s < N && e < N) {
+            sum += arr[e];
             while (sum > M) {
-                sum -= arr[l];
-                l++;
+                sum -= arr[s];
+                s++;
             }
-            max = Math.max(max, sum);
+            e++;
+            maxSum = Math.max(maxSum, sum);
         }
+        System.out.println(maxSum);
 
-        System.out.println(max);
+
 
     }
+
 }
