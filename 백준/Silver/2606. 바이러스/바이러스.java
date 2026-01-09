@@ -3,50 +3,57 @@ import java.util.*;
 
 public class Main {
     static int N, M;
-    static List<Integer>[] list;
-    static boolean[] visited;
-    static int count;
+    static int[] parent, size;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());    // 컴퓨터 수
         M = Integer.parseInt(br.readLine());    // 연결된 컴퓨터 쌍의 개수
-        visited = new boolean[N + 1];
-        list = new List[N + 1];
+        parent = new int[N + 1];
+        size = new int[N + 1];
         for (int i = 1; i <= N; i++) {
-            list[i] = new ArrayList<>();
+            parent[i] = i;
+            size[i] = 1;
         }
 
         for (int i = 0; i < M; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             int s = Integer.parseInt(st.nextToken());
             int e = Integer.parseInt(st.nextToken());
-            list[s].add(e);
-            list[e].add(s);
+            union(s, e);
         }
-        dfs(1);
-        System.out.println(count - 1);
-
+        int maxSize = 1;
+        for (int i = 1; i <= N; i++) {
+            if (find(i) == i) { // 루트만
+                maxSize = Math.max(maxSize, size[i]);
+            }
+        }
+        System.out.println(maxSize - 1);
 
 
     }
 
-    public static void dfs(int node) {
-        if (visited[node]) {
+    private static int find(int x) {
+        if (parent[x] == x) {
+            return x;
+        }
+        parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    private static void union(int a, int b) {
+        int ra = find(a);
+        int rb = find(b);
+        if (ra == rb) {
             return;
         }
-        visited[node] = true;
-        count++;
-
-        for (int i = 0; i < list[node].size(); i++) {
-            int next = list[node].get(i);
-            if (visited[next]) {
-                continue;
-            }
-            dfs(next);
+        if (size[ra] < size[rb]) {
+            int temp = ra;
+            ra = rb;
+            rb = temp;
         }
+        parent[rb] = ra;
+        size[ra] += size[rb];
     }
-
-
 
 }
