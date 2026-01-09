@@ -1,63 +1,52 @@
 import java.io.*;
 import java.util.*;
 
-public class Main
-{
+public class Main {
     static int N, M;
-    static ArrayList<Integer>[] list;
+    static List<Integer>[] list;
     static boolean[] visited;
     static int count;
 
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        N = Integer.parseInt(br.readLine());
-        M = Integer.parseInt(br.readLine());
-        list = new ArrayList[N + 1];
+        N = Integer.parseInt(br.readLine());    // 컴퓨터 수
+        M = Integer.parseInt(br.readLine());    // 연결된 컴퓨터 쌍의 개수
         visited = new boolean[N + 1];
-        count = 0;
-
-        for (int i = 1; i <= N; i++)
-        {
+        list = new List[N + 1];
+        for (int i = 1; i <= N; i++) {
             list[i] = new ArrayList<>();
         }
 
-        for (int i = 0; i < M; i++)
-        {
+        for (int i = 0; i < M; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-
-            list[x].add(y);
-            list[y].add(x);
-
+            int s = Integer.parseInt(st.nextToken());
+            int e = Integer.parseInt(st.nextToken());
+            list[s].add(e);
+            list[e].add(s);
         }
-        DFS(1);
+        dfs(1);
         System.out.println(count - 1);
+
 
 
     }
 
-    public static void DFS(int node)
-    {
-        if (visited[node])
-        {
+    public static void dfs(int node) {
+        if (visited[node]) {
             return;
         }
         visited[node] = true;
         count++;
 
-        for (int i : list[node])
-        {
-            if (!visited[i])
-            {
-                DFS(i);
+        for (int i = 0; i < list[node].size(); i++) {
+            int next = list[node].get(i);
+            if (visited[next]) {
+                continue;
             }
+            dfs(next);
         }
-
-
     }
+
+
+
 }
-
-
