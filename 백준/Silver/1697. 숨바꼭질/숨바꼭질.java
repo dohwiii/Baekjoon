@@ -37,12 +37,17 @@ public class Main {
                     visited[r2] = true;
                     queue.offer(r2);
                 }
-                int r3 = 2 * now;
-                if (r3 >= 0 && r3 <= 100_000 && !visited[r3]) {
-                    visited[r3] = true;
-                    queue.offer(r3);
+                if (now != 0) {
+                    int r3 = 2 * now;
+                    if (r3 >= 0 && r3 <= 100_000 && !visited[r3]) {
+                        visited[r3] = true;
+                        queue.offer(r3);
+                    }
                 }
+
             }
+
+
         }
 
     }
