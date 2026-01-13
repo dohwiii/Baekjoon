@@ -1,74 +1,72 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.Array;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M;
+    static int M, N;
     static int[][] map;
-    static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static Queue<int[]> queue;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        M = Integer.parseInt(st.nextToken());   // 가로
-        N = Integer.parseInt(st.nextToken());   // 세로
-        map = new int[N][M];    // 1: 익은 토마토 / 0: 익지 않은 토마토 / -1: 빈칸
-        visited = new boolean[N][M];
-        queue = new ArrayDeque<>();
-        int unripe = 0;     // 0의 개수
-        int maxDay = 1;
 
-        for (int i = 0; i < N; i++) {
+        M = Integer.parseInt(st.nextToken()); // 가로
+        N = Integer.parseInt(st.nextToken()); // 세로
+
+        map = new int[N][M];
+
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        int unripe = 0;   // 0의 개수 (익지 않은 토마토)
+        int maxDay = 1;   // map에 저장되는 최대 날짜 값
+
+        for (int y = 0; y < N; y++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
+            for (int x = 0; x < M; x++) {
                 int v = Integer.parseInt(st.nextToken());
-                map[i][j] = v;
+                map[y][x] = v;
 
-                if (v == 1) {   // 토마토
-                    queue.offer(new int[]{i, j});
+                if (v == 1) {
+                    // y*M + x 로 인코딩
+                    q.offer(y * M + x);
                 } else if (v == 0) {
                     unripe++;
                 }
             }
         }
-        // 토마토가 모두 익어있는 상태
+
+        // 처음부터 다 익어있다면
         if (unripe == 0) {
             System.out.println(0);
             return;
         }
-        while (!queue.isEmpty()) {
-            int size = queue.size();
 
-            while (size-- > 0) {
-                int[] now = queue.poll();
-                int curDay = map[now[0]][now[1]];
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            int y = cur / M;
+            int x = cur % M;
 
-                for (int i = 0; i < 4; i++) {
-                    int nx = now[0] + dx[i];
-                    int ny = now[1] + dy[i];
+            int curDay = map[y][x]; // 1 이상
 
-                    if (nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny] || map[nx][ny] != 0) {
-                        continue;
-                    }
-                    queue.offer(new int[]{nx, ny});
-                    map[nx][ny] = curDay + 1;
-                    unripe--;
-                    maxDay = Math.max(maxDay, map[nx][ny]);
-                }
+            for (int d = 0; d < 4; d++) {
+                int ny = y + dy[d];
+                int nx = x + dx[d];
+
+                if (ny < 0 || ny >= N || nx < 0 || nx >= M) continue;
+                if (map[ny][nx] != 0) continue; // 0만 익힐 수 있음 (-1/1/이미 익은 날짜는 스킵)
+
+                map[ny][nx] = curDay + 1; // 다음날 익음
+                maxDay = Math.max(maxDay, map[ny][nx]);
+                unripe--;
+                q.offer(ny * M + nx);
             }
         }
+
+        // BFS가 끝났는데도 0이 남아있으면 불가능
         if (unripe > 0) {
             System.out.println(-1);
+        } else {
+            System.out.println(maxDay - 1); // 시작이 1이므로 -1
         }
-        else {
-            System.out.println(maxDay - 1);
-        }
-
     }
-
 }
