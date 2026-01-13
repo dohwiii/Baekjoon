@@ -1,85 +1,77 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Array;
 import java.util.*;
 
 public class Main {
-    static int[][] map;
+    static int N;
+    static char[][] map;
+    static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static boolean[][] visited;
-    static long[] apart = new long[25 * 25];
-    static int N;
-    static int apartment;
-    static ArrayList<Long> list;
+
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         N = Integer.parseInt(br.readLine());
-        visited = new boolean[N][N];
-        map = new int[N][N];
-        apartment = 0;
-        list = new ArrayList<>();
+        map = new char[N][N];
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
-            for (int j = 0; j < N; j++) {
-                map[i][j] = str.charAt(j) - '0';
-            }
+            map[i] = str.toCharArray();
         }
+        int block = 0;
+        visited = new boolean[N][N];
+        List<Integer> ansList = new ArrayList<>();
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (!visited[i][j] && map[i][j] > 0) {
-                    apartment++;
-                    BFS(i, j);
+                if (!visited[i][j] && map[i][j] != '0') {
+                    block++;
+                    int bfs = bfs(i, j);
+                    ansList.add(bfs);
                 }
             }
         }
-        System.out.println(apartment);
-        Arrays.sort(apart);
-        for (long i : apart) {
-            if (i != 0) {
-                System.out.println(i);
-            }
+        Collections.sort(ansList);  // 오름차순 정렬
+        StringBuffer sb = new StringBuffer();
+        sb.append(block + "\n");
+        for (int a : ansList) {
+            sb.append(a + "\n");
         }
-
-
+        System.out.println(sb);
     }
-    public static void BFS(int x, int y)
-    {
-        if (visited[x][y]) {
 
-            return;
-        }
-        Queue<Coordinate> queue = new LinkedList<>();
-        queue.add(new Coordinate(x, y));
+    public static int bfs(int x, int y) {
+        Queue<Pos> queue = new ArrayDeque<>();
+        queue.offer(new Pos(x, y));
         visited[x][y] = true;
-        apart[apartment] = 1;
+        int house = 0;
 
         while (!queue.isEmpty()) {
-            Coordinate now = queue.poll();
-            for (int i = 0; i < 4; i++) {
-                int x1 = now.x + dx[i];
-                int y1 = now.y + dy[i];
+            Pos now = queue.poll();
+            house++;
 
-                if (x1 >= 0 && y1 >= 0 && x1 < N && y1 < N) {
-                    if (!visited[x1][y1] && map[x1][y1] != 0) {
-                        visited[x1][y1] = true;
-                        queue.add(new Coordinate(x1, y1));
-                        apart[apartment]++;
-                    }
+            for (int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N || visited[nx][ny] || map[nx][ny] == '0') {
+                    continue;
                 }
+                queue.offer(new Pos(nx, ny));
+                visited[nx][ny] = true;
             }
         }
+        return house;
     }
+
 }
-class Coordinate
-{
-    int x, y, count;
 
-    public Coordinate(int x, int y) {
+class Pos {
+    int x, y;
 
+    public Pos(int x, int y) {
         this.x = x;
         this.y = y;
     }
