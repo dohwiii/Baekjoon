@@ -1,58 +1,63 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Main {
-    static boolean[] visited;
-    static int[] parent;
+class Main {
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        parent = new int[N + 1];
-        for (int i = 0; i <= N; i++) {
-            parent[i] = i;
+    static int N, M, ans;
+    static List<Integer>[] graph;
+    static boolean[] visit;
+
+    private static int read() throws IOException {
+        int c, n = System.in.read() & 15;
+        while ((c = System.in.read()) > 32) {
+            n = (n << 3) + (n << 1) + (c & 15);
+        }
+        return n;
+    }
+
+    static void dfsIter(int start) {
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        stack.push(start);
+        visit[start] = true;
+
+        while (!stack.isEmpty()) {
+            int cur = stack.pop();
+            for (int next : graph[cur]) {
+                if (!visit[next]) {
+                    visit[next] = true;
+                    stack.push(next);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        N = read();
+        M = read();
+
+        graph = new ArrayList[N + 1];
+        visit = new boolean[N + 1];
+
+        for (int i = 1; i <= N; i++) {
+            graph[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            union(u, v);
+            int x = read();
+            int y = read();
+            graph[x].add(y);
+            graph[y].add(x);
         }
-        int edge = 0;
-        visited = new boolean[N + 1];
+
         for (int i = 1; i <= N; i++) {
-            int root = find(i);
-            if (!visited[root]) {
-                edge++;
-                visited[root] = true;
+            if (!visit[i]) {
+                ans++;
+                dfsIter(i);
             }
         }
-        System.out.println(edge);
 
-
-
+        System.out.println(ans);
     }
-
-    private static int find(int x) {
-        if (parent[x] == x) {
-            return x;
-        }
-        parent[x] = find(parent[x]);
-        return parent[x];
-    }
-
-    private static void union(int a, int b) {
-        int ra = find(a);
-        int rb = find(b);
-        if (ra == rb) {
-            return;
-        }
-        parent[rb] = ra;
-    }
-
 }
