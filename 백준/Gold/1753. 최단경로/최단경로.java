@@ -1,27 +1,22 @@
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int V, E;
     static List<Node>[] list;
-    static int[] dist;
-    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
+        final int INF = 199_991;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        V = Integer.parseInt(st.nextToken());
-        E = Integer.parseInt(st.nextToken());
-        dist = new int[V + 1];
-        visited = new boolean[V + 1];
+        int V = Integer.parseInt(st.nextToken());   // 정점
+        int E = Integer.parseInt(st.nextToken());   // 간선
+        int K = Integer.parseInt(br.readLine());    // 시작 정점
         list = new List[V + 1];
         for (int i = 0; i <= V; i++) {
             list[i] = new ArrayList<>();
         }
-
-        int start = Integer.parseInt(br.readLine());    //시작 정점
 
         for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
@@ -30,15 +25,31 @@ public class Main {
             int w = Integer.parseInt(st.nextToken());
             list[u].add(new Node(v, w));
         }
-        Arrays.fill(dist, Integer.MAX_VALUE);
+        int[] dist = new int[V + 1];
+        Arrays.fill(dist, INF);
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(K, 0));
+        dist[K] = 0;
 
-        bfs(start);
+        while (!pq.isEmpty()) {
+            Node now = pq.poll();
+            if (dist[now.node] < now.value) {
+                continue;
+            }
+            for (Node next : list[now.node]) {
+                if (dist[next.node] > dist[now.node] + next.value) {
+                    dist[next.node] = dist[now.node] + next.value;
+                    pq.offer(new Node(next.node, dist[next.node]));
+                }
+            }
+
+        }
         StringBuilder sb = new StringBuilder();
-
         for (int i = 1; i <= V; i++) {
-            if (dist[i] == Integer.MAX_VALUE) {
+            if (dist[i] == INF) {
                 sb.append("INF");
-            } else {
+            }
+            else {
                 sb.append(dist[i]);
             }
             sb.append("\n");
@@ -48,28 +59,7 @@ public class Main {
 
     }
 
-    public static void bfs(int node) {
-        PriorityQueue<Node> queue = new PriorityQueue<>();
-        queue.offer(new Node(node, 0));
-        dist[node] = 0;
-
-        while (!queue.isEmpty()) {
-            Node now = queue.poll();
-            if (now.value > dist[now.node]) {
-                continue;
-            }
-
-            for (Node next : list[now.node]) {
-                if (dist[next.node] > dist[now.node] + next.value) {
-                    dist[next.node] = dist[now.node] + next.value;
-                    queue.offer(new Node(next.node, dist[next.node]));
-                }
-            }
-        }
-    }
-
 }
-
 class Node implements Comparable<Node>{
     int node, value;
 
@@ -78,10 +68,9 @@ class Node implements Comparable<Node>{
         this.value = value;
     }
 
-
     @Override
     public int compareTo(Node o) {
-        return this.value - o.value;
+//        return this.value - o.value;    // 오름차순
+        return Integer.compare(this.value, o.value);
     }
-    
 }
