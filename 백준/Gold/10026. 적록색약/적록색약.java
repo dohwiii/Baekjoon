@@ -1,90 +1,78 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
     static int N;
-    static char[][] normalMap;
-    static char[][] abnormalMap;
     static boolean[][] visited;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static boolean flag;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-//        StringTokenizer st = new StringTokenizer(br.readLine());
-
         N = Integer.parseInt(br.readLine());
+        char[][] map = new char[N][N];
+        char[][] bMap = new char[N][N];
         visited = new boolean[N][N];
-        normalMap = new char[N][N];
-        abnormalMap = new char[N][N];
 
         for (int i = 0; i < N; i++) {
             String str = br.readLine();
             for (int j = 0; j < N; j++) {
-                normalMap[i][j] = str.charAt(j);
-            }
-        }
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (normalMap[i][j] == 'R') {
-                    abnormalMap[i][j] = 'G';
-                } else {
-                    abnormalMap[i][j] = normalMap[i][j];
+                char c = str.charAt(j);
+                map[i][j] = c;
+                bMap[i][j] = c;
+                if (c == 'G') {
+                    bMap[i][j] = 'R';
                 }
             }
         }
-        int xCnt = 0;
-        int oCnt = 0;
+        int area = 0;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (normalMap[i][j] != 'X') {
-                    dfs(i, j, normalMap);
-                    xCnt++;
+                if (!visited[i][j]) {
+                    area++;
+                    dfs(i, j, map);
                 }
+
             }
         }
         visited = new boolean[N][N];
+        int bArea = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (abnormalMap[i][j] != 'X') {
-                    dfs(i, j, abnormalMap);
-                    oCnt++;
+                if (!visited[i][j]) {
+                    bArea++;
+                    dfs(i, j, bMap);
                 }
             }
         }
-        bw.write(xCnt + " " + oCnt);   //적록색약 아닌 사람
-
-        bw.flush();
+        StringBuilder sb = new StringBuilder();
+        sb.append(area + " " + bArea);
+        System.out.println(sb);
 
     }
 
-    public static void dfs(int x, int y, char[][] map) {
-        char nowColor = map[x][y];  //현재 색깔
-        map[x][y] = 'X';
+    private static void dfs(int x, int y, char[][] temp) {
+        if (visited[x][y]) {
+            return;
+        }
+        visited[x][y] = true;
+        char color = temp[x][y];
 
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-
-            if (nx < 0 || nx >= N || ny < 0 || ny >= N || map[nx][ny] == 'X') {
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N || visited[nx][ny]) {
                 continue;
             }
-            if (map[nx][ny] == nowColor) {
-                dfs(nx, ny, map);
+            if (color != temp[nx][ny]) {
+                continue;
             }
+            dfs(nx, ny, temp);
+
         }
     }
 
-}
-
-class Pos {
-    int x, y;
-
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
 }
