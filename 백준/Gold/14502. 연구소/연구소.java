@@ -6,103 +6,93 @@ import java.util.*;
 public class Main {
     static int N, M;
     static int[][] map;
-    static boolean[][] visited;
-    static int max = Integer.MIN_VALUE;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static List<Pos> virus = new ArrayList<>();
-
+    static int maxSafeZone = 0;
+    static List<int[]> virusList = new ArrayList<>();
+    static List<int[]> emptyList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());   // 세로
+        M = Integer.parseInt(st.nextToken());   // 가로
         map = new int[N][M];
-        visited = new boolean[N][M];
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
-
-                if (map[i][j] == 2) { //바이러스
-                    virus.add(new Pos(i, j));
-                }
             }
-
         }
-        makeWall(0);
-        System.out.println(max);
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (map[i][j] == 2) {
+                    virusList.add(new int[]{i, j});
+                } else if (map[i][j] == 0) {
+                    emptyList.add(new int[]{i, j});
+                }
+
+            }
+        }
+        buildWall(0, 0);
+        System.out.println(maxSafeZone);
+
+
     }
 
-    public static void makeWall(int wallCnt) {
-        //벽이 3개 세워졌다면
-        if (wallCnt == 3) {
+    private static void buildWall(int wall, int start) {
+        if (wall == 3) {   // 3개의 벽 완성
             bfs();
             return;
         }
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (map[i][j] == 0) { //빈칸이라면
-                    map[i][j] = 1; //벽 세우기
-                    makeWall(wallCnt + 1);
-                    map[i][j] = 0; //벽 허물기
+        for (int i = start; i < emptyList.size(); i++) {
+            int[] pos = emptyList.get(i);
+            int x = pos[0], y = pos[1];
 
-                }
-            }
+            if (map[x][y] != 0) continue; // 혹시 이전 선택으로 바뀌었을 수 있으니 안전장치
+
+            map[x][y] = 1;
+            buildWall(wall + 1, i + 1);
+            map[x][y] = 0;  // 원복
         }
-    }
-
-    public static void bfs() {
-        Queue<Pos> queue = new ArrayDeque<>();
-        visited = new boolean[N][M];
-        int room = 0;
-
-        for (Pos wall : virus) {
-            queue.add(new Pos(wall.x, wall.y));
-
-            while (!queue.isEmpty()) {
-                Pos now = queue.poll();
-                room++;
-
-                for (int i = 0; i < 4; i++) {
-                    int nx = now.x + dx[i];
-                    int ny = now.y + dy[i];
-
-                    if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                        if (map[nx][ny] == 0 && !visited[nx][ny]) {
-                            visited[nx][ny] = true;
-                            queue.add(new Pos(nx, ny));
-                        }
-                    }
-                }
-            }
-        }
-
-        int safe = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (!visited[i][j] && map[i][j] == 0) {
-                    safe++;
-                }
-            }
-        }
-        max = Math.max(max, safe);
 
 
     }
 
+    private static void bfs() {
+        Queue<int[]> queue = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][M];
 
-}
+        for (int[] v : virusList) {
+            queue.offer(new int[]{v[0], v[1]});
+            visited[v[0]][v[1]] = true;
+        }
 
-class Pos {
-    int x, y;
+        while (!queue.isEmpty()) {
+            int[] now = queue.poll();
 
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
+            for (int i = 0; i < 4; i++) {
+                int nx = now[0] + dx[i];
+                int ny = now[1] + dy[i];
+                if (nx < 0 || nx >= N || ny < 0 || ny >= M || map[nx][ny] != 0 || visited[nx][ny]) {
+                    continue;
+                }
+                queue.offer(new int[]{nx, ny});
+                visited[nx][ny] = true;
+            }
+        }
+        int safeZone = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (map[i][j] == 0 && !visited[i][j]) {
+                    safeZone++;
+                }
+            }
+        }
+        maxSafeZone = Math.max(maxSafeZone, safeZone);
+
     }
 
 }
