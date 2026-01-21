@@ -17,7 +17,7 @@ public class Main {
         H = readInt();   // 높이
         
         map = new int[H][N][M];
-        queue = new int[N * M * H * 3];
+        queue = new int[N * M * H];  // flatten 방식 유지
         
         // 1: 익은 토마토 / 0: 익지 않은 토마토 / -1: 빈칸
         for (int i = 0; i < H; i++) {
@@ -35,10 +35,8 @@ public class Main {
                         t = 0;
                     } else {  // '1'
                         t = 1;
-                        // 큐에 추가
-                        queue[front++] = i;
-                        queue[front++] = j;
-                        queue[front++] = k;
+                        int flatten = i * (N * M) + j * M + k;
+                        queue[front++] = flatten;
                         ripen++;
                     }
                     
@@ -65,7 +63,7 @@ public class Main {
     private static int bfs() {
         int day = 0;
 
-        while (back != front) {
+        while (back != front) {  // ⭐ 큐가 비어있지 않으면
             int levelStart = back;
             int levelEnd = front;
             
@@ -73,10 +71,12 @@ public class Main {
                 return day;
             }
 
-            for (int i = levelStart; i < levelEnd; i += 3) {
-                int h = queue[i];
-                int r = queue[i + 1];
-                int c = queue[i + 2];
+            for (int i = levelStart; i < levelEnd; i++) {  // ⭐ flatten 방식이므로 +1씩
+                int tomato = queue[i];
+                int h = tomato / (N * M);
+                int rem = tomato % (N * M);
+                int r = rem / M;
+                int c = rem % M;
 
                 for (int dir = 0; dir < 6; dir++) {
                     int nx = r + dx[dir];
@@ -90,10 +90,8 @@ public class Main {
                         continue;
                     }
                     
-                    queue[front++] = nz;
-                    queue[front++] = nx;
-                    queue[front++] = ny;
-                    
+                    int flatten = nz * (N * M) + nx * M + ny;
+                    queue[front++] = flatten;
                     map[nz][nx][ny] = 1;
                     ripen++;
                 }
@@ -112,11 +110,7 @@ public class Main {
             int input = System.in.read();
             if (input > 32) {  // 공백, 개행이 아니면
                 n = (n << 3) + (n << 1) + (input & 15);
-                // n * 10 + (input - '0')와 동일
-                // (n << 3) = n * 8
-                // (n << 1) = n * 2
-                // n * 8 + n * 2 = n * 10
-                // (input & 15) = input - '0' (아스키 코드에서 숫자 추출)
+                // n * 10 + (input - '0')
             } else {
                 return n;
             }
