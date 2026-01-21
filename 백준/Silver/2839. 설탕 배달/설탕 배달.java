@@ -2,36 +2,36 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());    // 사탕 N킬로그램
-        int[] dp = new int[5001];
-        Arrays.fill(dp, Integer.MAX_VALUE);
-        dp[3] = 1;
-        dp[5] = 1;
-        if (N == 4) {
-            System.out.println(-1);
-            return;
-        }
+    public static void main(String[] args) throws IOException {
+ 
+    	
+    	// 2839. 설탕배달
+    	// N <= 5,000
+    	// while문과 for문을 중첩시킨다면 while문이 for문의 조건식 횟수를 n번 반복하기에 O(N*M)이 된다. 
+    	BufferedReader br = new BufferedReader (new InputStreamReader(System.in));
 
-        if (N > 5) {
-            for (int i = 6; i <= N; i++) {
-                if (dp[i - 3] != Integer.MAX_VALUE) {
-                    dp[i] = Math.min(dp[i], dp[i - 3] + 1);
-                }
-                if (dp[i - 5] != Integer.MAX_VALUE) {
-                    dp[i] = Math.min(dp[i], dp[i - 5] + 1);
-                }
-            }
-        }
-
-        if (dp[N] != Integer.MAX_VALUE) {
-            System.out.println(dp[N]);
-        }
-        else {
-            System.out.println(-1);
-        }
-
-
-    }
-}
+    	int N = Integer.parseInt(br.readLine());
+    	
+    	int count = 0;
+    	
+    	while( true ) {
+    		
+    		if(N%5==0) {
+    			count += N/5;
+    			System.out.println(count);
+    			break;
+    		}else{
+    			N-=3;
+    			count++;
+    		}
+    		
+    		if(N<0) {
+    			System.out.println(-1);
+    			break;
+    		}
+    	}
+    	
+    	
+    }}	
+	
+	
