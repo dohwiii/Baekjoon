@@ -1,46 +1,54 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
     static int[] parent;
-    static List<Integer>[] list;
+    static List<Integer>[] graph;
 
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
+        int N = readInt();
+        
         parent = new int[N + 1];
-        list = new List[N + 1];
+        graph = new ArrayList[N + 1];
+        
         for (int i = 1; i <= N; i++) {
-            list[i] = new ArrayList<>();
+            graph[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < N - 1; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int n1 = Integer.parseInt(st.nextToken());
-            int n2 = Integer.parseInt(st.nextToken());
-            list[n1].add(n2);
-            list[n2].add(n1);
+            int a = readInt();
+            int b = readInt();
+            graph[a].add(b);
+            graph[b].add(a);
         }
-        parent[1] = -1;
+
+        parent[1] = -1;  // 루트 표시
         dfs(1);
 
         StringBuilder sb = new StringBuilder();
         for (int i = 2; i <= N; i++) {
-            sb.append(parent[i] + "\n");
+            sb.append(parent[i]).append('\n');
         }
-
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
-    public static void dfs(int node) {
-
-        for (int next : list[node]) {
-            if (parent[next] == 0) {
-                parent[next] = node;    // 현재 노드가 부모
+    static void dfs(int node) {
+        for (int next : graph[node]) {
+            if (parent[next] == 0) {  // ⭐ visited 배열 대신
+                parent[next] = node;
                 dfs(next);
+            }
+        }
+    }
+
+    static int readInt() throws IOException {
+        int n = 0;
+        while (true) {
+            int input = System.in.read();
+            if (input > 32) {
+                n = (n << 3) + (n << 1) + (input & 15);
+            } else if (n > 0) {
+                return n;
             }
         }
     }
