@@ -7,13 +7,11 @@ import java.util.StringTokenizer;
 public class Main {
     static int[] parent;
     static List<Integer>[] list;
-    static boolean[] visited;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         parent = new int[N + 1];
-        visited = new boolean[N + 1];
         list = new List[N + 1];
         for (int i = 1; i <= N; i++) {
             list[i] = new ArrayList<>();
@@ -26,8 +24,10 @@ public class Main {
             list[n1].add(n2);
             list[n2].add(n1);
         }
-        StringBuilder sb = new StringBuilder();
+        parent[1] = -1;
         dfs(1);
+
+        StringBuilder sb = new StringBuilder();
         for (int i = 2; i <= N; i++) {
             sb.append(parent[i] + "\n");
         }
@@ -36,17 +36,12 @@ public class Main {
     }
 
     public static void dfs(int node) {
-        if (visited[node]) {
-            return;
-        }
-        visited[node] = true;
 
         for (int next : list[node]) {
-            if (visited[next]) {
-                continue;
+            if (parent[next] == 0) {
+                parent[next] = node;    // 현재 노드가 부모
+                dfs(next);
             }
-            parent[next] = node;    // 현재 노드가 부모
-            dfs(next);
         }
     }
 }
