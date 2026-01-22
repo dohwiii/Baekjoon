@@ -22,23 +22,29 @@ public class Main {
             graph[b].add(a);
         }
 
-        parent[1] = -1;  // 루트 표시
-        dfs(1);
+        // ⭐ BFS
+        int[] queue = new int[N];
+        int front = 0, back = 0;
+        
+        queue[back++] = 1;
+        parent[1] = -1;
+
+        while (front < back) {
+            int node = queue[front++];
+            
+            for (int next : graph[node]) {
+                if (parent[next] == 0) {
+                    parent[next] = node;
+                    queue[back++] = next;
+                }
+            }
+        }
 
         StringBuilder sb = new StringBuilder();
         for (int i = 2; i <= N; i++) {
             sb.append(parent[i]).append('\n');
         }
         System.out.print(sb);
-    }
-
-    static void dfs(int node) {
-        for (int next : graph[node]) {
-            if (parent[next] == 0) {  // ⭐ visited 배열 대신
-                parent[next] = node;
-                dfs(next);
-            }
-        }
     }
 
     static int readInt() throws IOException {
