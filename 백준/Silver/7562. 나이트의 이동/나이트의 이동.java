@@ -1,84 +1,55 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Main
-{
-    static int[] dx = {-1, -1, 1, 1, -2, -2, 2, 2};
-    static int[] dy = {-2, 2, -2, 2, 1, -1, 1, -1};
+public class Main {
+    static int N;
+    static int[] dx = {-2, -2, -1, -1, 1, 1, 2, 2};
+    static int[] dy = {-1, 1, -2, 2, -2, 2, -1, 1};
     static boolean[][] visited;
-    static int nowX, nowY;
-    static int destX, destY;
-    static int result;
 
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine()); //테스트 케이스 개수
+        int T = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < T; i++)
-        {
-            int L = Integer.parseInt(br.readLine()); //체스판 크기 LxL
+        while (T-- > 0) {
+            N = Integer.parseInt(br.readLine());
+            visited = new boolean[N][N];
             StringTokenizer st = new StringTokenizer(br.readLine());
-            nowX = Integer.parseInt(st.nextToken());
-            nowY = Integer.parseInt(st.nextToken());
+            int[] pos = new int[]{Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())};
             st = new StringTokenizer(br.readLine());
-            destX = Integer.parseInt(st.nextToken());
-            destY = Integer.parseInt(st.nextToken());
-            visited = new boolean[L][L];
-
-            bfs(nowX, nowY, L);
-            System.out.println(result);
+            int[] destination = new int[]{Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())};
+            sb.append(bfs(pos[0], pos[1], destination[0], destination[1]));
+            sb.append("\n");
         }
-
+        System.out.println(sb);
 
     }
 
-    public static void bfs(int x, int y, int L)
-    {
-        Queue<Pos> queue = new LinkedList<>();
-        queue.add(new Pos(x, y, 0));
+    private static int bfs(int x, int y, int destX, int destY) {
+        Queue<int[]> queue = new ArrayDeque<>();
+        queue.offer(new int[]{x, y, 0});
         visited[x][y] = true;
 
-        while (!queue.isEmpty())
-        {
-            Pos now = queue.poll();
-            if (now.x == destX && now.y == destY)
-            {
-                result = now.cnt;
-                return;
+        while (!queue.isEmpty()) {
+            int[] now = queue.poll();
+            if (now[0] == destX && now[1] == destY) {
+                return now[2];
             }
+            for (int dir = 0; dir < 8; dir++) {
+                int nx = now[0] + dx[dir];
+                int ny = now[1] + dy[dir];
 
-            for (int i = 0; i < 8; i++)
-            {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-
-                if (nx >= 0 && nx < L && ny >= 0 && ny < L)
-                {
-                    if (!visited[nx][ny])
-                    {
-                        queue.add(new Pos(nx, ny, now.cnt + 1));
-                        visited[nx][ny] = true;
-                    }
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N || visited[nx][ny]) {
+                    continue;
                 }
+                visited[nx][ny] = true;
+                queue.offer(new int[]{nx, ny, now[2] + 1});
+
             }
         }
+        return 0;
 
     }
-}
 
-class Pos
-{
-    int x, y, cnt;
-
-    public Pos(int x, int y, int cnt)
-    {
-        this.x = x;
-        this.y = y;
-        this.cnt = cnt;
-    }
 }
