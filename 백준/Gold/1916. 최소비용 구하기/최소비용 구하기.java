@@ -65,7 +65,7 @@ public class Main {
 
         @Override
         public int compareTo(Node o) {
-            return Long.compare(o.value, this.value);
+            return Long.compare(this.value, o.value);
         }
 
     }
