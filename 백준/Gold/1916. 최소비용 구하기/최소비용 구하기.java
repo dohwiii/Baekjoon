@@ -1,73 +1,67 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M;
-    static int[][] map;
-    static List<Node>[] list;
-
+    static class Node implements Comparable<Node> {
+        int vertex, cost;
+        
+        Node(int vertex, int cost) {
+            this.vertex = vertex;
+            this.cost = cost;
+        }
+        
+        public int compareTo(Node o) {
+            return Integer.compare(this.cost, o.cost);  // 명확하게
+        }
+    }
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        N = Integer.parseInt(br.readLine());    // 도시의 개수
-        M = Integer.parseInt(br.readLine());    // 버스의 개수
-        map = new int[N][N];
-        list = new List[N + 1];
+        
+        int N = Integer.parseInt(br.readLine());
+        int M = Integer.parseInt(br.readLine());
+        
+        List<Node>[] graph = new ArrayList[N + 1];
         for (int i = 1; i <= N; i++) {
-            list[i] = new ArrayList<>();
+            graph[i] = new ArrayList<>();
         }
+        
         for (int i = 0; i < M; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());   // 출발
-            int e = Integer.parseInt(st.nextToken());   // 도착
-            int v = Integer.parseInt(st.nextToken());   // 비용
-            list[s].add(new Node(e, v));
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            graph[a].add(new Node(b, c));
         }
+        
         StringTokenizer st = new StringTokenizer(br.readLine());
         int start = Integer.parseInt(st.nextToken());
         int end = Integer.parseInt(st.nextToken());
-
+        
+        // 다익스트라
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[start] = 0;
+        
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.offer(new Node(start, 0));
-        long[] dist = new long[N + 1];
-        Arrays.fill(dist, 100_000_000_001L);
-        dist[start] = 0;
-
+        
         while (!pq.isEmpty()) {
-            Node now = pq.poll();
-            if (dist[now.node] < now.value) {
-                continue;
-            }
-
-            for (Node next : list[now.node]) {
-                if (dist[next.node] > dist[now.node] + next.value) {
-                    dist[next.node] = dist[now.node] + next.value;
-                    pq.offer(new Node(next.node, dist[next.node]));
+            Node cur = pq.poll();
+            
+            if (cur.cost > dist[cur.vertex]) continue;
+            if (cur.vertex == end) break;  // 조기 종료
+            
+            for (Node next : graph[cur.vertex]) {
+                int newCost = dist[cur.vertex] + next.cost;
+                
+                if (newCost < dist[next.vertex]) {
+                    dist[next.vertex] = newCost;
+                    pq.offer(new Node(next.vertex, newCost));
                 }
             }
         }
+        
         System.out.println(dist[end]);
-
-
     }
-
-    static class Node implements Comparable<Node> {
-        int node;
-        long value;
-
-
-        public Node(int node, long value) {
-            this.node = node;
-            this.value = value;
-        }
-
-        @Override
-        public int compareTo(Node o) {
-            return Long.compare(this.value, o.value);
-        }
-
-    }
-
 }
