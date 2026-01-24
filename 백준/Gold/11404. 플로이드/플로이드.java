@@ -1,64 +1,52 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M;
+    static final int INF = 10_000_001;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());    // 도시 개수
-        int M = Integer.parseInt(br.readLine());    // 버스 개수
-        int[][] cityFare = new int[N][N];
+        int n = Integer.parseInt(br.readLine());
+        int m = Integer.parseInt(br.readLine());
 
-        for (int i = 0; i < M; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            cityFare[a - 1][b - 1] = cityFare[a - 1][b - 1] != 0 ? Math.min(cityFare[a - 1][b - 1], c) : c;
+        int[][] dist = new int[n][n];
+
+        // INF로 초기화, 자기 자신은 0
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], INF);
+            dist[i][i] = 0;
         }
 
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (i == j) {
-                        continue;
-                    }
-                    if (cityFare[i][k] > 0 && cityFare[k][j] > 0) {
-                        if (cityFare[i][j] != 0) {
-                            cityFare[i][j] = Math.min(cityFare[i][j], cityFare[i][k] + cityFare[k][j]);
-                        } else {
-                            cityFare[i][j] = cityFare[i][k] + cityFare[k][j];
-                        }
-                    }
+        // 간선 입력 (중복 간선은 최소 비용만)
+        for (int i = 0; i < m; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken()) - 1;
+            int b = Integer.parseInt(st.nextToken()) - 1;
+            int c = Integer.parseInt(st.nextToken());
+            if (c < dist[a][b]) dist[a][b] = c;
+        }
+
+        // Floyd-Warshall (불필요한 루프 많이 컷)
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                if (dist[i][k] == INF) continue; // i->k 없으면 스킵
+                int dik = dist[i][k];
+                for (int j = 0; j < n; j++) {
+                    if (dist[k][j] == INF) continue; // k->j 없으면 스킵
+                    int nd = dik + dist[k][j];
+                    if (nd < dist[i][j]) dist[i][j] = nd;
                 }
             }
         }
+
+        // 출력: INF면 0
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                sb.append(cityFare[i][j] + " ");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                sb.append(dist[i][j] == INF ? 0 : dist[i][j]).append(' ');
             }
-            sb.append("\n");
+            sb.append('\n');
         }
-        System.out.println(sb);
-
+        System.out.print(sb);
     }
-
-    static class City implements Comparable<City> {
-        int city, fare;
-
-        public City(int city, int fare) {
-            this.city = city;
-            this.fare = fare;
-        }
-
-        @Override
-        public int compareTo(City o) {
-            return this.fare - o.fare;
-        }
-    }
-
 }
