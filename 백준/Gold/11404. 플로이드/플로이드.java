@@ -1,63 +1,64 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int[][] map;
+    static int N, M;
+
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());    // 도시 개수
+        int M = Integer.parseInt(br.readLine());    // 버스 개수
+        int[][] cityFare = new int[N][N];
 
-        int N = Integer.parseInt(br.readLine());
-        int B = Integer.parseInt(br.readLine());
-        map = new int[N + 1][N + 1];
-
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                if (i == j) {
-                    map[i][j] = 0;
-                } else
-                    map[i][j] = 10000001;
-            }
-        }
-
-        for (int i = 0; i < B; i++)
-        {
+        for (int i = 0; i < M; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
-            int money = Integer.parseInt(st.nextToken());
-
-            if (map[start][end] > money) {
-                map[start][end] = money;
-            }
-
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            cityFare[a - 1][b - 1] = cityFare[a - 1][b - 1] != 0 ? Math.min(cityFare[a - 1][b - 1], c) : c;
         }
-        for (int i = 1; i <= N; i++)
-        {
-            for (int j = 1; j <= N; j++)
-            {
-                for (int k = 1; k <= N; k++)
-                {
-                    map[j][k] = Math.min(map[j][k], map[j][i] + map[i][k]);
 
+        for (int k = 0; k < N; k++) {
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    if (cityFare[i][k] > 0 && cityFare[k][j] > 0) {
+                        if (cityFare[i][j] != 0) {
+                            cityFare[i][j] = Math.min(cityFare[i][j], cityFare[i][k] + cityFare[k][j]);
+                        } else {
+                            cityFare[i][j] = cityFare[i][k] + cityFare[k][j];
+                        }
+                    }
                 }
             }
         }
-        for (int i = 1; i <= N; i++)
-        {
-            for (int j = 1; j <= N; j++)
-            {
-                if (map[i][j] == 10000001) {
-                    System.out.print("0 ");
-                }
-                else
-                    System.out.print(map[i][j] + " ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                sb.append(cityFare[i][j] + " ");
             }
-            System.out.println();
+            sb.append("\n");
+        }
+        System.out.println(sb);
+
+    }
+
+    static class City implements Comparable<City> {
+        int city, fare;
+
+        public City(int city, int fare) {
+            this.city = city;
+            this.fare = fare;
+        }
+
+        @Override
+        public int compareTo(City o) {
+            return this.fare - o.fare;
         }
     }
+
 }
