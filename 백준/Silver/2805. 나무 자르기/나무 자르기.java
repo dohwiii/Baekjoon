@@ -1,39 +1,45 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        st = new StringTokenizer(br.readLine());
+        long M = Long.parseLong(st.nextToken());
+        
         int[] trees = new int[N];
-        long lo = 0, hi = 0;
+        int max = 0;  // ✅ 수정
+        st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             trees[i] = Integer.parseInt(st.nextToken());
-            hi = Math.max(hi, trees[i]);
+            max = Math.max(max, trees[i]);
         }
-        long ans = 0;
-        while (lo < hi) {
-            long mid = (lo + hi) / 2;
-            long diff = 0;
-            for (int i = 0; i < N; i++) {
-                if (trees[i] <= mid) {   //이 높이보다 작은 나무들은 베지 못함
-                    continue;
+        
+        System.out.println(binarySearch(0, max, M, trees));  // ✅ 0부터
+    }
+    
+    private static int binarySearch(int a, int b, long M, int[] trees) {
+        int result = 0;  // ✅ 답을 명시적으로 저장
+        
+        while (a <= b) {  // ✅ <= 사용 (더 안전)
+            int avg = (a + b) / 2;
+            long sum = 0;  // ✅ long 사용
+            
+            for (int tree : trees) {
+                if (tree > avg) {
+                    sum += (tree - avg);
                 }
-                diff += (trees[i] - mid);
             }
-            if (diff >= M) {
-                ans = Math.max(ans, mid);
-                lo = mid + 1;
-            }
-            else if (diff < M) {
-                hi = mid;
+            
+            if (sum >= M) {  // 충분함 → 높이 올리기 가능
+                result = avg;     // ✅ 현재 높이 저장
+                a = avg + 1;      // 더 높은 높이 시도
+            } else {  // 부족함 → 높이 낮춰야 함
+                b = avg - 1;
             }
         }
-        System.out.println(ans);
+        
+        return result;  // ✅ 명확하게 답 반환
     }
 }
