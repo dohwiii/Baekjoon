@@ -1,46 +1,44 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int K = Integer.parseInt(st.nextToken());
-        int N = Integer.parseInt(st.nextToken());
-        long[] arr = new long[K];
-        long lo = 1, hi = 0;
+        int K = Integer.parseInt(st.nextToken());   // 가진 랜선 개수
+        int N = Integer.parseInt(st.nextToken());   // 필요한 랜선 개수
+        
+        long max = 0;  // ✅ long으로 변경
+        int[] cables = new int[K];  // ✅ K로 변경!
+
         for (int i = 0; i < K; i++) {
-            arr[i] = Long.parseLong(br.readLine());
-            hi = Math.max(hi, arr[i]);
+            cables[i] = Integer.parseInt(br.readLine());
+            max = Math.max(max, cables[i]);
         }
-        long ans = 0;
+        
+        System.out.println(binarySearch(1, max, cables, N));  // ✅ 1부터 시작
+    }
 
-        while (lo <= hi) {
-            long mid = (lo + hi) / 2;
-            long line = 0;
-            if (mid != 0) {
-                for (int i = 0; i < K; i++) {
-                    line += (arr[i] / mid);
-                }
+    private static long binarySearch(long a, long b, int[] cables, int N) {
+        long result = 0;  // ✅ length → result로 명확하게
+
+        while (a <= b) {
+            long mid = (a + b) / 2;
+            long count = 0;  // ✅ sum → count (개수니까)
+
+            for (int cable : cables) {  // ✅ 향상된 for문
+                count += (cable / mid);
             }
 
-            if (line >= N) {
-                ans = Math.max(ans, mid);
-                lo = mid + 1;
-            }
-            else {
-                if (hi == mid) {
-                    break;
-                }
-                hi = mid;
+            if (count >= N) {  // N개 이상 만들 수 있음
+                result = mid;     // ✅ 현재 길이 저장
+                a = mid + 1;      // 더 긴 길이 시도
+            } else {  // N개 못 만듦
+                b = mid - 1;      // 더 짧게 잘라야 함
             }
         }
-        System.out.println(ans);
-
-
-
-
+        return result;
     }
 }
