@@ -1,45 +1,54 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    static int N, M;
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        long M = Long.parseLong(st.nextToken());
-        
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        int max = 0;
         int[] trees = new int[N];
-        int max = 0;  // ✅ 수정
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             trees[i] = Integer.parseInt(st.nextToken());
             max = Math.max(max, trees[i]);
         }
-        
-        System.out.println(binarySearch(0, max, M, trees));  // ✅ 0부터
+        System.out.println(binarySearch(0, max, trees));
+
+
+
+
+
     }
-    
-    private static int binarySearch(int a, int b, long M, int[] trees) {
-        int result = 0;  // ✅ 답을 명시적으로 저장
-        
-        while (a <= b) {  // ✅ <= 사용 (더 안전)
-            int avg = (a + b) / 2;
-            long sum = 0;  // ✅ long 사용
-            
-            for (int tree : trees) {
-                if (tree > avg) {
-                    sum += (tree - avg);
+
+    private static int binarySearch(int a, int b, int[] trees) {
+        int result = 0;
+
+        while (a <= b) {
+            int mid = (a + b) / 2;
+            long sum = 0;
+
+            for (int i = 0; i < trees.length; i++) {
+                if (trees[i] <= mid) {
+                    continue;
                 }
+                sum += (trees[i] - mid);
             }
-            
-            if (sum >= M) {  // 충분함 → 높이 올리기 가능
-                result = avg;     // ✅ 현재 높이 저장
-                a = avg + 1;      // 더 높은 높이 시도
-            } else {  // 부족함 → 높이 낮춰야 함
-                b = avg - 1;
+            if (sum >= M) { // 절단기 높이 up
+                result = Math.max(result, mid);
+                a = mid + 1;
+
+            } else {  // 절단기 높이 down
+                b = mid - 1;
             }
         }
-        
-        return result;  // ✅ 명확하게 답 반환
+        return result;
     }
+
 }
