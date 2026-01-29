@@ -1,55 +1,49 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, C;
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());   // 집의 개수
-        C = Integer.parseInt(st.nextToken());   // 공유기 개수
-
+        int N = Integer.parseInt(st.nextToken());
+        int C = Integer.parseInt(st.nextToken());
         int[] home = new int[N];
+
         for (int i = 0; i < N; i++) {
             home[i] = Integer.parseInt(br.readLine());
         }
-        Arrays.sort(home);
-        int a = 0;
-        int b = home[N - 1] - home[0];  // 가장 먼 거리
+        Arrays.sort(home);  // 오름차순 정렬
+        int min = home[1] - home[0];        // 최소 인접 거리
+        int max = home[N - 1] - home[0];    // 최대 인접 거리
 
-        System.out.println(binarySearch(a, b, home));
 
+        System.out.println(binarySearch(1, max, home, C));
 
 
     }
 
-    private static int binarySearch(int a, int b, int[] home) {
-        int maxLen = 0;
+    private static int binarySearch(int a, int b, int[] home, int C) {
+        int dist = 0;
 
         while (a <= b) {
-            int len = (a + b) / 2;
+            int mid = (a + b) / 2;
             int count = 1;
-            int lastRouter = home[0];
+            int lastHome = home[0];
 
-            for (int i = 1; i < N; i++) {
-                int diff = home[i] - lastRouter;
-                if (diff >= len) {
+            for (int i = 1; i < home.length; i++) {
+                if (home[i] - lastHome >= mid) {
                     count++;
-                    lastRouter = home[i];   // 마지막 집
+                    lastHome = home[i];
                 }
             }
             if (count >= C) {
-                maxLen = len;
-                a = len + 1;
-            }
-            else {
-                b = len - 1;
+                dist = mid;
+                a = mid + 1;
+            } else {
+                b = mid - 1;
             }
         }
-        return maxLen;
+        return dist;
     }
 
 }
