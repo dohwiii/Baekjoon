@@ -1,47 +1,38 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         int X = Integer.parseInt(br.readLine());
         int[][] board = new int[N][N];
-        int r = N / 2;
-        int c = N / 2;
-        int target = N * N;
-        int len = 1;
+        int x = 0;
+        int y = 0;
         int dir = 0;
-        int[] dx = {-1, 0, 1, 0};
+        int val = N * N;
+        int[] dx = {1, 0, -1, 0};
         int[] dy = {0, 1, 0, -1};
-        int val = 1;
-        board[r][c] = 1;
-        int fx = 0, fy = 0;
-        if (X == 1) {
-            fx = r;
-            fy = c;
-        }
+        board[x][y] = val;
+        int ansX = 1;
+        int ansY = 1;
 
-        outer: while (val < N * N) {
-            for (int rep = 0; rep < 2; rep++) {
-                for (int step = 0; step < len; step++) {
-                    r += dx[dir];
-                    c += dy[dir];
-                    val++;
-                    board[r][c] = val;
-                    if (board[r][c] == X) {
-                        fx = r;
-                        fy = c;
-                    }
-                    if (val == N * N) {
-                        break outer;
-                    }
-                }
-                dir = (dir + 1) % 4;
+        while (val > 1) {
+            int nx = x + dx[dir];
+            int ny = y + dy[dir];
+
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N || board[nx][ny] != 0) {
+                dir = (dir + 1) % 4;    //방향 전환
+                continue;
             }
-            len++;
+            x = nx;
+            y = ny;
+            val--;
+            board[x][y] = val;
+            if (val == X) {
+                ansX = x;
+                ansY = y;
+            }
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < N; i++) {
@@ -50,12 +41,16 @@ public class Main {
             }
             sb.append("\n");
         }
-        sb.append((fx + 1) + " " + (fy + 1));
+        ansX++;
+        ansY++;
+        if (X == N * N) {
+            ansX = 1;
+            ansY = 1;
+        }
+        sb.append(ansX + " " + ansY);
         System.out.println(sb);
 
 
-
     }
-
 
 }
