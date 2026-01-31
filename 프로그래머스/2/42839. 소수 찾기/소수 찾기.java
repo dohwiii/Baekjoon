@@ -1,46 +1,57 @@
 import java.util.*;
 
 class Solution {
-    static StringBuilder sb = new StringBuilder();
-    static boolean[] visited;
-    static Set<Integer> primes = new HashSet<>();
+    static int cnt;
+    static boolean[] numVisited = new boolean[10_000_000];
     
     public int solution(String numbers) {
-        visited = new boolean[numbers.length()];
-        
-        for(int i=1; i<=numbers.length(); i++) {
-            solve(0, i, numbers);
+        int answer = 0;
+        int length = numbers.length();
+        char[] strArr = numbers.toCharArray();
+    
+        for(int i=1; i<=length; i++) {
+            combi(0, i, strArr, new boolean[length], new StringBuilder());
         }
-        return primes.size();
+        
+        
+        return cnt;
     }
-    public void solve(int depth, int length, String numbers) {
-        if(depth == length) {
-            int num = Integer.parseInt(sb.toString());
+    // 조합 만들기
+    private static void combi(int depth, int targetCnt, char[] arr, boolean[] visited, StringBuilder sb) {
+        if(depth == targetCnt) {
+            String temp = sb.toString();
+            int num = Integer.parseInt(temp);
+            if(numVisited[num]) {   // 이미 검증한 숫자라면
+                return;
+            }
+            numVisited[num] = true;
             if(isPrime(num)) {
-                primes.add(num);
+                cnt++;
             }
             return;
         }
-        
-        for(int i=0; i<numbers.length(); i++) {
+        for(int i=0; i<arr.length; i++) {
             if(!visited[i]) {
                 visited[i] = true;
-                sb.append(numbers.charAt(i));
-                solve(depth + 1, length, numbers);
+                sb.append(arr[i]);
+                combi(depth + 1, targetCnt, arr, visited, sb);
                 sb.deleteCharAt(sb.length() - 1);
                 visited[i] = false;
             }
+            
         }
+        
     }
-    private boolean isPrime(int num) {
-        if (num < 2) return false;
-        if (num == 2 || num == 3) return true; // 2와 3은 소수
-        if (num % 2 == 0 || num % 3 == 0) return false; // 짝수와 3의 배수는 소수가 아님
-
-        // 6k ± 1 패턴으로 검사
-        for (int i = 5; i <= Math.sqrt(num); i += 6) {
-            if (num % i == 0 || num % (i + 2) == 0) return false;
+    // 소수 판별
+    private static boolean isPrime(int num) {
+        if(num == 0 || num == 1) {
+            return false;
+        }
+        for(int i=2; i <= Math.sqrt(num); i++) {
+            if(num % i == 0) {
+                return false;
+            }
         }
         return true;
     }
-} 
+}
