@@ -1,56 +1,47 @@
 import java.util.*;
 
 class Solution {
-    static int cnt;
-    static boolean[] numVisited = new boolean[10_000_000];
-    
+    private Set<Integer> primes;
+
     public int solution(String numbers) {
-        int answer = 0;
-        int length = numbers.length();
-        char[] strArr = numbers.toCharArray();
-    
-        for(int i=1; i<=length; i++) {
-            combi(0, i, strArr, new boolean[length], new StringBuilder());
+        primes = new HashSet<>();
+        int[] digits = new int[numbers.length()];
+
+        for (int i = 0; i < numbers.length(); i++) {
+            digits[i] = numbers.charAt(i) - '0';
         }
-        
-        
-        return cnt;
+
+        for (int len = 1; len <= digits.length; len++) {
+            permutation(0, len, digits, new boolean[digits.length], 0);
+        }
+
+        return primes.size();
     }
-    // 조합 만들기
-    private static void combi(int depth, int targetCnt, char[] arr, boolean[] visited, StringBuilder sb) {
-        if(depth == targetCnt) {
-            String temp = sb.toString();
-            int num = Integer.parseInt(temp);
-            if(numVisited[num]) {   // 이미 검증한 숫자라면
-                return;
-            }
-            numVisited[num] = true;
-            if(isPrime(num)) {
-                cnt++;
-            }
+
+    // 순열 만들기 (static 제거)
+    private void permutation(int depth, int target, int[] digits, boolean[] visited, int current) {
+        if (depth == target) {
+            if (isPrime(current)) primes.add(current);
             return;
         }
-        for(int i=0; i<arr.length; i++) {
-            if(!visited[i]) {
+
+        for (int i = 0; i < digits.length; i++) {
+            if (!visited[i]) {
                 visited[i] = true;
-                sb.append(arr[i]);
-                combi(depth + 1, targetCnt, arr, visited, sb);
-                sb.deleteCharAt(sb.length() - 1);
+                permutation(depth + 1, target, digits, visited, current * 10 + digits[i]);
                 visited[i] = false;
             }
-            
         }
-        
     }
-    // 소수 판별
-    private static boolean isPrime(int num) {
-        if(num == 0 || num == 1) {
-            return false;
-        }
-        for(int i=2; i <= Math.sqrt(num); i++) {
-            if(num % i == 0) {
-                return false;
-            }
+
+    // 소수 판별 (아래 버그 수정 버전)
+    private boolean isPrime(int num) {
+        if (num < 2) return false;
+        if (num == 2) return true;
+        if (num % 2 == 0) return false;
+
+        for (int i = 3; i * i <= num; i += 2) {
+            if (num % i == 0) return false;
         }
         return true;
     }
