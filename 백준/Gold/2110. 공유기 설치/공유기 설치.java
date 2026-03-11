@@ -2,48 +2,52 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int[] arr;
+    static int N, C;
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int C = Integer.parseInt(st.nextToken());
-        int[] home = new int[N];
+        N = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        arr = new int[N];
 
         for (int i = 0; i < N; i++) {
-            home[i] = Integer.parseInt(br.readLine());
+            arr[i] = Integer.parseInt(br.readLine());
         }
-        Arrays.sort(home);  // 오름차순 정렬
-        int min = home[1] - home[0];        // 최소 인접 거리
-        int max = home[N - 1] - home[0];    // 최대 인접 거리
+        Arrays.sort(arr);
+        System.out.println(binarySearch());
 
-
-        System.out.println(binarySearch(1, max, home, C));
 
 
     }
 
-    private static int binarySearch(int a, int b, int[] home, int C) {
-        int dist = 0;
+    public static int binarySearch() {
+        int l = 1;
+        int r = arr[N - 1] - arr[0];
+        int maxLen = 0;
 
-        while (a <= b) {
-            int mid = (a + b) / 2;
-            int count = 1;
-            int lastHome = home[0];
-
-            for (int i = 1; i < home.length; i++) {
-                if (home[i] - lastHome >= mid) {
-                    count++;
-                    lastHome = home[i];
+        while (l <= r) {
+            int wifi = 1;
+            int mid = (l + r) / 2;  // 최소거리
+            int s = arr[0];
+            for (int i = 1; i < N; i++) {
+                if (arr[i] - s < mid) {
+                    continue;
+                } else {
+                    wifi++;
+                    s = arr[i];
                 }
             }
-            if (count >= C) {
-                dist = mid;
-                a = mid + 1;
-            } else {
-                b = mid - 1;
+            if (wifi < C) {
+                r = mid - 1;
+            } else if (wifi >= C) {
+                l = mid + 1;
+                maxLen = Math.max(maxLen, mid);
             }
+
         }
-        return dist;
+        return maxLen;
+
     }
 
 }
