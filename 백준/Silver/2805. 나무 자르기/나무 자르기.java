@@ -1,54 +1,46 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int[] arr;
     static int N, M;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        int max = 0;
-        int[] trees = new int[N];
+        N = Integer.parseInt(st.nextToken());    // 나무의 개수
+        M = Integer.parseInt(st.nextToken());    // 챙겨갈 나무 높이
+        arr = new int[N];   // 나무의 높이
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
-            trees[i] = Integer.parseInt(st.nextToken());
-            max = Math.max(max, trees[i]);
+            arr[i] = Integer.parseInt(st.nextToken());
         }
-        System.out.println(binarySearch(0, max, trees));
+        Arrays.sort(arr);   // 오름차순
 
+        int l = 1;
+        int r = arr[N - 1];
+        int ans = 0;
 
-
-
-
-    }
-
-    private static int binarySearch(int a, int b, int[] trees) {
-        int result = 0;
-
-        while (a <= b) {
-            int mid = (a + b) / 2;
+        while (l <= r) {
+            int cutter = (l + r) / 2;  // 절단기 높이
             long sum = 0;
 
-            for (int i = 0; i < trees.length; i++) {
-                if (trees[i] <= mid) {
-                    continue;
+            for (int i = 0; i < N; i++) {
+                if (arr[i] > cutter) {
+                    sum += (arr[i] - cutter);
                 }
-                sum += (trees[i] - mid);
             }
-            if (sum >= M) { // 절단기 높이 up
-                result = Math.max(result, mid);
-                a = mid + 1;
-
-            } else {  // 절단기 높이 down
-                b = mid - 1;
+            if (sum >= M) {
+                ans = cutter;
+                l = cutter + 1;
+            }
+            else {
+                r = cutter - 1;
             }
         }
-        return result;
-    }
+        System.out.println(ans);
 
+
+
+    }
 }
