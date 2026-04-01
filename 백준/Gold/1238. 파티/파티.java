@@ -40,22 +40,25 @@ public class Main {
     }
 
     private static int bfs(int node, int dest) {
-        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        PriorityQueue<Node> queue = new PriorityQueue<>();
         boolean[] visited = new boolean[N + 1];
         int[] dp = new int[N + 1];
         Arrays.fill(dp, Integer.MAX_VALUE);
         dp[node] = 0;
         visited[node] = true;
-        queue.offer(node);
+        queue.offer(new Node(node, 0));
 
         while (!queue.isEmpty()) {
-            int now = queue.poll();
+            Node now = queue.poll();
+            if (dp[now.end] < now.time) {
+                continue;
+            }
 
-            for (Node next : list[now]) {
-                if (dp[next.end] > dp[now] + next.time) {
-                    dp[next.end] = dp[now] + next.time;
+            for (Node next : list[now.end]) {
+                if (dp[next.end] > dp[now.end] + next.time) {
+                    dp[next.end] = dp[now.end] + next.time;
                     visited[next.end] = true;
-                    queue.offer(next.end);
+                    queue.offer(new Node(next.end, dp[next.end]));
                 }
             }
 
