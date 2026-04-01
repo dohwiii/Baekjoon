@@ -3,7 +3,8 @@ import java.util.*;
 
 public class Main {
     static int N, X;
-    static List<Node>[] list;
+    static List<Node>[] graph;
+    static List<Node>[] reverseGraph;;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -11,9 +12,12 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
         X = Integer.parseInt(st.nextToken());
-        list = new List[N + 1];
+        List<Node>[] graph = new List[N + 1];
+        List<Node>[] reverseGraph = new List[N + 1];
+
         for (int i = 1; i <= N; i++) {
-            list[i] = new ArrayList<>();
+            graph[i] = new ArrayList<>();
+            reverseGraph[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < M; i++) {
@@ -22,16 +26,21 @@ public class Main {
             int E = Integer.parseInt(st.nextToken());
             int T = Integer.parseInt(st.nextToken());
             // 단방향
-            list[S].add(new Node(E, T));
+            graph[S].add(new Node(E, T));
+            // 역방향
+            reverseGraph[E].add(new Node(S, T));
         }
         int max = 0;
+        int[] dp = new int[N + 1];
+        int[] dp2 = new int[N + 1];
+        bfs(X, reverseGraph, dp);
+        bfs(X, graph, dp2);
         for (int i = 1; i <= N; i++) {
             if (i == X) {
                 continue;
             }
-            int go = bfs(i, X);
-            int back = bfs(X, i);
-            max = Math.max(max, go + back);
+            int sum = dp[i] + dp2[i];
+            max = Math.max(max, sum);
         }
 
         System.out.println(max);
@@ -39,10 +48,9 @@ public class Main {
         // 가장 많은 시간을 소비하는 학생
     }
 
-    private static int bfs(int node, int dest) {
+    private static void bfs(int node, List<Node>[] graph, int[] dp) {
         PriorityQueue<Node> queue = new PriorityQueue<>();
         boolean[] visited = new boolean[N + 1];
-        int[] dp = new int[N + 1];
         Arrays.fill(dp, Integer.MAX_VALUE);
         dp[node] = 0;
         visited[node] = true;
@@ -54,7 +62,7 @@ public class Main {
                 continue;
             }
 
-            for (Node next : list[now.end]) {
+            for (Node next : graph[now.end]) {
                 if (dp[next.end] > dp[now.end] + next.time) {
                     dp[next.end] = dp[now.end] + next.time;
                     visited[next.end] = true;
@@ -63,7 +71,6 @@ public class Main {
             }
 
         }
-        return dp[dest];
     }
 
     static class Node implements Comparable<Node> {
