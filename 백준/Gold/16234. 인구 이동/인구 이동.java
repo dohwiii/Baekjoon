@@ -2,13 +2,13 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int[][] nation;
     static int N, L, R;
+    static int[][] map;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static boolean[][] visitedNation;
-    static ArrayList<ArrayList<Pos>> totalList; //모든 연합국
-    static ArrayList<Pos> nationList; //하나의 연합국
+    static boolean[][] visited;
+    static boolean isOpen;
+    static int cnt, people;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,89 +16,76 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         L = Integer.parseInt(st.nextToken());
         R = Integer.parseInt(st.nextToken());
-        nation = new int[N][N];
+        map = new int[N][N];
+
+        // 두 나라의 인구 차이가 L명 이상, R명 이하라면, 두 나라가 공유하는 국경선 -> 오늘 하루 동안 open
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
-                nation[i][j] = Integer.parseInt(st.nextToken());
+                map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
+        // 1. 국경선 모두 open
+        // 2. 인구이동
+        // 3. 인구수 배분
+
         int day = 0;
+        // 하루마다 리셋
         while (true) {
-            visitedNation = new boolean[N][N];
-            boolean isMove = false;
-            totalList = new ArrayList<>();
+            List<int[]> openNation = new ArrayList<>();
+            visited = new boolean[N][N];
+            isOpen = false;
 
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
-                    if (!visitedNation[i][j]) {
-                        bfs(i, j);
-                        if (nationList.size() == 1) {
-                            nationList.remove(new Pos(i, j));
+                    if (!visited[i][j]) {
+                        cnt = 0;    // 연합 칸 수
+                        people = 0; // 연합의 인구수
+                        openNation = new ArrayList<>();
+                        openBorder(i, j, openNation);   // 하나의 연합 생성
+                        int dividePeople = people / cnt;
+                        for (int[] c : openNation) {
+                            int x = c[0];
+                            int y = c[1];
+                            map[x][y] = dividePeople;
                         }
-                        else {
-                            totalList.add(nationList);
-                        }
+
                     }
                 }
             }
-            if (totalList.size() > 0) {
-                isMove = true;
-            }
-            if (isMove) {
-                for (ArrayList<Pos> now : totalList) {
-                    int sum = 0;
-                    int count = 0;
-                    for (Pos p : now) {
-                        sum += nation[p.x][p.y];
-                        count++;
-                    }
-                    int newPopulation = (int) sum / count;
-                    for (Pos p : now) {
-                        nation[p.x][p.y] = newPopulation;
-                    }
-                }
-                day++;
-            }
-            else
+            // 더이상 열 국경선이 없음
+            if (!isOpen) {
                 break;
+            }
+            day++;
+
         }
         System.out.println(day);
+
+
     }
 
-    public static void bfs(int x, int y) {
-        Queue<Pos> queue = new LinkedList<Pos>();
-        nationList = new ArrayList<>();
-        queue.add(new Pos(x, y));
-        nationList.add(new Pos(x, y));
-        visitedNation[x][y] = true;
+    private static void openBorder(int x, int y, List<int[]> list) {
+        // 두 나라의 인구 차이가 L명 이상, R명 이하라면, 두 나라가 공유하는 국경선 -> 오늘 하루 동안 open
+        visited[x][y] = true;
+        cnt++;
+        people += map[x][y];
+        list.add(new int[]{x, y});
 
-        while (!queue.isEmpty()) {
-            Pos now = queue.poll();
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
 
-            for (int i = 0; i < 4; i++) {
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (!visitedNation[nx][ny]) {
-                        int diff = Math.abs(nation[now.x][now.y] - nation[nx][ny]);
-                        if (diff <= R && diff >= L) {
-                            visitedNation[nx][ny] = true;
-                            nationList.add(new Pos(nx, ny));
-                            queue.add(new Pos(nx, ny));
-                        }
-                    }
-                }
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N || visited[nx][ny]) {
+                continue;
             }
+            int diff = Math.abs(map[nx][ny] - map[x][y]);
+            if (diff >= L && diff <= R) {   // 국경선 open
+                isOpen = true;
+                openBorder(nx, ny, list);
+            }
+
         }
-    }
-}
-class Pos {
-    int x, y;
-    public Pos(int x, int y) {
-        this.x = x;
-        this.y = y;
     }
 }
