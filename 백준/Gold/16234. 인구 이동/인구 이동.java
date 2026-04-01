@@ -30,10 +30,13 @@ public class Main {
         // 2. 인구이동
         // 3. 인구수 배분
 
+
         int day = 0;
         // 하루마다 리셋
         while (true) {
+            List<List<int[]>> totalList = new ArrayList<>();
             List<int[]> openNation = new ArrayList<>();
+            List<Integer> dividePeople = new ArrayList<>();
             visited = new boolean[N][N];
             isOpen = false;
 
@@ -44,16 +47,23 @@ public class Main {
                         people = 0; // 연합의 인구수
                         openNation = new ArrayList<>();
                         openBorder(i, j, openNation);   // 하나의 연합 생성
-                        int dividePeople = people / cnt;
-                        for (int[] c : openNation) {
-                            int x = c[0];
-                            int y = c[1];
-                            map[x][y] = dividePeople;
-                        }
+                        dividePeople.add(people / cnt);
+                        totalList.add(openNation);
+
 
                     }
                 }
             }
+            for (int i = 0; i < totalList.size(); i++) {
+                List<int[]> ints = totalList.get(i);
+                for (int j = 0; j < ints.size(); j++) {
+                    int[] c = ints.get(j);
+                    int x = c[0];
+                    int y = c[1];
+                    map[x][y] = dividePeople.get(i);
+                }
+            }
+
             // 더이상 열 국경선이 없음
             if (!isOpen) {
                 break;
