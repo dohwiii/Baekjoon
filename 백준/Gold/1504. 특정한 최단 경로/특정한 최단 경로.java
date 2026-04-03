@@ -1,95 +1,69 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, E;
-    static List<Node>[] list;
-    static int[] dist;
-    static final int INF = 200000000;
+    static int N, E, u, v;
+    static int[][] dist;
+    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
         N = Integer.parseInt(st.nextToken());
         E = Integer.parseInt(st.nextToken());
+        visited = new boolean[N + 1];
+        dist = new int[N + 1][N + 1];
 
-        dist = new int[N + 1];
-        list = new List[N + 1];
         for (int i = 1; i <= N; i++) {
-            list[i] = new ArrayList<>();
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        for (int i = 1; i <= N; i++) {
+            dist[i][i] = 0;
         }
 
         for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-
-            list[a].add(new Node(b, c));
-            list[b].add(new Node(a, c));
+            int c = Integer.parseInt(st.nextToken());   // 거리
+            // 양방향
+            dist[a][b] = Math.min(dist[a][b], c);
+            dist[b][a] = Math.min(dist[b][a], c);
         }
         st = new StringTokenizer(br.readLine());
-        int u = Integer.parseInt(st.nextToken());
-        int v = Integer.parseInt(st.nextToken());
+        u = Integer.parseInt(st.nextToken());
+        v = Integer.parseInt(st.nextToken());
+        // 1번 ~ N번 이동할 때 반드시 두 정점을 거쳐야 함
+        // 한번 이동했던 정점은 물론, 한번 이동했던 간선도 다시 이동할 수 있다 -> 하지만 최단 경로
 
-        int res1 = 0;
-        res1 += solve(1, u);
-        res1 += solve(u, v);
-        res1 += solve(v, N);
+        for (int k = 1; k <= N; k++) {
+            for (int i = 1; i <= N; i++) {  // 중간 다리
+                for (int j = 1; j <= N; j++) {
+                    if (dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE) {
+                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
 
-        int res2 = 0;
-        res2 += solve(1, v);
-        res2 += solve(v, u);
-        res2 += solve(u, N);
 
-        if (res1 >= INF || res2 >= INF) {
-            System.out.println(-1);
-        } else {
-            System.out.println(Math.min(res1, res2));
-        }
-    }
-
-    public static int solve(int start, int end) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(start, 0));
-        Arrays.fill(dist, INF);
-        dist[start] = 0;
-
-        while (!pq.isEmpty()) {
-            Node now = pq.poll();
-
-            if (now.node == end) {
-                break;
-            }
-            if (dist[now.node] < now.value) {
-                continue;
-            }
-
-            for (Node next : list[now.node]) {
-                if (dist[next.node] > dist[now.node] + next.value) {
-                    dist[next.node] = dist[now.node] + next.value;
-                    pq.offer(new Node(next.node, dist[next.node]));
                 }
             }
         }
-        return dist[end];
-    }
-}
+        long path1 = Long.MAX_VALUE;  // 불가능이라고 일단 가정
+        long path2 = Long.MAX_VALUE;
+        int MAX = Integer.MAX_VALUE;
 
-class Node implements Comparable<Node> {
-    int node, value;
+        // path1이 가능할 때만 계산
+        if (dist[1][u] != MAX && dist[u][v] != MAX && dist[v][N] != MAX) {
+            path1 = (long)dist[1][u] + dist[u][v] + dist[v][N];
+        }
 
-    public Node(int node, int value) {
-        this.node = node;
-        this.value = value;
-    }
+        // path2가 가능할 때만 계산
+        if (dist[1][v] != MAX && dist[v][u] != MAX && dist[u][N] != MAX) {
+            path2 = (long)dist[1][v] + dist[v][u] + dist[u][N];
+        }
 
-    @Override
-    public int compareTo(Node o) {
-        return this.value - o.value;
+        // 둘 다 불가능하면 -1, 아니면 작은 값
+        long result = Math.min(path1, path2);
+        System.out.println(result == Long.MAX_VALUE ? -1 : result);
+
     }
 }
