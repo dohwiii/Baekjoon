@@ -1,20 +1,22 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main {
+    static int N, E;
+    static int[][] map, dp;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static int[][] map, dp;
-    static final int INF = 200000;
+    static final int INF = 1126;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        int index = 1;
+        int T = 1;
+
         while (true) {
-            int N = Integer.parseInt(br.readLine());
-            if (N == 0) {
+            N = Integer.parseInt(br.readLine());
+            if (N == 0) {   // 종료
                 break;
             }
             map = new int[N][N];
@@ -26,49 +28,61 @@ public class Main {
                     dp[i][j] = INF;
                 }
             }
-            dp[0][0] = map[0][0];
-            PriorityQueue<Pos> queue = new PriorityQueue<>();
-            queue.offer(new Pos(0, 0, map[0][0]));
 
-            while (!queue.isEmpty()) {
-                Pos now = queue.poll();
-                if (dp[now.x][now.y] < now.cost) {
-                    continue;
-                }
-
-                for (int i = 0; i < 4; i++) {
-                    int nx = now.x + dx[i];
-                    int ny = now.y + dy[i];
-
-                    if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
-                        continue;
-                    }
-                    if (dp[nx][ny] > dp[now.x][now.y] + map[nx][ny]) {
-                        dp[nx][ny] = dp[now.x][now.y] + map[nx][ny];
-                        queue.offer(new Pos(nx, ny, dp[nx][ny]));
-                    }
-                }
-            }
-            sb.append("Problem ").append(index + ": ");
-            sb.append(dp[N - 1][N - 1] + "\n");
-            index++;
+            // 최소 금액으로 이동 (N-1, N-1)
+            solve(0, 0);
+            sb.append("Problem " + T + ": " + dp[N - 1][N - 1]);
+            sb.append("\n");
+            T++;
         }
-        System.out.println(sb.toString());
+        System.out.println(sb);
+
 
     }
 
-    static class Pos implements Comparable<Pos> {
-        int x, y, cost;
+    private static void solve(int x, int y) {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        dp[0][0] = map[0][0];
+        pq.offer(new Node(x, y, dp[x][y]));
 
-        public Pos(int x, int y, int cost) {
+        while (!pq.isEmpty()) {
+            Node now = pq.poll();
+            if (dp[now.x][now.y] < now.dist) {
+                continue;
+            }
+            if (now.x == N - 1 && now.y == N - 1) {
+                break;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
+                    continue;
+                }
+                if (dp[nx][ny] > dp[now.x][now.y] + map[nx][ny]) {
+                    dp[nx][ny] = dp[now.x][now.y] + map[nx][ny];
+                    pq.offer(new Node(nx, ny, dp[nx][ny]));
+                }
+            }
+        }
+    }
+
+
+    static class Node implements Comparable<Node> {
+        int x, y, dist;
+
+        public Node(int x, int y, int dist) {
             this.x = x;
             this.y = y;
-            this.cost = cost;
+            this.dist = dist;
         }
 
         @Override
-        public int compareTo(Pos o) {
-            return this.cost - o.cost;
+        public int compareTo(Node o) {
+            return this.dist - o.dist;
         }
     }
+
 }
