@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     static int N, E;
     static List<Node>[] graph;
-    static final int INF = 799_000;
+    static final int INF = 800_000;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -37,19 +37,15 @@ public class Main {
 
         // 1 -> u -> v -> N
         // 1 -> v -> u -> N
-        int result = -1;
-        if ((dist[1][u] != INF && dist[u][v] != INF && dist[v][N] != INF) && (dist[1][v] != INF && dist[v][u] != INF && dist[u][N] != INF)) {
-            int route1 = dist[1][u] + dist[u][v] + dist[v][N];
-            int route2 = dist[1][v] + dist[v][u] + dist[u][N];
-            result = Math.min(route1, route2);
-        } else if ((dist[1][u] != INF && dist[u][v] != INF && dist[v][N] != INF)) {
-            result = dist[1][u] + dist[u][v] + dist[v][N];
-        }
-        else if(dist[1][v] != INF && dist[v][u] != INF && dist[u][N] != INF){
-            result = dist[1][v] + dist[v][u] + dist[u][N];
-        }
-        System.out.println(result);
 
+        int route1 = INF, route2 = INF;
+        if (dist[1][u] != INF && dist[u][v] != INF && dist[v][N] != INF)
+            route1 = dist[1][u] + dist[u][v] + dist[v][N];
+        if (dist[1][v] != INF && dist[v][u] != INF && dist[u][N] != INF)
+            route2 = dist[1][v] + dist[v][u] + dist[u][N];
+
+        int result = Math.min(route1, route2);
+        System.out.println(result == INF ? -1 : result);
     }
 
     private static void dijkstra(int node, int[][] dist) {
