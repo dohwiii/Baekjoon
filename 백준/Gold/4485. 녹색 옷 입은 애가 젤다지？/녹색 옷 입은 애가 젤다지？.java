@@ -1,13 +1,12 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main {
-    static int N, E;
+    static int N;
     static int[][] map, dp;
     static int[] dx = {1, -1, 0, 0};
     static int[] dy = {0, 0, 1, -1};
-    static final int INF = 1126;
+    static final int INF = 140_626;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
