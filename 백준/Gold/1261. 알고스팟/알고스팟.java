@@ -1,4 +1,3 @@
-import org.w3c.dom.Node;
 
 import java.io.*;
 import java.util.*;
@@ -40,6 +39,9 @@ public class Main {
 
         while (!dq.isEmpty()) {
             Node now = dq.pollFirst();
+            if (dist[now.x][now.y] < now.cost) {
+                continue;
+            }
 
             for (int i = 0; i < 4; i++) {
                 int nx = now.x + dx[i];
@@ -63,12 +65,12 @@ public class Main {
     }
 
     static class Node {
-        int x, y, broken;
+        int x, y, cost;
 
-        public Node(int x, int y, int broken) {
+        public Node(int x, int y, int cost) {
             this.x = x;
             this.y = y;
-            this.broken = broken;
+            this.cost = cost;
         }
     }
 }
