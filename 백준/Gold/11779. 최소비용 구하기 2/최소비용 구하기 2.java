@@ -56,8 +56,6 @@ public class Main {
         Arrays.fill(dist, INF);
         dist[node] = 0;
         pq.offer(new City(node, 0));
-        Arrays.fill(prev, -1);
-        prev[node] = 0;
 
         while (!pq.isEmpty()) {
             City now = pq.poll();
