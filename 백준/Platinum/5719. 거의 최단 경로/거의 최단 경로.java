@@ -1,23 +1,20 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M, S, D;
-    static List<Node>[] list;
-    static boolean[] visited;
-    static final long INF = Long.MAX_VALUE;
-    static long result;
-    static long[] dist;
-    static List<Node>[] path;
-    static boolean[][] shortVisited;
+    static int N, M, S, E;
+    static List<Node>[] graph;
+    static List<Integer>[] parent;
+    static final int INF = 500_001;
+    static boolean[][] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
         while (true) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(br.readLine());
             N = Integer.parseInt(st.nextToken());
             M = Integer.parseInt(st.nextToken());
             if (N == 0 && M == 0) {
@@ -25,100 +22,126 @@ public class Main {
             }
             st = new StringTokenizer(br.readLine());
             S = Integer.parseInt(st.nextToken());
-            D = Integer.parseInt(st.nextToken());
-            list = new ArrayList[N];
-            dist = new long[N];
-            visited = new boolean[N];
-            path = new ArrayList[N];
-            shortVisited = new boolean[N][N];
-            result = -1;
-
+            E = Integer.parseInt(st.nextToken());
+            graph = new List[N];
+            parent = new List[N];
+            visited = new boolean[N][N];    // 간선 기준으로 방문체크
             for (int i = 0; i < N; i++) {
-                path[i] = new ArrayList<>();
-            }
-            for (int i = 0; i < N; i++) {
-                list[i] = new ArrayList<>();
+                graph[i] = new ArrayList<>();
+                parent[i] = new ArrayList<>();
             }
             for (int i = 0; i < M; i++) {
                 st = new StringTokenizer(br.readLine());
-                int a = Integer.parseInt(st.nextToken());
-                int b = Integer.parseInt(st.nextToken());
-                long c = Integer.parseInt(st.nextToken());
-                list[a].add(new Node(b, c)); //단방향
+                int s = Integer.parseInt(st.nextToken());
+                int e = Integer.parseInt(st.nextToken());
+                int t = Integer.parseInt(st.nextToken());
+                // 단방향
+                graph[s].add(new Node(e, t));
             }
-            dijkstra(S); //최단 경로 알아냄
-            remove(S, D); //최단경로 쳐냄
-            dijkstra(S);
-            if (dist[D] != INF) {
-                result = dist[D];
-            }
-            bw.write(result + "");
-            bw.write("\n");
+            /**
+             * 1. S -> E 최단 경로 구하기
+             */
+            int[] dist = dijkstra(S);
+            int minDist = dist[E];  // E까지의 최단 경로
 
+            /**
+             *  2. 최단경로 거치는 노드들 visited true처리
+             */
+            Queue<Integer> queue = new ArrayDeque<>();
+            for (int i = 0; i < parent[E].size(); i++) {
+                int num = parent[E].get(i);
+                visited[num][E] = true;
+                queue.offer(num);
+            }
+            while (!queue.isEmpty()) {
+                int now = queue.poll();
+
+                for (int prev : parent[now]) {
+                    if (prev != -1 && !visited[prev][now]) {
+                        visited[prev][now] = true;
+                        queue.offer(prev);
+                    }
+                }
+            }
+
+            /**
+             * 3. 방문 안한 경로 중 가장 짧은 경로 구하기
+             */
+            PriorityQueue<Node> pq = new PriorityQueue<>();
+            pq.offer(new Node(S, 0));
+            int[] dist2 = new int[N];
+            Arrays.fill(dist2, INF);
+            dist2[S] = 0;
+
+            while (!pq.isEmpty()) {
+                Node now = pq.poll();
+                if (dist2[now.node] < now.dist) {
+                    continue;
+                }
+
+                for (Node next : graph[now.node]) {
+                    if (!visited[now.node][next.node]) {  // 최단경로에 포함된 노드가 아니라면
+                        if (dist2[next.node] > dist2[now.node] + next.dist) {
+                            dist2[next.node] = dist2[now.node] + next.dist;
+                            pq.offer(new Node(next.node, dist2[next.node]));
+                        }
+                    }
+                }
+            }
+            if (dist2[E] == INF) {
+                sb.append("-1");
+            } else {
+                sb.append(dist2[E]);
+            }
+            sb.append("\n");
         }
-        bw.flush();
-        bw.close();
+        System.out.println(sb);
+
 
     }
 
-    public static void dijkstra(int start) {
+    private static int[] dijkstra(int start) {
         PriorityQueue<Node> pq = new PriorityQueue<>();
+        int[] dist = new int[N];
         Arrays.fill(dist, INF);
         dist[start] = 0;
-        pq.add(new Node(start, 0));
+        parent[start].add(-1);
+        pq.offer(new Node(start, 0));
 
         while (!pq.isEmpty()) {
             Node now = pq.poll();
+            if (dist[now.node] < now.dist) {
+                continue;
+            }
 
-            //이미 도착한 시간보다 현재 시간이 더 크다면 탐색할 필요 없음
-            if (dist[now.end] < now.value) {
-                continue;
-            }
-            if (now.end == D) {
-                continue;
-            }
-            for (Node next : list[now.end]) {
-                if (shortVisited[now.end][next.end]) {
-                    continue;
+            for (Node next : graph[now.node]) {
+                if (dist[next.node] > dist[now.node] + next.dist) {
+                    dist[next.node] = dist[now.node] + next.dist;
+                    pq.offer(new Node(next.node, dist[next.node]));
+                    parent[next.node].clear();  // 새로운 최단경로를 찾았으므로 리셋하고 추가
+                    parent[next.node].add(now.node);   // 부모 노드
                 }
-                if (dist[next.end] > dist[now.end] + next.value) {
-                    dist[next.end] = dist[now.end] + next.value;
-                    path[next.end] = new ArrayList<>();
-                    path[next.end].add(new Node(now.end, dist[now.end] + next.value));
-                    pq.add(new Node(next.end, dist[next.end]));
-                } else if (dist[next.end] == dist[now.end] + next.value) {
-                    path[next.end].add(new Node(now.end, dist[now.end] + next.value));
+                else if (dist[next.node] == dist[now.node] + next.dist) {
+                    parent[next.node].add(now.node);   // 부모 노드
                 }
             }
         }
-
+        return dist;
     }
 
-    public static void remove(int s, int d) {
-        if (s == d) {
-            return;
+
+    static class Node implements Comparable<Node> {
+        int node, dist;
+
+        public Node(int node, int dist) {
+            this.node = node;
+            this.dist = dist;
         }
-        for (Node n : path[d]) {
-            if (!shortVisited[n.end][d]) {
-                shortVisited[n.end][d] = true;
-                remove(s, n.end);
-            }
+
+        @Override
+        public int compareTo(Node o) {
+            return this.dist - o.dist;
         }
     }
 
-}
-
-class Node implements Comparable<Node> {
-    int end;
-    long value;
-
-    public Node(int end, long value) {
-        this.end = end;
-        this.value = value;
-    }
-
-    @Override
-    public int compareTo(Node o) {
-        return Long.compare(this.value, o.value);
-    }
 }
