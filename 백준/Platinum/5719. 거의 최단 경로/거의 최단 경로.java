@@ -48,11 +48,7 @@ public class Main {
              *  2. 최단경로 거치는 노드들 visited true처리
              */
             Queue<Integer> queue = new ArrayDeque<>();
-            for (int i = 0; i < parent[E].size(); i++) {
-                int num = parent[E].get(i);
-                visited[num][E] = true;
-                queue.offer(num);
-            }
+            queue.offer(E);
             while (!queue.isEmpty()) {
                 int now = queue.poll();
 
