@@ -1,143 +1,111 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M, S, E;
-    static List<Node>[] graph;
-    static List<Integer>[] parent;
-    static final int INF = 500_001;
+    static int N;
+    static List<Edge>[] graph;
+    static final int INF = 5_000_001;
+    static List<Integer>[] visitedEdge;
     static boolean[][] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
 
         while (true) {
-            st = new StringTokenizer(br.readLine());
+            StringTokenizer st = new StringTokenizer(br.readLine());
             N = Integer.parseInt(st.nextToken());
-            M = Integer.parseInt(st.nextToken());
+            int M = Integer.parseInt(st.nextToken());
             if (N == 0 && M == 0) {
                 break;
             }
-            st = new StringTokenizer(br.readLine());
-            S = Integer.parseInt(st.nextToken());
-            E = Integer.parseInt(st.nextToken());
-            graph = new List[N];
-            parent = new List[N];
-            visited = new boolean[N][N];    // 간선 기준으로 방문체크
+            visitedEdge = new List[N];
+            visited = new boolean[N][N];
+            graph = new List[N];    // 0번 ~ N-1번
             for (int i = 0; i < N; i++) {
                 graph[i] = new ArrayList<>();
-                parent[i] = new ArrayList<>();
+                visitedEdge[i] = new ArrayList<>();
             }
+            st = new StringTokenizer(br.readLine());
+            int S = Integer.parseInt(st.nextToken());   // 시작
+            int D = Integer.parseInt(st.nextToken());   // 도착
+
             for (int i = 0; i < M; i++) {
                 st = new StringTokenizer(br.readLine());
-                int s = Integer.parseInt(st.nextToken());
-                int e = Integer.parseInt(st.nextToken());
-                int t = Integer.parseInt(st.nextToken());
-                // 단방향
-                graph[s].add(new Node(e, t));
+                int u = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
+                int p = Integer.parseInt(st.nextToken());   // 자연수 1 ~ 1000
+                graph[u].add(new Edge(v, p));
             }
-            /**
-             * 1. S -> E 최단 경로 구하기
-             */
-            int[] dist = dijkstra(S);
-            int minDist = dist[E];  // E까지의 최단 경로
 
-            /**
-             *  2. 최단경로 거치는 노드들 visited true처리
-             */
+            // 최단경로 구하기
+            int[] dist = dijkstra(S);
             Queue<Integer> queue = new ArrayDeque<>();
-            queue.offer(E);
+            queue.offer(D);
             while (!queue.isEmpty()) {
                 int now = queue.poll();
 
-                for (int prev : parent[now]) {
-                    if (prev != -1 && !visited[prev][now]) {
+                for (int prev : visitedEdge[now]) {
+                    if (!visited[prev][now]) {
                         visited[prev][now] = true;
                         queue.offer(prev);
                     }
                 }
             }
-
-            /**
-             * 3. 방문 안한 경로 중 가장 짧은 경로 구하기
-             */
-            PriorityQueue<Node> pq = new PriorityQueue<>();
-            pq.offer(new Node(S, 0));
-            int[] dist2 = new int[N];
-            Arrays.fill(dist2, INF);
-            dist2[S] = 0;
-
-            while (!pq.isEmpty()) {
-                Node now = pq.poll();
-                if (dist2[now.node] < now.dist) {
-                    continue;
-                }
-
-                for (Node next : graph[now.node]) {
-                    if (!visited[now.node][next.node]) {  // 최단경로에 포함된 노드가 아니라면
-                        if (dist2[next.node] > dist2[now.node] + next.dist) {
-                            dist2[next.node] = dist2[now.node] + next.dist;
-                            pq.offer(new Node(next.node, dist2[next.node]));
-                        }
-                    }
-                }
-            }
-            if (dist2[E] == INF) {
+            dist = dijkstra(S);
+            if (dist[D] == INF) {
                 sb.append("-1");
             } else {
-                sb.append(dist2[E]);
+                sb.append(dist[D]);
             }
             sb.append("\n");
+
+
         }
         System.out.println(sb);
 
 
     }
 
-    private static int[] dijkstra(int start) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
+    private static int[] dijkstra(int node) {
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
         int[] dist = new int[N];
         Arrays.fill(dist, INF);
-        dist[start] = 0;
-        parent[start].add(-1);
-        pq.offer(new Node(start, 0));
+        dist[node] = 0;
+        pq.offer(new Edge(node, 0));
 
         while (!pq.isEmpty()) {
-            Node now = pq.poll();
-            if (dist[now.node] < now.dist) {
-                continue;
-            }
+            Edge now = pq.poll();
 
-            for (Node next : graph[now.node]) {
-                if (dist[next.node] > dist[now.node] + next.dist) {
-                    dist[next.node] = dist[now.node] + next.dist;
-                    pq.offer(new Node(next.node, dist[next.node]));
-                    parent[next.node].clear();  // 새로운 최단경로를 찾았으므로 리셋하고 추가
-                    parent[next.node].add(now.node);   // 부모 노드
+            for (Edge next : graph[now.node]) {
+                if (!visited[now.node][next.node]) {
+                    if (dist[now.node] != INF && dist[next.node] > dist[now.node] + next.dist) {
+                        dist[next.node] = dist[now.node] + next.dist;
+                        pq.offer(new Edge(next.node, dist[next.node]));
+                        visitedEdge[next.node].clear();
+                        visitedEdge[next.node].add(now.node);
+                    } else if (dist[now.node] != INF && dist[next.node] == dist[now.node] + next.dist) {
+                        visitedEdge[next.node].add(now.node);
+                    }
                 }
-                else if (dist[next.node] == dist[now.node] + next.dist) {
-                    parent[next.node].add(now.node);   // 부모 노드
-                }
+
             }
         }
         return dist;
     }
 
-
-    static class Node implements Comparable<Node> {
+    static class Edge implements Comparable<Edge> {
         int node, dist;
 
-        public Node(int node, int dist) {
+        public Edge(int node, int dist) {
             this.node = node;
             this.dist = dist;
         }
 
         @Override
-        public int compareTo(Node o) {
+        public int compareTo(Edge o) {
             return this.dist - o.dist;
         }
     }
-
 }
