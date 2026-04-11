@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 
@@ -11,7 +12,7 @@ public class Main {
         int M = Integer.parseInt(st.nextToken());
         int[][] edges = new int[M][3];
         long[] dist = new long[N + 1];
-        int INF = 5_000_001;
+        long INF = 5_000_001;
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
@@ -23,25 +24,24 @@ public class Main {
         Arrays.fill(dist, INF);
         dist[1] = 0;
 
-        // N-1 반복
         for (int i = 0; i < N - 1; i++) {
             for (int[] edge : edges) {
-                int a = edge[0];
-                int b = edge[1];
-                int t = edge[2];    // 시간
-                if (dist[a] != INF && dist[b] > dist[a] + t) {
-                    dist[b] = dist[a] + t;
+                int s = edge[0];
+                int e = edge[1];
+                int d = edge[2];
+                if (dist[s] != INF && dist[e] > dist[s] + d) {
+                    dist[e] = dist[s] + d;
                 }
             }
         }
-        boolean hasNegCycle = false;    // 음수 사이클 유무
+        boolean hasNegCycle = false;
         for (int[] edge : edges) {
-            int a = edge[0];
-            int b = edge[1];
-            int t = edge[2];    // 시간
-            if (dist[a] != INF && dist[b] > dist[a] + t) {
+            int s = edge[0];
+            int e = edge[1];
+            int d = edge[2];
+            if (dist[s] != INF && dist[e] > dist[s] + d) {
+                dist[e] = dist[s] + d;
                 hasNegCycle = true;
-                dist[b] = dist[a] + t;
                 break;
             }
         }
@@ -49,16 +49,12 @@ public class Main {
             System.out.println(-1);
         } else {
             for (int i = 2; i <= N; i++) {
-                if (dist[i] == INF) {
-                    sb.append("-1\n");
-                    continue;
-                }
-                sb.append(dist[i] + "\n");
+                long value = dist[i] == INF ? -1 : dist[i];
+                sb.append(value + "\n");
             }
-            System.out.print(sb.toString().trim());
+            System.out.println(sb);
         }
 
 
     }
-
 }
