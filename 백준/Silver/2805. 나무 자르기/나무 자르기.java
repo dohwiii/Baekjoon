@@ -31,7 +31,7 @@ public class Main {
         int e = max;
         int maxCut = 0;
 
-        while (s < e) {
+        while (s <= e) {
             int mid = (s + e) / 2;
             long sum = 0;
 
@@ -44,7 +44,7 @@ public class Main {
                 s = mid + 1;
                 maxCut = mid;
             } else {
-                e = mid;
+                e = mid - 1;
             }
         }
         return maxCut;
