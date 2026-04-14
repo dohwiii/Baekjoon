@@ -23,7 +23,7 @@ public class Main {
     }
 
     private static int binarySearch() {
-        int s = 0, e = home[N - 1] - home[0];
+        int s = 1, e = home[N - 1] - home[0];
         int maxDist = 0;
 
         while (s <= e) {
