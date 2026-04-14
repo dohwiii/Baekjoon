@@ -37,7 +37,7 @@ public class Main {
                 }
             }
             if (wifi >= C) {
-                maxDist = Math.max(maxDist, mid);
+                maxDist = mid;
                 s = mid + 1;
             } else {
                 e = mid - 1;
