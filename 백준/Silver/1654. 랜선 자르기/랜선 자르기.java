@@ -12,7 +12,7 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         K = Integer.parseInt(st.nextToken());   // 랜선 개수
         N = Integer.parseInt(st.nextToken());   // 필요한 랜선 개수
-        cables = new int[N];
+        cables = new int[K];
 
         for (int i = 0; i < K; i++) {
             cables[i] = Integer.parseInt(br.readLine());
@@ -31,7 +31,7 @@ public class Main {
 
         while (s <= e) {
             long mid = (s + e) / 2;
-            int sum = 0;
+            long sum = 0;
 
             for (int i = 0; i < K; i++) {
                 long cnt = cables[i] / mid;
