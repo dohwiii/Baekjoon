@@ -1,28 +1,21 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
     public int[] solution(int[] array, int[][] commands) {
         int[] answer = new int[commands.length];
         int index = 0;
         
-        for(int i=0; i<commands.length; i++) {
-            LinkedList<Integer> list = new LinkedList<>();
-            int[] nowCommand = commands[i];
-            int start = nowCommand[0] - 1;
-            int end = nowCommand[1] - 1;
-            
-            for(int j = start; j <= end; j++) {
-                list.add(array[j]);
-            }
-             Collections.sort(list, (o1, o2) -> {
-                return o1 - o2;
-             });
-
-            answer[index++] = list.remove(nowCommand[2] - 1);
+        for(int[] c : commands) {
+            int result = find(array, c[0], c[1], c[2]);
+            answer[index++] = result;
         }
         
         return answer;
     }
-
+    private static int find(int[] array, int s, int e, int k) {
+        int[] sArr = Arrays.copyOfRange(array, s-1, e);
+        Arrays.sort(sArr);
+        
+        return sArr[k-1];
+    }
 }
