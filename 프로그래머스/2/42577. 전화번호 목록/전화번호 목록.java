@@ -3,14 +3,18 @@ import java.util.*;
 class Solution {
     public boolean solution(String[] phone_book) {
         Set<String> set = new HashSet<>();
-        Arrays.sort(phone_book);
-        
-        for(int i=0; i<phone_book.length - 1; i++) {
-            if(phone_book[i+1].startsWith(phone_book[i])) {
-                return false;
+        for(String phone : phone_book) {
+            set.add(phone);
+        }
+        for(String s : phone_book) {
+            for(int i=1; i<s.length(); i++) {
+                String subStr = s.substring(0, i);
+                if(set.contains(subStr)) {
+                    return false;
+                }
             }
         }
-        //접두어가 있으면 false, 접두어 하나도 없으면 true
+        
         return true;
     }
-} 
+}
