@@ -2,21 +2,23 @@ import java.util.*;
 
 class Solution {
     public int solution(String[][] clothes) {
-        Map<String, Integer> typeMap = new HashMap<>();
-        
-        // 각 의상 종류별로 개수를 저장
-        for (String[] cloth : clothes) {
-            String type = cloth[1];
-            typeMap.put(type, typeMap.getOrDefault(type, 0) + 1);
+        Map<String, List<String>> map = new HashMap<>();
+        for(String[] cloth : clothes) {
+            String name = cloth[0]; // 의상 이름
+            String type = cloth[1]; // 의상 종류
+            
+            List<String> value = map.getOrDefault(type, new ArrayList<>()); 
+            value.add(name);
+            map.put(type, value);
         }
         
         int answer = 1;
-        
-        // 모든 종류의 옷 경우의 수를 계산
-        for (int count : typeMap.values()) {
-            answer *= (count + 1); // 선택하지 않는 경우를 포함하여 (count + 1)
+        for(String key: map.keySet()) {
+            List<String> value = map.get(key);
+            int size = value.size();
+            answer *= (size + 1);
         }
-        
-        return answer - 1; // 모든 옷을 선택하지 않는 경우를 제외
+
+        return answer - 1;
     }
 }
