@@ -9,11 +9,9 @@ class Solution {
         }
         
         
-        
-        
-        return bfs(begin, target, words, set);
+        return bfs(begin, target, set);
     }
-    private static int bfs(String begin, String target, String[] words, Set<String> set) {
+    private static int bfs(String begin, String target, Set<String> set) {
         Queue<Sentence> queue = new ArrayDeque<>();
         Set<String> visited = new HashSet<>();
         queue.offer(new Sentence(begin, 0));
@@ -27,11 +25,9 @@ class Solution {
             }
             
             for(int i=0; i<now.str.length(); i++) {
-                // char[] arr = now.str.toCharArray();
                 sb = new StringBuilder(now.str);
                 
                 for(char c='a'; c<='z'; c++) {
-                    // arr[i] = c;
                     sb.setCharAt(i, c);
                     if(set.contains(sb.toString()) && !visited.contains(sb.toString()) ) {   // words에 포함이 되어있다면
                         visited.add(sb.toString());
@@ -46,7 +42,7 @@ class Solution {
     } 
     static class Sentence {
         String str;
-        int depth;;
+        int depth;
         
         public Sentence(String str, int depth) {
             this.str=str;
