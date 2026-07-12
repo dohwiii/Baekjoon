@@ -1,56 +1,56 @@
 import java.util.*;
-
+// N개의 마을 중 K시간 이하로 배달 가능한 곳 카운트하기
+// 1번 마을 출발
+// 다익스트라
 class Solution {
     public int solution(int N, int[][] road, int K) {
         int answer = 0;
-        List<Node>[] list = new List[N + 1];
-        for(int i=0; i<=N; i++) {
+        List<Delivery>[] list = new List[N+1];
+        for(int i=1; i<=N; i++) {
             list[i] = new ArrayList<>();
         }
-        for(int [] r : road) {
-            int a = r[0];
-            int b = r[1];
-            int t = r[2];
-            list[a].add(new Node(b, t));
-            list[b].add(new Node(a, t));
+        for(int i=0; i<road.length; i++) {
+            int x = road[i][0];
+            int y = road[i][1];
+            int d = road[i][2];
+            list[x].add(new Delivery(y, d));
+            list[y].add(new Delivery(x, d));
         }
+        PriorityQueue<Delivery> pq = new PriorityQueue<>();
+        pq.offer(new Delivery(1, 0));
         int[] dist = new int[N+1];
         Arrays.fill(dist, Integer.MAX_VALUE);
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(1, 0));
         dist[1] = 0;
-        
         while(!pq.isEmpty()) {
-            Node now = pq.poll();
-            if(dist[now.node] < now.time) {
-                continue;
-            }
+            Delivery now = pq.poll();
             
-            for(Node next : list[now.node]) {
-                if(dist[next.node] > dist[now.node] + next.time) {
-                    dist[next.node] = dist[now.node] + next.time;
-                    pq.offer(new Node(next.node, dist[next.node]));
+            for(Delivery next : list[now.town]) {
+                if(dist[next.town] > dist[now.town] + next.dist) {
+                    dist[next.town] = dist[now.town] + next.dist;
+                    pq.offer(new Delivery(next.town, dist[next.town]));
                 }
             }
         }
+        // dist 배열 K 이하 검사
         for(int i=1; i<=N; i++) {
             if(dist[i] <= K) {
                 answer++;
             }
         }
+        
         return answer;
     }
-    static class Node implements Comparable<Node> {
-        int node, time;
-        public Node(int node, int time) {
-            this.node=node;
-            this.time=time;
+    static class Delivery implements Comparable<Delivery> {
+        int town;
+        int dist;
+        
+        public Delivery(int town, int dist) {
+            this.town=town;
+            this.dist=dist;
         }
         @Override
-        public int compareTo(Node n) {
-            return this.time - n.time;
+        public int compareTo(Delivery d) {
+            return this.dist - d.dist;
         }
     }
-    
-    
 }
