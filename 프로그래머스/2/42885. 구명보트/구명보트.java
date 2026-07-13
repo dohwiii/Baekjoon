@@ -3,10 +3,10 @@ import java.util.*;
 class Solution {
     public int solution(int[] people, int limit) {
         int answer = 0;
-        
-        
+
         Arrays.sort(people);    // 오름차순 정렬
         answer = binarySearch(0, people.length - 1, people, limit);
+        
         return answer;
     }
     private static int binarySearch(int left, int right, int[] people, int limit) {
