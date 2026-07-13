@@ -3,34 +3,31 @@ import java.util.*;
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
         int[] answer = {};
-        Queue<Integer> queue = new ArrayDeque<>();
+        int N = progresses.length;
+        int[] need = new int[N];
         
-        for(int i=0; i<progresses.length; i++) {
-            int remain = 100 - progresses[i];
-            int left = (int) Math.ceil((remain*1.0) / speeds[i]);
-            queue.offer(left);  // 배포까지 남은 완료일
+        for(int i=0; i<N; i++) {
+            int left = 100 - progresses[i]; // 남은 퍼센트
+            int day = (int) Math.ceil(left / (double) speeds[i]);
+            need[i] = day;
         }
-        List<Integer> list = new ArrayList<>();
-        
-        while(!queue.isEmpty()) {
-            int now = queue.poll();
-            int cnt = 1;
-            
-            while(!queue.isEmpty()) {
-                if(now >= queue.peek()) {
-                    queue.poll();
-                    cnt++;
-                }
-                else {
-                    break;
-                }
+        List<Integer> answerList = new ArrayList<>();
+        int cnt = 1;
+        int day = need[0];  // 첫번째 작업
+        for(int i=1; i<N; i++) {
+            if(day >= need[i]) {    // 같이 배포할 수 있다면
+                cnt++;
             }
-            list.add(cnt);  // 같이 배포할 작업 개수
+            else {  // 시간 더 소요
+                answerList.add(cnt);
+                cnt = 1;
+                day = need[i];  // 초기화
+            }
         }
-        answer = new int[list.size()];
-        for(int i=0; i<list.size(); i++) {
-            answer[i] = list.get(i);
+        if(cnt > 0) {
+            answerList.add(cnt);
         }
-        return answer;
+        
+        return answerList.stream().mapToInt(Integer::intValue).toArray();
     }
 }
