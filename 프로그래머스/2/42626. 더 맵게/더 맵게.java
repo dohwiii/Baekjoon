@@ -3,20 +3,34 @@ import java.util.*;
 class Solution {
     public int solution(int[] scoville, int K) {
         int answer = 0;
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        
         for(int s : scoville) {
-            pq.offer(s);
+            long a = (long) s;
+            pq.offer(a);
         }
-        while(pq.size() >= 2 && pq.peek() < K) {
-            int first = pq.poll();
-            int second = pq.poll();
-            int score = first + second * 2;
-            pq.offer(score);
-            answer++;   //섞음
+        boolean isPossible = false;
+        int cnt = 0;    // 섞은 횟수
+        
+        while(!pq.isEmpty()) {
+            if(pq.peek() >= K) {        
+                isPossible = true;
+                break;
+            }
+            if(pq.size() < 2) {
+                break;
+            }
+            long smaller = pq.poll();
+            long larger = pq.poll();
+            long mix = smaller + larger * 2;
+            pq.offer(mix);
+            cnt++;  // 섞기
+            
         }
-        if(pq.poll() < K) {
-            return -1;
+        if(isPossible) {
+            return cnt;
         }
-        return answer;
+        
+        return -1;
     }
 }
