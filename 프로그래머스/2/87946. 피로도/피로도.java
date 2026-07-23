@@ -1,20 +1,26 @@
+import java.util.*;
+
 class Solution {
-    static int maxDungeon = Integer.MIN_VALUE;
-    static boolean[] visited;
+    static int max;
     public int solution(int k, int[][] dungeons) {
-        visited = new boolean[dungeons.length];
+        int answer = -1;
+        int N = dungeons.length;    // 던전 개수
         
-        solve(k, dungeons, 0);
-        return maxDungeon;
+        permutation(0, k, dungeons, new boolean[N]);
+        
+        return max;
     }
-    public void solve(int fatigue, int[][] dungeons, int dungeon) {
-        maxDungeon = Math.max(maxDungeon, dungeon);
+    private static void permutation(int depth, int fatigue, int[][] dungeons, boolean[] visited) {
+        max = Math.max(max, depth);
         
         for(int i=0; i<dungeons.length; i++) {
-            if(!visited[i] && dungeons[i][0] <= fatigue) {
-                visited[i] = true;
-                solve(fatigue - dungeons[i][1], dungeons, dungeon + 1);
-                visited[i] = false;
+            if(!visited[i]) {
+                if(fatigue >= dungeons[i][0]) {
+                    visited[i] = true;
+                    permutation(depth + 1, fatigue - dungeons[i][1], dungeons, visited);
+                    visited[i] = false;
+                }
+                
             }
         }
     }
