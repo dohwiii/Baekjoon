@@ -1,100 +1,70 @@
 import java.util.*;
-
+// 1. orders의 주문한 메뉴를 가지고 course 크기만큼 조합구하기
+// 2. 조합 메뉴가 orders에 몇번 주문됐는지 카운트
+// 3. 주문한게 2번 이상이라면 추가
 class Solution {
-    static boolean[] visited;
-    static int max;
-    static String maxMenu = "";
-    static Map<String, Integer> map = new HashMap<>();
-    
     public String[] solution(String[] orders, int[] course) {
         String[] answer = {};
-        List<String> list = new ArrayList<>();
+        List[] ansList = new List[course.length];
+        for(int i=0; i<course.length; i++) {
+            ansList[i] = new ArrayList<>();
+        }
         
-        for(int j=0; j<orders.length; j++) {
-            char[] charArr = orders[j].toCharArray(); // String to Char Array
-            Arrays.sort(charArr); // Char Array 알파벳 순 정렬
-            String order = new String(charArr); // 또는 String.valueOf(charArr);  
+        for(int i=0; i<course.length; i++) {
+            int menuSize = course[i];
+            Map<String, Integer> orderMap = new HashMap<>();
             
-            for(int i=0; i<course.length; i++) {
-                int length = course[i]; //코스요리에 해당하는 길이(요리 개수)
-                if(length > order.length()) {
+            for(int j=0; j<orders.length; j++) {
+                char[] order = orders[j].toCharArray();
+                Arrays.sort(order); // 알파벳 오름차순
+                combi(0, 0, new char[menuSize], menuSize, order, orderMap);
+            }
+            int max = 0;
+            // 최대 주문 메뉴 추리기
+            for(String key : orderMap.keySet()) {
+                int orderCnt = orderMap.get(key);   // 주문 횟수
+                if(orderCnt < 2) {
                     continue;
                 }
-                max = 2;    //같은 조합을 시킨 사람의 수
-                maxMenu = " ";
-                visited = new boolean[order.length()];
-                combi(0, length, order, 0, orders);
-            }
-            
-        } 
-
-        for(int i=0; i<course.length; i++) {
-            int length = course[i];
-            int max = 0;
-            
-            for(String s : map.keySet()) {
-                if(s.length() == length) {
-                    if(max < map.get(s)) {
-                        max = map.get(s);
-                    }
+                if(orderCnt < max ) {
+                    // 저장할 필요 없음
+                    
                 }
-            }
-            for(String s : map.keySet()) {
-                if(s.length() == length) {
-                    if(map.get(s) == max) {
-                        list.add(s);
-                    }
+                else if(orderCnt > max) {  // 최대 주문 갱신
+                    max = orderCnt;
+                    ansList[i] = new ArrayList<>();
+                    ansList[i].add(key);
                 }
-                
+                else {
+                    ansList[i].add(key);
+                }
             }
         }
-        Collections.sort(list);
+        List<String> ans = new ArrayList<>();
         
-        return list.toArray(new String[list.size()]);
+        for(int i=0; i<course.length; i++) {
+            ans.addAll(ansList[i]);
+        }
+        Collections.sort(ans);
+        answer = new String[ans.size()];
+        for(int i=0; i<ans.size(); i++) {
+            answer[i] = ans.get(i);
+        }
+        return answer;
     }
-    public void combi(int depth, int length, String menu, int index, String[] orders) {
-        if(depth == length) {
+    private static void combi(int depth, int index, char[] result, int menuSize, char[] order, Map<String, Integer> orderMap) {
+        if(depth == menuSize) {
             StringBuilder sb = new StringBuilder();
-            for(int i=0; i<menu.length(); i++) {
-                if(visited[i]) {
-                    sb.append(menu.charAt(i));
-                }
+            for(int i=0; i<menuSize; i++) {
+                sb.append(result[i]);
             }
-            //원하는 길이의 문자열 조합 만들어짐
-            //다른 메뉴들과 비교 -> 어떤 조합이 제일 인기가 많은지
-            int result = countSameMenu(sb.toString(), orders);
-
-            if(max <= result) {
-                max = result;
-                maxMenu = sb.toString();
-                map.put(maxMenu, result);
-            }
+            String str = sb.toString();
+            orderMap.put(str, orderMap.getOrDefault(str, 0) + 1);
             return;
         }
-        for(int i=index; i<menu.length(); i++) {
-            if(!visited[i]) {
-                visited[i] = true;
-                combi(depth + 1, length, menu, i + 1, orders);
-                visited[i] = false;
-            }
+        for(int i=index; i<order.length; i++) {
+            result[depth] = order[i];
+            combi(depth + 1, i + 1, result, menuSize, order, orderMap);
         }
-        
-    }
-    public int countSameMenu(String str, String[] orders) {
-        int cnt = 0;
-        
-        for(int i=0; i<orders.length; i++) {
-            boolean isPossible = true;
-            for(int j=0; j<str.length(); j++) {
-                char c = str.charAt(j);
-                if(!orders[i].contains(Character.toString(c))) {
-                    isPossible = false;
-                }
-            }
-            if(isPossible) {
-                cnt++;
-            }
-        }
-        return cnt;
     }
 }
