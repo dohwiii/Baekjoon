@@ -26,16 +26,12 @@ class Solution {
                 if(orderCnt < 2) {
                     continue;
                 }
-                if(orderCnt < max ) {
-                    // 저장할 필요 없음
-                    
-                }
-                else if(orderCnt > max) {  // 최대 주문 갱신
+                if(orderCnt > max) {  // 새 최댓값
                     max = orderCnt;
                     ansList[i] = new ArrayList<>();
                     ansList[i].add(key);
                 }
-                else {
+                else if(orderCnt == max){
                     ansList[i].add(key);
                 }
             }
