@@ -1,53 +1,87 @@
+import java.util.*;;
+
 class Solution {
-    static int maxDiff = 0;
-    static int[] result = {-1};
+    static int bestDiff = 0;
+    static List<int[]> list = new ArrayList<>();
     
-    public int[] solution(int n, int[] info) {  //화살 개수, 어피치 과녁 화살 개수
-        int[] ryanArrows = new int[11];
-        backtrack(n, info, ryanArrows, 0, 0, 0);
+    public int[] solution(int n, int[] info) {
+        int[] answer = new int[11];
         
-        return result;
-    }
-    public void backtrack(int arrow, int[] info, int[] ryanArrows, int idx, int ryanScore, int apeachScore) {
-        if(idx == 11) { //모든 과녁 마침
-            ryanArrows[10] += arrow;    //남은 화살 수
-            
-            if(ryanScore > apeachScore) {
-                int diff = ryanScore - apeachScore;
-                if(diff > maxDiff || (diff == maxDiff && betterScore(ryanArrows))) {
-                    maxDiff = diff;
-                    result = ryanArrows.clone();
-                }
+        game(0, new int[11], n, n, info);
+        int minIndex = 0;
+        
+        if(list.isEmpty()) {
+            return new int[]{-1};
+        }
+        int[] best = null;
+        
+        for(int[] arr : list) {
+            if(best == null || isBetter(arr, best)) {
+                best = arr;
             }
-            ryanArrows[10] -= arrow;    //남은 화살 수
+        }
+    
+        return best;
+        
+        
+    }
+    private static void game(int index, int[] ryan, int leftArrow, int n, int[] info) {
+        if(index == 11) {   // 종료조건
+            ryan[10] += leftArrow;
+            calc(ryan, info);
+            ryan[10] -= leftArrow;
             return;
         }
-        int nowTarget = 10 - idx; //지금 가리키고 있는 과녁 점수
-        int apeach = info[idx]; //어피치가 쏜 화살 개수
         
-        //라이언이 화살을 쏠 경우
-        if(arrow >= (apeach + 1)) {
-            ryanArrows[idx] = apeach + 1;
-            backtrack(arrow - (apeach + 1), info, ryanArrows, idx + 1, ryanScore + nowTarget, apeachScore);
-            ryanArrows[idx] = 0;
+        // 어피치보다 화살 개수 + 1 쏘기
+        if(leftArrow > info[index]) {
+            int left = leftArrow - info[index] - 1;
+            ryan[index] = info[index] + 1;  // 어피치가 쏜 화살보다 1개 더 쏘기
+            game(index + 1, ryan, left, n, info);
         }
         
-        //라이언이 화살 포기
-        ryanArrows[idx] = 0;
-        if(apeach > 0) {
-            backtrack(arrow, info, ryanArrows, idx + 1, ryanScore, apeachScore + nowTarget);
+        //  안쏘기
+        ryan[index] = 0;
+        game(index + 1, ryan, leftArrow, n, info);
+    }
+    private static void calc(int[] ryan, int[] apeach) {
+        int rTotal = 0;
+        int aTotal = 0;
+        
+        for(int i=0; i<11; i++) {
+            int r = ryan[i];
+            int a = apeach[i];
+            if(r == 0 && a == 0) {
+                continue;
+            }
+            
+            if(r > a) {
+                rTotal += (10 - i);    // 라이언 승
+            }
+            else {
+                aTotal += (10 - i);     // 어피치 승
+            }
         }
-        else {  //어피치는 해당 과녁에 0발을 쏨
-            backtrack(arrow, info, ryanArrows, idx + 1, ryanScore, apeachScore);
+        if(rTotal <= aTotal) {
+            return;
+        }
+        if(rTotal == 0) {
+            return;
+        }
+        int diff = rTotal - aTotal;
+        if(diff > bestDiff) {
+            list = new ArrayList<>();
+            list.add(ryan.clone());
+            bestDiff = diff;
+        }
+        else if(diff == bestDiff) {
+            list.add(ryan.clone());
         }
     }
-    public boolean betterScore(int[] ryanArrows) {
+    private static boolean isBetter(int[] a, int[] b) {
         for(int i=10; i>=0; i--) {
-            if(ryanArrows[i] > result[i]) {
-                return true;
-            }
-            else if(ryanArrows[i] < result[i]) {
-                return false;
+            if(a[i] != b[i]) {
+                return a[i] > b[i];
             }
         }
         return false;
