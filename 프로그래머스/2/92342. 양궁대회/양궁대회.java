@@ -2,6 +2,7 @@ import java.util.*;;
 
 class Solution {
     static int bestDiff = 0;
+    static int[] best = new int[11];
     static List<int[]> list = new ArrayList<>();
     
     public int[] solution(int n, int[] info) {
@@ -9,18 +10,19 @@ class Solution {
         
         game(0, new int[11], n, n, info);
         int minIndex = 0;
+        boolean isAllZero = true;
         
-        if(list.isEmpty()) {
-            return new int[]{-1};
-        }
-        int[] best = null;
-        
-        for(int[] arr : list) {
-            if(best == null || isBetter(arr, best)) {
-                best = arr;
+        for(int i=0; i<11; i++) {
+            if(best[i] != 0) {
+                isAllZero = false;
+                break;
             }
         }
-    
+        
+        if(isAllZero) {
+            return new int[]{-1};
+        }
+
         return best;
         
         
@@ -69,21 +71,23 @@ class Solution {
             return;
         }
         int diff = rTotal - aTotal;
+        
         if(diff > bestDiff) {
-            list = new ArrayList<>();
-            list.add(ryan.clone());
+            best = ryan.clone();
             bestDiff = diff;
         }
         else if(diff == bestDiff) {
-            list.add(ryan.clone());
-        }
-    }
-    private static boolean isBetter(int[] a, int[] b) {
-        for(int i=10; i>=0; i--) {
-            if(a[i] != b[i]) {
-                return a[i] > b[i];
+            for(int i=10; i>=0; i--) {
+                if(best[i] < ryan[i]) {
+                    best = ryan.clone();
+                    break;
+                }
+                else if(best[i] > ryan[i]) {
+                    break;
+                }
             }
+            
         }
-        return false;
     }
+
 }
