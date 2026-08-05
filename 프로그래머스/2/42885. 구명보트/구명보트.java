@@ -3,26 +3,28 @@ import java.util.*;
 class Solution {
     public int solution(int[] people, int limit) {
         int answer = 0;
-
-        Arrays.sort(people);    // 오름차순 정렬
-        answer = binarySearch(0, people.length - 1, people, limit);
         
-        return answer;
+        Arrays.sort(people);
+        
+        
+        return binarySearch(people, limit);
     }
-    private static int binarySearch(int left, int right, int[] people, int limit) {
-        int boat = 0;
+    private static int binarySearch(int[] people, int limit) {
+        int s = 0, e = people.length - 1;
+        int saveBoat = 0;
         
-        while(left <= right) {
-            if(people[left] + people[right] <= limit) {
-                left++;
-                right--;
-                boat++;
+        while(s <= e) {
+            int sum = people[s] + people[e];
+            
+            if(sum <= limit) {
+                s++;
+                e--;
             }
-            else {
-                right--;
-                boat++;
+            else if(sum > limit) {
+                e--;
             }
+            saveBoat++;
         }
-        return boat;
+        return saveBoat;
     }
 }
