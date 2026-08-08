@@ -22,8 +22,6 @@ class Solution {
     }
     private static boolean findBlock() {
         boolean[][] is4block = new boolean[m][n];
-        int[] dx = {0, 1, 1};
-        int[] dy = {1, 1, 0};
        
         for(int x=0; x<m; x++) {
             for(int y=0; y<n; y++) {
