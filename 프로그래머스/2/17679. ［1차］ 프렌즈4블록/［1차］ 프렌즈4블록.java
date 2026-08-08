@@ -24,43 +24,18 @@ class Solution {
         boolean[][] is4block = new boolean[m][n];
         int[] dx = {0, 1, 1};
         int[] dy = {1, 1, 0};
-        Queue<int[]> queue = new ArrayDeque<>();
        
         for(int x=0; x<m; x++) {
             for(int y=0; y<n; y++) {
-                if(map[x][y] == '0') {
+                if(map[x][y] == '0') {  // '0'인 블록들끼리 2x2 블록이라고 착각하지 않기
                     continue;
                 } 
-                int isFound = 1;
-                queue = new ArrayDeque<>();
-                queue.offer(new int[]{x, y});
-                 
-                for(int dir = 0; dir < 3; dir++) {
-                    int nx = x + dx[dir];
-                    int ny = y + dy[dir];
-                    
-                    if(nx < 0 || nx >=m || ny<0 || ny>=n) {
-                        continue;
-                    }
-                    if(map[x][y] != map[nx][ny]) {  // 같은 블록이 아님
-                        isFound = 0;
-                        while(!queue.isEmpty()) {
-                            queue.poll();
-                        }
-                        break;
-                    }
-                    isFound++;
-                    queue.offer(new int[]{nx, ny});
-                }
-                if(isFound == 4) {   // 2x2 같은 블록
-                    while(!queue.isEmpty()) {
-                        int[] arr = queue.poll();
-                        is4block[arr[0]][arr[1]] = true;    // 2x2 블록 완성
-                    } 
-                }
-                else {
-                    while(!queue.isEmpty()) {   // 2x2 아니니깐 다 버리기
-                        queue.poll();
+                char c = map[x][y];
+                
+                if(x+1 < m && y+1 < n) {
+                    if(c == map[x+1][y] && c == map[x+1][y+1] && c == map[x][y+1]) {
+                        is4block[x][y] = is4block[x+1][y] = true;
+                        is4block[x][y+1] = is4block[x+1][y+1] = true;
                     }
                 }
                 
@@ -91,13 +66,12 @@ class Solution {
                     queue.offer(r);
                 }
                 else {  // 숫자인 블록
-                    // 0인 블록들이 아래에 있다면
-                    while(!queue.isEmpty()) {
+                    // 0인 블록들이 아래에 있다면 1개 꺼내서 매칭
+                    if(!queue.isEmpty()) {
                         int nr = queue.poll();
                         map[nr][c] = map[r][c];
                         map[r][c] = '0';
                         queue.offer(r);
-                        break;
                     }
                 }
             }
