@@ -1,45 +1,47 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
-    static List<Integer>[] list;
+    // 컴퓨터는 0 ~ n-1
+    static int[] parent;
     public int solution(int n, int[][] computers) {
         int answer = 0;
-        list = new List[n];
+        parent = new int[n];
+        
         for(int i=0; i<n; i++) {
-            list[i] = new ArrayList<>();
+            parent[i] = i;
         }
-        for(int i=0; i<computers.length; i++) {
+        for(int i=0; i<n; i++) {
             for(int j=0; j<n; j++) {
-                if(i==j) {
-                    continue;
-                }
-                if(computers[i][j] == 1) {
-                    list[i].add(j);
-                    list[j].add(i);
+                if(i != j && computers[i][j] == 1) {  // 연결되어 있다면
+                    union(i, j);
                 }
             }
         }
-        boolean[] visited = new boolean[n];
-        
         for(int i=0; i<n; i++) {
-            if(!visited[i]) {
-                dfs(i, visited);
-                answer++;
-            }
+            parent[i] = find(i);
+        }
+        Set<Integer> set = new HashSet<>();
+        for(int i=0; i<n; i++) {
+            set.add(parent[i]);
         }
         
-        return answer;
+        return set.size();
     }
-    private static void dfs(int now, boolean[] visited) {
-        if(visited[now]) {
-            return;
+    private int find(int x) {
+        if(parent[x] == x) {
+            return x;
         }
-        visited[now] = true;
+        parent[x] = find(parent[x]);
+        return parent[x];
+    }
+    private void union(int a, int b) {
+        int pa = find(a);
+        int pb = find(b);
         
-        for(int next : list[now]) {
-            if(!visited[next]) {
-                dfs(next, visited);
-            }
+        if(pa != pb) {
+            parent[pb] = pa;
         }
+
     }
 }
