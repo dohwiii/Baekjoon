@@ -12,9 +12,11 @@ class Solution {
             parent[i] = i;
         }
         for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
+            for(int j=i+1; j<n; j++) {
                 if(i != j && computers[i][j] == 1) {  // 연결되어 있다면
-                    union(i, j);
+                    if(union(i, j)) {
+                        answer++;
+                    }
                 }
             }
         }
@@ -26,7 +28,8 @@ class Solution {
             set.add(parent[i]);
         }
         
-        return set.size();
+        // return set.size();
+        return n - answer;
     }
     private int find(int x) {
         if(parent[x] == x) {
@@ -35,13 +38,15 @@ class Solution {
         parent[x] = find(parent[x]);
         return parent[x];
     }
-    private void union(int a, int b) {
+    private boolean union(int a, int b) {
         int pa = find(a);
         int pb = find(b);
         
         if(pa != pb) {
             parent[pb] = pa;
+            return true;
         }
+        return false;
 
     }
 }
