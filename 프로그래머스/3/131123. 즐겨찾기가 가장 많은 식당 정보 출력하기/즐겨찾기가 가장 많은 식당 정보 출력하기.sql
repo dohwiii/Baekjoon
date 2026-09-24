@@ -1,9 +1,12 @@
 -- 코드를 입력하세요
+-- 음식 종류를 기준으로 내림차순 
+-- 음식종류별로 즐겨찾기가 가장 많은 식당
+
 SELECT FOOD_TYPE, REST_ID, REST_NAME, FAVORITES
-from REST_INFO a
-where a.FAVORITES = (
-    select max(FAVORITES) 
-    from REST_INFO b
-    where a.FOOD_TYPE = b.FOOD_TYPE
-) 
-order by FOOD_TYPE desc;
+FROM REST_INFO
+WHERE (FOOD_TYPE, FAVORITES) IN (SELECT FOOD_TYPE, MAX(FAVORITES)
+from REST_INFO
+group by FOOD_TYPE)
+ORDER BY FOOD_TYPE DESC;
+
+
