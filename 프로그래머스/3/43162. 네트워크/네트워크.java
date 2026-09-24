@@ -13,22 +13,14 @@ class Solution {
         }
         for(int i=0; i<n; i++) {
             for(int j=i+1; j<n; j++) {
-                if(i != j && computers[i][j] == 1) {  // 연결되어 있다면
+                if(computers[i][j] == 1) {  // 연결되어 있다면
                     if(union(i, j)) {
                         answer++;
                     }
                 }
             }
         }
-        for(int i=0; i<n; i++) {
-            parent[i] = find(i);
-        }
-        Set<Integer> set = new HashSet<>();
-        for(int i=0; i<n; i++) {
-            set.add(parent[i]);
-        }
-        
-        // return set.size();
+
         return n - answer;
     }
     private int find(int x) {
