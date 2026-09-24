@@ -4,12 +4,12 @@ class Solution {
     public int solution(int[][] info, int n, int m) {
         int answer = 0;
         int itemCnt = info.length;
-        int[] dp = new int[itemCnt * 3 + 1];
+        int[] dp = new int[m];
         Arrays.fill(dp, itemCnt * 3 + 1);
         dp[0] = 0;
         
         for(int i=0; i<itemCnt; i++) {
-            int[] next = new int[itemCnt * 3 + 1];
+            int[] next = new int[m];
             int a = info[i][0];
             int b = info[i][1];
             Arrays.fill(next, itemCnt * 3 + 1);
@@ -23,15 +23,13 @@ class Solution {
                     } 
                     
                     // B가 훔쳤을 때
-                    if(j != itemCnt * 3 + 1) {
-                        if(j + b < m) {
-                            next[j + b] = Math.min(next[j+b], dp[j]);
-                        } 
-                    }
+                    if(j + b < m) {
+                        next[j + b] = Math.min(next[j+b], dp[j]);
+                    } 
                 }
             }
             
-            dp = next.clone();
+            dp = next;
         }
         answer = 121;
         for(int i=0; i<m; i++) {
