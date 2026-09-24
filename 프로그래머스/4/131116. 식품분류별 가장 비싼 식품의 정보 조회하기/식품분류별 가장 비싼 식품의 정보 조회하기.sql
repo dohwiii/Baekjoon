@@ -14,5 +14,6 @@ from FOOD_PRODUCT f inner join
 FROM FOOD_PRODUCT
 group by CATEGORY
 having CATEGORY in ('과자', '국', '김치', '식용유')
-order by MAX_PRICE desc) d on f.category = d.category
-where price = max_price;
+) d on f.category = d.category
+where price = max_price
+order by MAX_PRICE desc;
