@@ -7,34 +7,24 @@ class Solution {
     public int solution(int n, int[][] costs) {
         int answer = 0;
         parent = new int[n];
-        PriorityQueue<Island> pq = new PriorityQueue<>();
         
         for(int i=0; i<n; i++) {
             parent[i] = i;
         }
-        for(int i=0; i<costs.length; i++) {
-            pq.offer(new Island(costs[i][0], costs[i][1], costs[i][2]));
-            // union(costs[i][0], costs[i][1]); // 연결
-        }
+
         int cnt = 0;    // 노드 - 1개만 연결
         
-        while(!pq.isEmpty()) {
-            Island now = pq.poll();
-            int i1 = now.i1;
-            int i2 = now.i2;
-            int c = now.cost;
-            
-            if(union(i1, i2)) {
-                answer += c; // 비용
-                cnt++;  // 경로 생성
+        Arrays.sort(costs, (a, b) -> a[2] - b[2]);
+        
+        for(int i=0; i<costs.length; i++) {
+            if(union(costs[i][0], costs[i][1])) {
+                cnt++;
+                answer += costs[i][2];
             }
-            
-            if(cnt == n - 1) {
+            if(cnt == n-1) {
                 break;
             }
         }
-    
-        
         
         return answer;
     }
@@ -55,19 +45,5 @@ class Solution {
         }
         return false;
     }
-    static class Island implements Comparable<Island> {
-        int i1, i2;
-        int cost;
-        
-        public Island(int i1, int i2, int cost) {
-            this.i1=i1;
-            this.i2=i2;
-            this.cost=cost;
-        }
-        
-        @Override
-        public int compareTo(Island i) {  // 비용 오름차순 정렬
-            return this.cost - i.cost;
-        }
-    }
+
 }
