@@ -19,15 +19,10 @@ class Solution {
     }
     private static void dfs(int k, boolean[] visited, int cnt, int[][] dungeons, int depth) {
         // System.out.println(depth+" "+k+" "+Arrays.toString(visited));
-        if(depth == dungeons.length) {
-            maxDungeon = Math.max(maxDungeon, cnt);
-            return;
-        }
+        maxDungeon = Math.max(maxDungeon, cnt);
         
         for(int i=0; i<dungeons.length; i++) {
-            if(!visited[i]) {   // 아직 방문 안했다면
-                dfs(k, visited, cnt, dungeons, depth+1);    // 선택안함
-                
+            if(!visited[i]) {   // 아직 방문 안했다면                
                 int min = dungeons[i][0];
                 if(k >= min) {
                     visited[i] = true;
