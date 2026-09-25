@@ -3,29 +3,33 @@ import java.util.*;
 class Solution {
     public long solution(int n, int[] times) {
         long answer = 0;
-        long max = 0;
+        Arrays.sort(times);
+        long min = times[0];
+        long max = times[times.length - 1];    // 가장 오래 심사를 받는데 걸리는 시간
         
-        for(int i=0; i<times.length; i++) {
-            max = Math.max(max, times[i]);
-        }
+        long r = max * n; // 심사를 받는데 걸리는 최악의 시간
         
-        return binarySearch(1, max*n, times, n);
+        return binarySearch(0, r, n, times);
     }
-    private static long binarySearch(long left, long right, int[] times, int n) {
-        while(left <= right) {
-            long mid = (left + right) / 2;
-            long available = 0;
+    private long binarySearch(long l, long r, int n, int[] times) {
+        long result = 0;
+        
+        while(l <= r) {
+            long mid = (l + r) / 2;
+            long people = 0;
             
             for(int i=0; i<times.length; i++) {
-                available += mid / times[i];
+                people += mid / times[i];    
             }
-            if(available >= n) {
-                right = mid - 1;
+            
+            if(people >= n) {
+                r = mid - 1;
+                result = mid;
             }
             else {
-                left = mid + 1;
+                l = mid + 1;
             }
         }
-        return left;
+        return result;
     }
 }
