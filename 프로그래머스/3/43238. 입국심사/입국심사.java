@@ -6,10 +6,10 @@ class Solution {
         Arrays.sort(times);
         long min = times[0];
         long max = times[times.length - 1];    // 가장 오래 심사를 받는데 걸리는 시간
+        long l = min;
+        long r = min * n; // 심사를 받는데 걸리는 최악의 시간
         
-        long r = max * n; // 심사를 받는데 걸리는 최악의 시간
-        
-        return binarySearch(0, r, n, times);
+        return binarySearch(l, r, n, times);
     }
     private long binarySearch(long l, long r, int n, int[] times) {
         long result = 0;
