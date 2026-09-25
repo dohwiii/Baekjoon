@@ -7,7 +7,6 @@ class Solution {
         int[] answer = {};
         Map<String, Integer> inMap = new HashMap<>(); // <차량번호, 입차시간>
         Map<String, Integer> payout = new HashMap<>(); // <차량번호, 머문시간> 
-        Map<String, Integer> moneyMap = new HashMap<>(); // <차량번호, 머문시간> 
         
         for(String r : records) {
             String[] s = r.split(" ");
@@ -61,8 +60,9 @@ class Solution {
             cars[index++] = car;
         }
         Arrays.sort(cars);   // 차량번호 오름차순
-        
-        for(String car : payout.keySet()) {
+
+        for(int i=0; i<cars.length; i++) {
+            String car = cars[i];
             int retention = payout.get(car);
             int money = 0;
             money += fees[1];   // 기본시간
@@ -72,10 +72,8 @@ class Solution {
                 int overTime = (int) Math.ceil((double) retention / fees[2]);
                 money += overTime * fees[3];
             }
-            moneyMap.put(car, money);
-        }
-        for(int i=0; i<cars.length; i++) {
-            answer[i] = moneyMap.get(cars[i]);
+            answer[i] = money;
+   
         }
 
         // 차량 번호가 작은 자동차부터 청구할 주차 요금을 차례대로 정수 배열에 담아서 return 
