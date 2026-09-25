@@ -26,13 +26,13 @@ class Solution {
         
         for(int i=0; i<dungeons.length; i++) {
             if(!visited[i]) {   // 아직 방문 안했다면
-                dfs(k, visited.clone(), cnt, dungeons, depth+1);    // 선택안함
+                dfs(k, visited, cnt, dungeons, depth+1);    // 선택안함
                 
                 int min = dungeons[i][0];
                 if(k >= min) {
-                    boolean[] newVisited = visited.clone();
-                    newVisited[i] = true;
-                    dfs(k - dungeons[i][1], newVisited, cnt+1, dungeons, depth+1);   // 선택함
+                    visited[i] = true;
+                    dfs(k - dungeons[i][1], visited, cnt+1, dungeons, depth+1);   // 선택함
+                    visited[i] = false;
                 }
             }
         }
