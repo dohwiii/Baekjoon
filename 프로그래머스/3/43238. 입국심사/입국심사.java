@@ -20,6 +20,9 @@ class Solution {
             
             for(int i=0; i<times.length; i++) {
                 people += mid / times[i];    
+                if (people >= n) {
+                    break;
+                }
             }
             
             if(people >= n) {
