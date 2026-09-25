@@ -26,15 +26,7 @@ class Solution {
             else {  // 출차 -> 계산
                 int inTime = inMap.get(car);    // 입차시간
                 int retention = time - inTime;
-
-//                 int money = 0;
-//                 money += fees[1];   // 기본요금
-
-//                 if(retention > fees[0]) {  // 기본시간 초과
-//                     retention -= fees[0];   // 기본시간 제외
-//                     int overTime = (int) Math.ceil((double) retention / fees[2]);
-//                     money += overTime * fees[3];
-//                 }
+                
                 if(payout.containsKey(car)) {   // 재출입
                     int original = payout.get(car);
                     payout.put(car, original + retention);
@@ -49,18 +41,9 @@ class Solution {
         }
         // 아직 출차 못한 차들
         for(String car : inMap.keySet()) {
-            System.out.println(car+" "+inMap.get(car));
             int outTime = 23 * 60 + 59;
             int inTime = inMap.get(car);
             int retention = outTime - inTime;
-//             int money = 0;
-//             money += fees[1];   // 기본시간
-
-//             if(retention > fees[0]) {  // 기본시간 초과
-//                 retention -= fees[0];   // 기본시간 제외
-//                 int overTime = (int) Math.ceil((double) retention / fees[2]);
-//                 money += overTime * fees[3];
-//             }
 
             if(payout.containsKey(car)) {   // 재출입
                 int original = payout.get(car);
