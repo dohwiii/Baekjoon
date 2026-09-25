@@ -24,6 +24,10 @@ class Solution {
         while(!pq.isEmpty()) {
             Town now = pq.poll();
             
+            if(time[now.town] < now.time) {
+                continue;
+            }
+            
             for(Town next : list[now.town]) {
                 if(time[next.town] > time[now.town] + next.time) {
                     time[next.town] = time[now.town] + next.time;
