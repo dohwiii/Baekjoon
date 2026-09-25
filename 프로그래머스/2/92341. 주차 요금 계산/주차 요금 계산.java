@@ -1,58 +1,101 @@
 import java.util.*;
 
+// 기본시간 이하 -> 기본시간
+// 단위시간 올림
 class Solution {
-    static Map<Integer, Integer> parking = new HashMap<>();
-    static Map<Integer, Integer> fee = new TreeMap<>();
-    
     public int[] solution(int[] fees, String[] records) {
-        List<Integer> list = new ArrayList<>();
-        fee = new TreeMap<>();
+        int[] answer = {};
+        Map<String, Integer> inMap = new HashMap<>(); // <차량번호, 입차시간>
+        Map<String, Integer> payout = new HashMap<>(); // <차량번호, 머문시간> 
+        Map<String, Integer> moneyMap = new HashMap<>(); // <차량번호, 머문시간> 
         
-        for(int i=0; i<records.length; i++) {
-            String[] record = records[i].split(" ");
-            int time = toMinutes(record[0]);    //시각
-            int carNumber = Integer.parseInt(record[1]);   //차량번호
-            String history = record[2]; //IN or OUT
+        for(String r : records) {
+            String[] s = r.split(" ");
+            String[] t = s[0].split(":");
+            int hour = Integer.parseInt(t[0]);
+            int min = Integer.parseInt(t[1]);
+            int time = hour * 60 + min;
+            String car = s[1];
+            String history = s[2];  // IN or OUT
             
-            if(history.equals("IN")) {  //입차
-                parking.put(carNumber, time);
+            // 입차 -> inMap 넣기
+            if(history.equals("IN")) {
+                inMap.put(car, time);
+                
             }
-            else {  //출차
-                int inTime = parking.get(carNumber); //입차 시간
-                int totalTime = time - inTime;
-                fee.put(carNumber, fee.getOrDefault(carNumber, 0) + totalTime);    //요금 더하기
-                parking.remove(carNumber);  //출차함
+            else {  // 출차 -> 계산
+                int inTime = inMap.get(car);    // 입차시간
+                int retention = time - inTime;
+
+//                 int money = 0;
+//                 money += fees[1];   // 기본요금
+
+//                 if(retention > fees[0]) {  // 기본시간 초과
+//                     retention -= fees[0];   // 기본시간 제외
+//                     int overTime = (int) Math.ceil((double) retention / fees[2]);
+//                     money += overTime * fees[3];
+//                 }
+                if(payout.containsKey(car)) {   // 재출입
+                    int original = payout.get(car);
+                    payout.put(car, original + retention);
+                }
+                else {
+                    payout.put(car, retention);
+                }
+                inMap.remove(car);
             }
+            
+            
         }
-        //23:59분에 출차한 차량
-        for(int carNumber : parking.keySet()) {
-            int inTime = parking.get(carNumber);
-            int result = 1439 - inTime;
-            fee.put(carNumber, fee.getOrDefault(carNumber, 0) + result);    //요금 더하기
+        // 아직 출차 못한 차들
+        for(String car : inMap.keySet()) {
+            System.out.println(car+" "+inMap.get(car));
+            int outTime = 23 * 60 + 59;
+            int inTime = inMap.get(car);
+            int retention = outTime - inTime;
+//             int money = 0;
+//             money += fees[1];   // 기본시간
+
+//             if(retention > fees[0]) {  // 기본시간 초과
+//                 retention -= fees[0];   // 기본시간 제외
+//                 int overTime = (int) Math.ceil((double) retention / fees[2]);
+//                 money += overTime * fees[3];
+//             }
+
+            if(payout.containsKey(car)) {   // 재출입
+                int original = payout.get(car);
+                payout.put(car, original + retention);
+            }
+            else {
+                payout.put(car, retention);
+            }
+                
         }
-        
-        int basicMin = fees[0]; //기본 시간(분)
-        int basicFee = fees[1]; //기본 요금
-        int unitMin = fees[2];  //단위 시간(분)
-        int unitFee = fees[3];  //단위 요금
-        int[] answer = new int[fee.size()];
+        String[] cars = new String[payout.size()];
+        answer = new int[payout.size()];
         int index = 0;
-        
-        for(int carNumber : fee.keySet()) {
-            int totalTime = fee.get(carNumber);
-            answer[index++] = calculateFee(totalTime, basicMin, basicFee, unitMin, unitFee);
+        for(String car : payout.keySet()) {
+            cars[index++] = car;
         }
+        Arrays.sort(cars);   // 차량번호 오름차순
         
+        for(String car : payout.keySet()) {
+            int retention = payout.get(car);
+            int money = 0;
+            money += fees[1];   // 기본시간
+
+            if(retention > fees[0]) {  // 기본시간 초과
+                retention -= fees[0];   // 기본시간 제외
+                int overTime = (int) Math.ceil((double) retention / fees[2]);
+                money += overTime * fees[3];
+            }
+            moneyMap.put(car, money);
+        }
+        for(int i=0; i<cars.length; i++) {
+            answer[i] = moneyMap.get(cars[i]);
+        }
+
+        // 차량 번호가 작은 자동차부터 청구할 주차 요금을 차례대로 정수 배열에 담아서 return 
         return answer;
-    }
-    public int calculateFee(int totalTime, int basicMin, int basicFee, int unitMin, int unitFee) {
-        if(totalTime > basicMin) {
-            return basicFee + (int) Math.ceil((totalTime - basicMin) / (double) unitMin) * unitFee;
-        }
-        return basicFee;
-    }
-    public int toMinutes(String time) {
-        String[] splitTime = time.split(":");
-        return Integer.parseInt(splitTime[0]) * 60 + Integer.parseInt(splitTime[1]);
     }
 }
