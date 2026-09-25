@@ -4,42 +4,33 @@ class Solution {
     public String solution(String number, int k) {
         String answer = "";
         char[] strArr = number.toCharArray();
-        List<Character> list = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-       
-        int ansLen = strArr.length - k;
-        int start = 0;
-        int end = strArr.length - ansLen;
-        int remove = 0;
-        int removeIdx = 0;
+        Stack<Character> stack = new Stack<>();
         
-        while(ansLen > 0) {
-            int nowRemove = 0;
-            int max = 0;
-            for(int i=start; i<=end; i++) {
-                if(strArr[i] > max) {
-                    nowRemove = 0;  // 초기화
-                    max = strArr[i];
-                    nowRemove += (i - start);    // 앞에 삭제한 개수
-                    removeIdx = i;  // 선택한 수의 인덱스
+        stack.push(strArr[0]);
+        int remove = 0;
+        for(int i=1; i<strArr.length; i++) {
+            while(!stack.isEmpty() && remove < k) {
+                if(stack.peek() < strArr[i]) {
+                    remove++;
+                    stack.pop();
+                }
+                else {
+                    break;
                 }
             }
-            sb.append(strArr[removeIdx]);
-            ansLen--;
-            start = removeIdx + 1;
-            end = strArr.length - ansLen;
-            remove += nowRemove;
+            stack.push(strArr[i]);
         }
         
-        // 삭제횟수가 모자를 경우
-        // if(sb.toString().length() < strArr.length - k) {
-        //     for(int i=removeIdx+1; i<strArr.length; i++) {
-        //         sb.append(strArr[i]);
-        //     }
-        // }
-        
-        
+        while(!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        sb.reverse();
+        answer = sb.toString();
+        if(sb.toString().length() > strArr.length - k) {
+            answer = sb.substring(0, strArr.length - k);
+        }
         // 만들 수 있는 수 중 가장 큰 숫자를 문자열 형태(number - k 길이)
-        return sb.toString();
+        return answer;
     }
 }
