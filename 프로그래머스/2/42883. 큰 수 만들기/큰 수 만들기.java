@@ -13,7 +13,7 @@ class Solution {
         int remove = 0;
         int removeIdx = 0;
         
-        while(remove < k && end < strArr.length) {
+        while(ansLen > 0) {
             int nowRemove = 0;
             int max = 0;
             for(int i=start; i<=end; i++) {
@@ -32,11 +32,11 @@ class Solution {
         }
         
         // 삭제횟수가 모자를 경우
-        if(sb.toString().length() < strArr.length - k) {
-            for(int i=removeIdx+1; i<strArr.length; i++) {
-                sb.append(strArr[i]);
-            }
-        }
+        // if(sb.toString().length() < strArr.length - k) {
+        //     for(int i=removeIdx+1; i<strArr.length; i++) {
+        //         sb.append(strArr[i]);
+        //     }
+        // }
         
         
         // 만들 수 있는 수 중 가장 큰 숫자를 문자열 형태(number - k 길이)
