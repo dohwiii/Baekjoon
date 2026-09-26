@@ -15,20 +15,7 @@ class Solution {
             list[w[0]].add(w[1]);
             list[w[1]].add(w[0]);
         }
-        
-        // 가장 와이어가 많은 노드의 연결된 간선 중에서 하나씩 끊어보기
-        List<Integer> maxNode = new ArrayList<>();
-        int max = -1;
-        for(int i=1; i<=n; i++) {
-            if(list[i].size() > max) {
-                maxNode = new ArrayList<>();
-                maxNode.add(i);
-                max = list[i].size();
-            }
-            else if(list[i].size() == max) {
-                maxNode.add(i);
-            }
-        }
+   
         int minDiff = 100;
         boolean[][] visited = new boolean[n+1][n+1];
         for(int[] wire : wires) {            
