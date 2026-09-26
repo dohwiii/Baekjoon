@@ -31,16 +31,14 @@ class Solution {
         }
         int minDiff = 100;
         boolean[][] visited = new boolean[n+1][n+1];
-        for(int[] wire : wires) {
-            boolean[] visitedNode = new boolean[n+1];
-            
+        for(int[] wire : wires) {            
             int w1 = wire[0];
             int w2 = wire[1];
             visited[w1][w2] = true;
             visited[w2][w1] = true;
 
             cnt = 0;
-            dfs(1, visited, visitedNode);
+            dfs(1, visited);
             minDiff = Math.min(minDiff, Math.abs(cnt - (n - cnt)));
 
             visited[w1][w2] = false;
@@ -52,14 +50,14 @@ class Solution {
         // 송전탑 개수의 차이(절대값)
         return minDiff;
     }
-    private static void dfs(int node, boolean[][] visited, boolean[] visitedNode) {
+    private static void dfs(int node, boolean[][] visited) {
         cnt++;
         
         for(int next : list[node]) {
             if(!visited[node][next] && !visited[next][node]) {
                 visited[node][next] = true;
                 visited[next][node] = true;
-                dfs(next, visited, visitedNode);
+                dfs(next, visited);
                 visited[node][next] = false;
                 visited[next][node] = false;
             }
