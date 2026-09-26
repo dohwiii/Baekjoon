@@ -13,11 +13,13 @@ class Solution {
     static List<Node>[] list;
     static int[] types;
     static int max;
+    static int count;
     static boolean[] infected;
+    static Set<Integer> typeSet;
     public int solution(int n, int infection, int[][] edges, int k) {
         int answer = 0;
-        
-        Set<Integer> typeSet = new HashSet<>();   // 타입종류
+        typeSet = new HashSet<>();
+        infected = new boolean[n+1];
         list = new List[n+1];
         for(int i=1; i<=n; i++) {
             list[i] = new ArrayList<>();
@@ -33,30 +35,34 @@ class Solution {
         for(int a: typeSet) {
             types[idx++] = a;
         }
+        count = 1;
+        infected[infection] = true;
         permutation(0, new int[k], k, infection, n);
         // 최대 k번 파이프 열고 닫은 후, 감영된 배양체 개수의 최댓값
         return max;
     }
-    private static void bfs(int start, int n, int selected, int k, boolean[][] visitedEdge) {
+    private static void bfs(int n, int selected) {
         Queue<Integer> queue = new ArrayDeque<>();
-        infected[start] = true;
+        boolean[] visited = new boolean[n + 1];
+
         
         for(int i=1; i<=n; i++) {
             if(infected[i]) {
+                visited[i] = true;
                 queue.offer(i);
             }
         }
-
+        
         while(!queue.isEmpty()) {
             int now = queue.poll();
 
             for(Node next : list[now]) {
-                if(!visitedEdge[now][next.node] && !visitedEdge[next.node][now]) {
+                if(!visited[next.node]) {
                     if(next.type == selected) {
-                        visitedEdge[next.node][now] = true;
-                        visitedEdge[now][next.node] = true;
+                        visited[next.node] = true;
                         infected[next.node] = true;
                         queue.offer(next.node);
+                        count++;
                     }
                 }
 
@@ -67,25 +73,20 @@ class Solution {
 
     }
     private static void permutation(int depth, int[] selected, int k, int infection, int n) {
-        if(depth == k) { // 다 뽑음
-            boolean[][] visitedEdge = new boolean[n+1][n+1];
-            infected = new boolean[n+1];
-            for(int i=0; i<selected.length; i++) {
-                bfs(infection, n, selected[i], k, visitedEdge);
-            }
-            int cnt = 0;
-            for(int i=1; i<=n; i++) {
-                if(infected[i]) {
-                    cnt++;
-                }
-            }
-            max = Math.max(max, cnt);
+        if(depth == k) {
+            max = Math.max(max, count);
             return;
         }
-        
+           
         for(int i=0; i<types.length; i++) {
-            selected[depth] = types[i];
+            boolean[] backup = infected.clone();
+            int backupCount = count;
+            
+            bfs(n, types[i]);
             permutation(depth+1, selected, k, infection, n);
+            
+            infected = backup;
+            count = backupCount;
         }
     }
     static class Node {
