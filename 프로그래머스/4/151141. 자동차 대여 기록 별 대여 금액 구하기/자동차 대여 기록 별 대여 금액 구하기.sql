@@ -1,15 +1,16 @@
-select HISTORY_ID, ROUND((1 - IF(ISNULL(p.DISCOUNT_RATE), 0, p.DISCOUNT_RATE)/100) * n.daily_fee * period, 0) as 'FEE'
-from (
-    select HISTORY_ID, h.car_id, datediff(end_date, start_date) + 1 as 'period', c.car_type, c.daily_fee
-    from CAR_RENTAL_COMPANY_RENTAL_HISTORY h 
-        join CAR_RENTAL_COMPANY_CAR c using (car_id)
-    where c.car_type = '트럭'
-    ) as n
-    left join CAR_RENTAL_COMPANY_DISCOUNT_PLAN p on n.car_type = p.car_type
-    and p.DURATION_TYPE = (case
-            when period >= 90 then '90일 이상'
-            when period >= 30 then '30일 이상'
-            when period >= 7 then '7일 이상'
-           end
-          )
-order by FEE desc, HISTORY_ID desc;
+-- 자동차 종류가 '트럭'인 자동차의 대여 기록에 대해서 대여 기록 별로 대여 금액(컬럼명: FEE)을 구하기
+-- 할인율 적용 기간: 7일 이상 30일 미만 / 30일 이상 90일 미만 / 90일 이상
+-- HISTORY에서 대여기간을 구하고 -> CAR에서 CAR_TYPE, DAILY_FEE -> PLAN에서 CAR_TYPE과 DURATION_TYPE에 해당하는 DISCOUNT_RATE 확인
+-- DAILY_FEE와 DISCOUNT_RATE 곱한 후 대여기간 곱하기 -> FEE
+
+SELECT HISTORY_ID,
+    DAILY_FEE * (100-NVL(DISCOUNT_RATE, 0)) * (END_DATE - START_DATE + 1) * 0.01 AS FEE
+FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY H 
+JOIN CAR_RENTAL_COMPANY_CAR C ON C.CAR_ID = H.CAR_ID
+LEFT JOIN CAR_RENTAL_COMPANY_DISCOUNT_PLAN P ON C.CAR_TYPE = P.CAR_TYPE
+and P.DURATION_TYPE = (CASE WHEN END_DATE-START_DATE+1 >=90 THEN '90일 이상'
+                            WHEN END_DATE-START_DATE+1 >=30 THEN '30일 이상'
+                            WHEN END_DATE-START_DATE+1 >=7 THEN '7일 이상'
+                      END)
+WHERE C.CAR_TYPE='트럭'
+ORDER BY FEE DESC, HISTORY_ID DESC;
