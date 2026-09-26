@@ -6,6 +6,10 @@ import java.util.*;
 // infection노드에 연결된 파이프종류를 우선적으로 조합처리? -> 근데 그러면 다음 노드에서는 무슨 파이프 열지 기준을 어떻게 정해야 함?
 // 그냥 A, B, C를 기준으로 순열 구하기?
 
+
+// 내가 놓친 부분
+// 1. visitedEdge 만들어놓고 방문처리 안함
+// 2. 이미 열은 파이프를 다시 열어도 된다는 생각을 못함 (중복 순열 가능 (A,A), (B,B), (C,C))
 class Solution {
     static List<Node>[] list;
     static int[] types;
@@ -30,15 +34,12 @@ class Solution {
         for(int a: typeSet) {
             types[idx++] = a;
         }
-        permutation(0, new int[k], new boolean[typeSet.size()], k, infection, n);
+        permutation(0, new int[k], k, infection, n);
         // 최대 k번 파이프 열고 닫은 후, 감영된 배양체 개수의 최댓값
         return max;
     }
     private static void bfs(int start, int n, int selected, int k, boolean[][] visitedEdge) {
-        boolean[] visited = new boolean[n+1];
         Queue<Integer> queue = new ArrayDeque<>();
-        queue.offer(start);
-        visited[start] = true;
         visitedNode.add(start);
         
         for(int a : visitedNode) {
@@ -63,7 +64,7 @@ class Solution {
 
 
     }
-    private static void permutation(int depth, int[] selected, boolean[] visited, int k, int infection, int n) {
+    private static void permutation(int depth, int[] selected, int k, int infection, int n) {
         if(depth == k) { // 다 뽑음
             boolean[][] visitedEdge = new boolean[n+1][n+1];
             visitedNode = new HashSet<>();
@@ -76,7 +77,7 @@ class Solution {
         
         for(int i=0; i<types.length; i++) {
             selected[depth] = types[i];
-            permutation(depth+1, selected, visited, k, infection, n);
+            permutation(depth+1, selected, k, infection, n);
         }
     }
     static class Node {
