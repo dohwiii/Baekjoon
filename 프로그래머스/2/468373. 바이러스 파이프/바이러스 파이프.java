@@ -6,15 +6,14 @@ import java.util.*;
 // infection노드에 연결된 파이프종류를 우선적으로 조합처리? -> 근데 그러면 다음 노드에서는 무슨 파이프 열지 기준을 어떻게 정해야 함?
 // 그냥 A, B, C를 기준으로 순열 구하기?
 
-
 // 내가 놓친 부분
 // 1. visitedEdge 만들어놓고 방문처리 안함
-// 2. 이미 열은 파이프를 다시 열어도 된다는 생각을 못함 (중복 순열 가능 (A,A), (B,B), (C,C))
+// 2. 같은 타입의 재선택이 가능하다. (중복 순열 가능 (A → B → A))
 class Solution {
     static List<Node>[] list;
     static int[] types;
     static int max;
-    static Set<Integer> visitedNode;
+    static boolean[] infected;
     public int solution(int n, int infection, int[][] edges, int k) {
         int answer = 0;
         
@@ -40,11 +39,14 @@ class Solution {
     }
     private static void bfs(int start, int n, int selected, int k, boolean[][] visitedEdge) {
         Queue<Integer> queue = new ArrayDeque<>();
-        visitedNode.add(start);
+        infected[start] = true;
         
-        for(int a : visitedNode) {
-            queue.offer(a);
+        for(int i=1; i<=n; i++) {
+            if(infected[i]) {
+                queue.offer(i);
+            }
         }
+
         while(!queue.isEmpty()) {
             int now = queue.poll();
 
@@ -53,7 +55,7 @@ class Solution {
                     if(next.type == selected) {
                         visitedEdge[next.node][now] = true;
                         visitedEdge[now][next.node] = true;
-                        visitedNode.add(next.node);
+                        infected[next.node] = true;
                         queue.offer(next.node);
                     }
                 }
@@ -67,11 +69,17 @@ class Solution {
     private static void permutation(int depth, int[] selected, int k, int infection, int n) {
         if(depth == k) { // 다 뽑음
             boolean[][] visitedEdge = new boolean[n+1][n+1];
-            visitedNode = new HashSet<>();
+            infected = new boolean[n+1];
             for(int i=0; i<selected.length; i++) {
                 bfs(infection, n, selected[i], k, visitedEdge);
             }
-            max = Math.max(max, visitedNode.size());
+            int cnt = 0;
+            for(int i=1; i<=n; i++) {
+                if(infected[i]) {
+                    cnt++;
+                }
+            }
+            max = Math.max(max, cnt);
             return;
         }
         
