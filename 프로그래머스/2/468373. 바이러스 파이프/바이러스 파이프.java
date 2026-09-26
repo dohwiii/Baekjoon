@@ -83,7 +83,9 @@ class Solution {
             int backupCount = count;
             
             bfs(n, types[i]);
-            
+            if(count == backupCount) {
+                continue;
+            }
             permutation(depth+1, selected, k, infection, n);
             
             infected = backup;
