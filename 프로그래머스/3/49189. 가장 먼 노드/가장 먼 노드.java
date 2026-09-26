@@ -25,7 +25,7 @@ class Solution {
                 answer++;
             }
         }        
-        // 1번 노드로부터 가장 멀리 떨어진 노드가 몇 개 -> 다익스트라
+        // 1번 노드로부터 가장 멀리 떨어진 노드가 몇 개
         return answer;
     }
     private static int[] bfs(int node, int n) {
