@@ -2,47 +2,67 @@ import java.util.*;
 
 class Solution {
     static List<Integer>[] list;
-    static boolean[] visited;
-    static int[] child;
+    static int cnt = 0;
     
     public int solution(int n, int[][] wires) {
-        list = new List[n + 1];
-        child = new int[n + 1];
-        visited = new boolean[n + 1];
-        for(int i=0; i<=n; i++) {
+        int answer = -1;
+        list = new List[n+1];
+        for(int i=1; i<=n; i++) {
             list[i] = new ArrayList<>();
         }
-        for(int i=0; i<wires.length; i++) {
-            int a = wires[i][0];
-            int b = wires[i][1];
-            list[a].add(b);
-            list[b].add(a);
+        for(int[] w : wires) {
+            // 양방향
+            list[w[0]].add(w[1]);
+            list[w[1]].add(w[0]);
         }
-
-        dfs(1);
-        int max = Arrays.stream(child).max().getAsInt();
-        int minDiff = Integer.MAX_VALUE;
-        System.out.println(Arrays.toString(child));
         
-        for(int i=n; i>=2; i--) {
-            int diff = max - child[i];
-            minDiff = Math.min(minDiff, Math.abs(diff - child[i]));
-        }
-
-        return minDiff;
-    }
-    public int dfs(int now) {
-        if(child[now] != 0) {
-            return child[now];
-        }
-        child[now] = 1;
-        visited[now] = true;
-        
-        for(int next : list[now]) {
-            if(!visited[next]) {
-                child[now] += dfs(next);
+        // 가장 와이어가 많은 노드의 연결된 간선 중에서 하나씩 끊어보기
+        List<Integer> maxNode = new ArrayList<>();
+        int max = -1;
+        for(int i=1; i<=n; i++) {
+            if(list[i].size() > max) {
+                maxNode = new ArrayList<>();
+                maxNode.add(i);
+                max = list[i].size();
+            }
+            else if(list[i].size() == max) {
+                maxNode.add(i);
             }
         }
-        return child[now];
+        int minDiff = 100;
+        boolean[][] visited = new boolean[n+1][n+1];
+        for(int[] wire : wires) {
+            boolean[] visitedNode = new boolean[n+1];
+            
+            int w1 = wire[0];
+            int w2 = wire[1];
+            visited[w1][w2] = true;
+            visited[w2][w1] = true;
+
+            cnt = 0;
+            dfs(1, visited, visitedNode);
+            minDiff = Math.min(minDiff, Math.abs(cnt - (n - cnt)));
+
+            visited[w1][w2] = false;
+            visited[w2][w1] = false;
+            
+        }
+        
+        
+        // 송전탑 개수의 차이(절대값)
+        return minDiff;
+    }
+    private static void dfs(int node, boolean[][] visited, boolean[] visitedNode) {
+        cnt++;
+        
+        for(int next : list[node]) {
+            if(!visited[node][next] && !visited[next][node]) {
+                visited[node][next] = true;
+                visited[next][node] = true;
+                dfs(next, visited, visitedNode);
+                visited[node][next] = false;
+                visited[next][node] = false;
+            }
+        }
     }
 }
