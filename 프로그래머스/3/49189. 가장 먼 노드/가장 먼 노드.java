@@ -3,7 +3,7 @@ import java.util.*;
 class Solution {
     static List<Integer>[] list;
     public int solution(int n, int[][] edge) {
-        int answer = 1;
+        int answer = 0;
         list = new List[n+1];
         
         for(int i=1; i<=n; i++) {
