@@ -73,8 +73,8 @@ class Solution {
 
     }
     private static void permutation(int depth, int[] selected, int k, int infection, int n) {
+        max = Math.max(max, count);
         if(depth == k) {
-            max = Math.max(max, count);
             return;
         }
            
@@ -83,6 +83,7 @@ class Solution {
             int backupCount = count;
             
             bfs(n, types[i]);
+            
             permutation(depth+1, selected, k, infection, n);
             
             infected = backup;
