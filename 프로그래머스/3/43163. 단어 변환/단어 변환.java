@@ -5,7 +5,9 @@ class Solution {
     static int min = 11;
     public int solution(String begin, String target, String[] words) {
         int answer = 0;
-        dfs(0, begin, words, begin, target, new HashSet<>());
+        Set<String> set = new HashSet<>();
+        set.add(begin);
+        dfs(0, begin, words, begin, target, set);
         
         if(min == 11) {
             min = 0;
