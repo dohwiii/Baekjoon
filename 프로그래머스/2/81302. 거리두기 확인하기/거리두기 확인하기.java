@@ -27,6 +27,7 @@ class Solution {
                         if(!bfs(j, k)) {
                             answer[i] = 0;
                             possible = false;
+                            break;
                         }
                     }
                 }
