@@ -70,9 +70,7 @@ class Solution {
                     continue;
                 }
                 if(map[nx][ny] == 'P') {    // 응시자일 경우
-                    if(dist <= 2) {
-                        return false;
-                    }
+                    return false;
                 }
                 // 빈 테이블일 경우
                 queue.offer(new int[]{nx, ny});
