@@ -39,12 +39,9 @@ class Solution {
     }
     private static int bfs(int a, int b, Game target) {
         Queue<Game> queue = new ArrayDeque<>();
-        boolean[][][] visited = new boolean[N][M][4];
+        boolean[][] visited = new boolean[N][M];
         queue.offer(new Game(a, b, 0));
-        visited[a][b][0] = true;
-        visited[a][b][1] = true;
-        visited[a][b][2] = true;
-        visited[a][b][3] = true;
+        visited[a][b] = true;
         
         while(!queue.isEmpty()) {
             Game now = queue.poll();
@@ -59,15 +56,15 @@ class Solution {
                 int dx = dxx[dir];
                 int dy = dyy[dir];
                 
-                if(x+dx <0 || x+dx>=N || y+dy<0 || y+dy>=M || visited[x+dx][y+dy][dir] || map[x+dx][y+dy] == 'D') {
-                    continue;
-                }
                 // 한번에 쭉 이동
                 while((x + dx >= 0 && x + dx< N && y + dy >=0 && y + dy < M) && map[x + dx][y + dy] != 'D') {
                     x += dx;
                     y += dy;
-                    visited[x][y][dir] = true;
                 }
+                if(visited[x][y]) {
+                    continue;
+                }
+                visited[x][y] = true;
                 queue.offer(new Game(x, y, now.move + 1));
             }
         }
