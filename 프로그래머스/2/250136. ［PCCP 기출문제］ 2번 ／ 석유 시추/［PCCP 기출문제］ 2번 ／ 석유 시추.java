@@ -4,6 +4,11 @@ import java.util.*;
 // 0이면 빈 땅, 1이면 석유
 // 석유 덩어리에 해당되면 그 석유덩어리 크기를 해당 칸에 다 적어놓음
 // for 열 -> for 행해서 숫자가 0보다 큰게 있다면 더함 -> 나와서 최댓값 비교
+
+// 내가 놓쳤던 포인트
+// 1. 'ㄷ'자 모형으로 같은 석유덩어리가 있는 경우에 시추관 검사할 때 다른 덩어리로 인식 
+// 2. bfs 끝난 후 land 배열과 nameLand 배열에 덩어리 크기와 순번을 새길 때 N*M을 다 도는 것이 아니라 List에 덩어리 좌표만 담아서 해당 좌표들만 표시
+
 class Solution {
     static int N, M;
     static int[] dx = {1,-1,0,0};
@@ -28,16 +33,16 @@ class Solution {
             }
         }
         
+        int[] lastColumn = new int[totalCnt + 1];   // 해당 덩어리를 몇번째 열까지 저장했는지 확인
         // 시추관 설치
         for(int col=0; col<M; col++) {  // 시추관 하나 설치
-            boolean[] visited = new boolean[totalCnt + 1];
             int sumArea = 0;
             
             for(int row = 0; row < N; row++) {
                 int name = nameLand[row][col];  // 석유덩어리의 이름
-                if(!visited[name]) {
+                if(lastColumn[name] != col + 1) {
+                    lastColumn[name] = col + 1;
                     sumArea += land[row][col];
-                    visited[name] = true;
                 }
             }
             answer = Math.max(answer, sumArea);
