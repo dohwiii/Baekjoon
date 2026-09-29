@@ -32,32 +32,29 @@ class Solution {
             }
         }
         int total = 0;
-        int[][] result = move(start.x, start.y);
-        if(result[lever.x][lever.y] == Integer.MAX_VALUE) {
+        int result = move(start.x, start.y, lever);
+        if(result == -1) {
             return -1;
         }
-        total += result[lever.x][lever.y];
-        result = move(lever.x, lever.y);
-        if(result[end.x][end.y] == Integer.MAX_VALUE) {
+        total += result;
+        result = move(lever.x, lever.y, end);
+        if(result == -1) {
             return -1;
         }
-        total += result[end.x][end.y];
+        total += result;
             
         return total;
     }
-    private static int[][] move(int x, int y) {    // 미로 이동 / 벽 이동 X
-        PriorityQueue<Pos> pq = new PriorityQueue<>();
-        int[][] dist = new int[N][M];
-        for(int i=0; i<N; i++) {
-            Arrays.fill(dist[i], Integer.MAX_VALUE);
-        }
-        dist[x][y] = 0;
-        pq.offer(new Pos(x, y, 0));
+    private static int move(int x, int y, Pos end) {    // 미로 이동 / 벽 이동 X
+        Queue<Pos> queue = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][M];
+        queue.offer(new Pos(x, y, 0));
+        visited[x][y] = true;
         
-        while(!pq.isEmpty()) {
-            Pos now = pq.poll();
-            if(dist[now.x][now.y] < now.cost) {
-                continue;
+        while(!queue.isEmpty()) {
+            Pos now = queue.poll();
+            if(now.x==end.x && now.y==end.y) {
+                return now.cost;
             }
             
             for(int dir=0; dir<4; dir++) {
@@ -70,16 +67,17 @@ class Solution {
                 if(maze[nx][ny] == 'X') {   // 벽
                     continue;
                 }
-                if(dist[nx][ny] > now.cost + 1) {
-                    dist[nx][ny] = now.cost + 1;
-                    pq.offer(new Pos(nx, ny, dist[nx][ny]));
+                if(visited[nx][ny]) {
+                    continue;
                 }
+                visited[nx][ny] = true;
+                queue.offer(new Pos(nx, ny, now.cost+1));
             }
             
         }
-        return dist;
+        return -1;
     }
-    static class Pos implements Comparable<Pos> {
+    static class Pos {
         int x, y, cost;
         
         public Pos(int x, int y, int cost) {
@@ -88,9 +86,5 @@ class Solution {
             this.cost=cost;
         }
         
-        @Override 
-        public int compareTo(Pos p) {
-            return this.cost - p.cost;
-        }
     }
 }
