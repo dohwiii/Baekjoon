@@ -13,7 +13,7 @@ class Solution {
         maxAnswer = new int[2];
         int[] money = new int[users.length];
         
-        combi( 0, new boolean[4], new int[emoticons.length], users, emoticons);
+        combi( 0, new int[emoticons.length], users, emoticons);
 
         
         
@@ -57,7 +57,7 @@ class Solution {
         
         
     }
-    private static void combi(int depth, boolean[] visited, int[] arr, int[][] users, int[] emoticons) {
+    private static void combi(int depth, int[] arr, int[][] users, int[] emoticons) {
         if(depth == arr.length) {   // 이모티콘 할인율 다 뽑았다면
             calc(arr, users, emoticons);
             return;
@@ -65,7 +65,7 @@ class Solution {
         
         for(int i=0; i<4; i++) {
             arr[depth] = discounts[i];
-            combi(depth+1, visited, arr, users, emoticons);
+            combi(depth+1, arr, users, emoticons);
         }
     } 
 }
