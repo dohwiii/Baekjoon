@@ -1,76 +1,71 @@
 import java.util.*;
 
+// 이모티콘 할인율 설정
+// 유저의 지출액 계산
+// 이모티콘 플러스 가입 수 계산
+// 1. 가입자 수 -> 2. 판매액
 class Solution {
-    static int[] discount = {10, 20, 30, 40};
-    static boolean[] visited;
-    static List<Sale> list;
-    static List<Join> resultList = new ArrayList<>();
+    static int[] discounts = {10, 20, 30, 40};
+    static int[] maxAnswer;
     
     public int[] solution(int[][] users, int[] emoticons) {
-        int[] answer = new int[2];
-        visited = new boolean[4];
-        list = new ArrayList<>(emoticons.length);
-        int[] selectedDiscount = new int[emoticons.length]; //이모티콘마다 할인율 담는 배열
+        int[] answer = {};
+        maxAnswer = new int[2];
+        int[] money = new int[users.length];
         
-        permutation(0, emoticons, users, selectedDiscount);
+        combi( 0, new boolean[4], new int[emoticons.length], users, emoticons);
+
         
-        Collections.sort(resultList);
-        Join j = resultList.get(0);
-        answer[0] = j.member;
-        answer[1] = j.sales;
-        return answer;
+        
+        // 이모티콘 플러스 가입 수 & 이모티콘 매출액
+        return maxAnswer;
     }
-    public void permutation(int depth, int[] emoticons, int[][] users, int[] selectedDiscount) {
-        if(depth == emoticons.length) {
-            int join = 0;
-            int money = 0;
+    private static void calc(int[] emoticonDiscounts, int[][] users, int[] emoticons) {
+        int[] sumMoney = new int[users.length];
+        int[] discountMoney = new int[emoticons.length];    // 이모티콘별 할인 금액
+        int signup = 0;
+        int total = 0;
+        
+        for(int i=0; i<emoticons.length; i++) {
+            int sale = (int) ((double) emoticons[i] * (100 - emoticonDiscounts[i]) * 0.01);
+            discountMoney[i] = sale;
+        }
+        
+        for(int i=0; i<users.length; i++) {
+            int sellDiscount = users[i][0];
             
-            for(int[] user : users) {   //유저마다
-                int purchase = 0;
-                for(int i=0; i<selectedDiscount.length; i++) {
-                    int percent = selectedDiscount[i];
-                    if(percent >= user[0]) {  //할인율 이상 구매
-                        int discount = (int) (emoticons[i] * (100 - percent) / 100.0);
-                        purchase += discount;
-                    }
+            for(int j=0; j<emoticons.length; j++) {
+                if(sellDiscount <= emoticonDiscounts[j]) { // 산다
+                    sumMoney[i] += discountMoney[j];
                 }
-                //모든 구매 끝
-                if(purchase >= user[1]) {   //이모티콘 플러스 가입자
-                    join++;
-                }
-                else {
-                    money += purchase;
+                if(sumMoney[i] >= users[i][1]) {    // 이모티콘 플러스 가입 조건 금액
+                    signup++;   // 가입 완료
+                    sumMoney[i] = 0;
+                    break;
                 }
             }
-            resultList.add(new Join(join, money));  //가입자, 매출액
-                
+            total += sumMoney[i];      
+        }
+        if(signup > maxAnswer[0]) {
+            maxAnswer[0] = signup;
+            maxAnswer[1] = total;
+        }
+        else if(maxAnswer[0] == signup) {   // 가입자 수 같다면 -> 최대 매출액 비교
+            maxAnswer[1] = Math.max(maxAnswer[1], total);
             return;
         }
+        
+        
+    }
+    private static void combi(int depth, boolean[] visited, int[] arr, int[][] users, int[] emoticons) {
+        if(depth == arr.length) {   // 이모티콘 할인율 다 뽑았다면
+            calc(arr, users, emoticons);
+            return;
+        }
+        
         for(int i=0; i<4; i++) {
-            selectedDiscount[depth] = discount[i];
-            permutation(depth + 1, emoticons, users, selectedDiscount);
+            arr[depth] = discounts[i];
+            combi(depth+1, visited, arr, users, emoticons);
         }
-    }
-    
-    static class Sale {
-        int item, percent;
-        public Sale(int item, int percent) {
-            this.item=item;
-            this.percent=percent;
-        }
-    }
-    static class Join implements Comparable<Join> {
-        int member, sales;
-        public Join(int member, int sales) {
-            this.member=member;
-            this.sales=sales;
-        }
-        @Override
-        public int compareTo(Join j) {
-            if(j.member == this.member) {
-                return j.sales - this.sales;
-            }
-            return j.member - this.member;
-        }
-    }
+    } 
 }
