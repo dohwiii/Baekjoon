@@ -20,23 +20,22 @@ class Solution {
         int[] allPicks = new int[totalPicks];
 
         int needPicks = (int) Math.ceil((double)totalMinerals / 5); // 모든 광물들 캐기 위해서 필요한 곡괭이 수
-        int endMinerals = minerals.length;
         
         if(totalPicks < needPicks) {
             needPicks = totalPicks;
         }
-        choosePick(0, new int[needPicks], new boolean[allPicks.length], needPicks, copyPicks, endMinerals, minerals);
+        choosePick(0, new int[needPicks], needPicks, copyPicks, minerals);
         
         // 마인이 작업을 끝내기까지 필요한 최소한의 피로도
         return min;
     }
-    private static void choosePick(int depth, int[] arr, boolean[] visited, int needPicks, int[] copyPicks, int end, String[] minerals) {   // 사용할 곡괭이 선정
+    private static void choosePick(int depth, int[] arr, int needPicks, int[] copyPicks, String[] minerals) {   // 사용할 곡괭이 선정
         if(depth == needPicks) {
             StringBuilder sb = new StringBuilder();
             for(int i=0; i<arr.length; i++) {
                 sb.append(arr[i]);
             }
-            int result = gainMinerals(end, arr, minerals);
+            int result = gainMinerals(arr, minerals);
             min = Math.min(min, result);
             return;
         }
@@ -53,17 +52,17 @@ class Solution {
                 else {
                     arr[depth] = 3;
                 }     
-                choosePick(depth+1, arr, visited, needPicks, copyPicks, end, minerals);
+                choosePick(depth+1, arr, needPicks, copyPicks, minerals);
                 copyPicks[i]++;
             }
         }
         
     }
-    private static int gainMinerals(int end, int[] choicePicks, String[] minerals) {
+    private static int gainMinerals(int[] choicePicks, String[] minerals) {
         int picksIndex = 0;
         int fatigue = 0;
         
-        for(int i=0; i<end; i++) {
+        for(int i=0; i<minerals.length; i++) {
             if(picksIndex >= choicePicks.length) {
                 break;
             }
