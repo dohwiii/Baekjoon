@@ -5,12 +5,13 @@ import java.util.*;
 // 광물은 순서대로만!
  // 가지고 있는 곡괭이 수보다 광물 수가 더 많다면 -> 캘 수 있는 광물까지만 계산
 class Solution {
-    static int min = Integer.MAX_VALUE;
+    static int min;
     
     public int solution(int[] picks, String[] minerals) {
         int answer = 0;
         int totalMinerals = minerals.length;
         int totalPicks = 0;
+        min = Integer.MAX_VALUE;
         
         for(int a : picks) {
             totalPicks += a;
@@ -31,10 +32,6 @@ class Solution {
     }
     private static void choosePick(int depth, int[] arr, int needPicks, int[] copyPicks, String[] minerals) {   // 사용할 곡괭이 선정
         if(depth == needPicks) {
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i<arr.length; i++) {
-                sb.append(arr[i]);
-            }
             int result = gainMinerals(arr, minerals);
             min = Math.min(min, result);
             return;
@@ -42,16 +39,8 @@ class Solution {
 
         for(int i=0; i<copyPicks.length; i++) {
             if(copyPicks[i] > 0) {
-                copyPicks[i]--;
-                if(i == 0) { // 다이아몬드
-                    arr[depth] = 1;
-                }
-                else if(i == 1) {    // 철
-                    arr[depth] = 2;
-                }
-                else {
-                    arr[depth] = 3;
-                }     
+                copyPicks[i]--; 
+                arr[depth] = i+1;
                 choosePick(depth+1, arr, needPicks, copyPicks, minerals);
                 copyPicks[i]++;
             }
