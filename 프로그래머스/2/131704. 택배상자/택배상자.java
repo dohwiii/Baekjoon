@@ -13,44 +13,29 @@ class Solution {
         for(int i=0; i<order.length; i++) {
             queue.offer(i+1);
         }
-
-        int idx = 0;
-        while(idx < order.length) {
-            int now = order[idx];
-            boolean isPossible = false;
-
-            // 한번에 찾을 수 있다면
-            if(!queue.isEmpty() && now == queue.peek()) {
+        
+        int next = 1;
+        
+        for(int i=0; i<order.length; i++) {
+            int now = order[i];
+            while(next < now) { // 현재 숫자보다 주문번호가 더 크다면
+                stack.push(next);
+                next++;
+            }
+            if(next == now) {
                 answer++;
-                queue.poll();
-                idx++;
-                isPossible = true;
+                next++;             
                 continue;
             }
-            else if(!stack.isEmpty() && now == stack.peek()) {
-                answer++;
-                stack.pop();
-                idx++;
-                isPossible = true;
-                continue;
-            }
-            // 없다면
-            while(!queue.isEmpty()) {    
-                if(now == queue.peek()) {
-                    isPossible = true;
-                    break;
+            if(!stack.isEmpty()) {
+                if(now == stack.peek()) {
+                    stack.pop();
+                    answer++;
                 }
-                if(now > queue.peek()) {    // 큐에 들어있는 숫자
-                    stack.push(queue.poll());   // 보조 컨테이너 벨트에 저장
-                    isPossible = true;
-                }
-                else if(now < queue.peek() && stack.peek() != now) {    // 보조 컨테이너 벨트에 있지만, 뺄 수 없는 위치에 있다면
+                else {
                     return answer;
                 }
                 
-            }
-            if(!isPossible) {
-                return answer;
             }
         }
         
