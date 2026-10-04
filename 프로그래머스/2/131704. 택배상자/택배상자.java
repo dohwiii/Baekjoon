@@ -32,17 +32,14 @@ class Solution {
                 continue;
             }
             // 없다면
-            while(!queue.isEmpty()) {    // 큐에 있는 숫자
-                // System.out.println(now+" "+queue.peek());
+            while(!queue.isEmpty()) {    
                 if(now == queue.peek()) {
-                    // System.out.println(now+" "+queue.peek());
                     break;
                 }
-                if(now > queue.peek()) {
+                if(now > queue.peek()) {    // 큐에 들어있는 숫자
                     stack.push(queue.poll());   // 보조 컨테이너 벨트에 저장
                 }
-                else if(now < queue.peek() && stack.peek() != now) {
-                    // System.out.println(now+" "+queue.peek()+" "+stack.peek());
+                else if(now < queue.peek() && stack.peek() != now) {    // 보조 컨테이너 벨트에 있지만, 뺄 수 없는 위치에 있다면
                     return answer;
                 }
                 
