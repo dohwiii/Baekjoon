@@ -14,10 +14,11 @@ class Solution {
             queue.offer(i+1);
         }
         
-        int next = 1;
+        int next = 1;   // 메인 컨테이너 벨트 상자
         
         for(int i=0; i<order.length; i++) {
             int now = order[i];
+            
             while(next < now) { // 현재 숫자보다 주문번호가 더 크다면
                 stack.push(next);
                 next++;
