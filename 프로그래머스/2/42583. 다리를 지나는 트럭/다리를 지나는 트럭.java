@@ -3,31 +3,54 @@ import java.util.*;
 class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
         int answer = 0;
-        Queue<Integer> queue = new ArrayDeque<>(bridge_length);
-        for(int i=0; i<bridge_length; i++) {
-            queue.offer(0);
-        }
-        int totalW = 0; // 현재 다리에 있는 무게
-        int time = 0;
-        int index = 0;  // 트럭 순서 인덱스
+        Queue<Car> queue = new ArrayDeque<>();
+        int index = 1;
+        int time = 2;
+        int nowWeight = truck_weights[0];
+        int len = bridge_length - 1;
         
-        while(!queue.isEmpty()) {
-            int first = queue.poll();   // 맨 앞 트럭 뺌
-            totalW -= first;
-            time++;         // 초 증가
-
+        while(len-- > 0) {
+            queue.offer(new Car(0, -1));
+        }
+        queue.offer(new Car(truck_weights[0], 0));
+        
+        // 1초마다 다리에서는 앞으로 전진
+        // 현재 다리에 무게가 버틸 수 있다면 다음 차 진입
+        // 아니면 0 지입
+        
+        while(true) {   // 더이상 다리에 차량이 없는 경우
+            Car outCar = queue.poll();
+            nowWeight -= outCar.weight;
+            if(outCar.idx == truck_weights.length - 1) {
+                break;
+            }
             if(index < truck_weights.length) {
-                if(totalW + truck_weights[index] <= weight) {
-                    queue.offer(truck_weights[index]);  // 현재 index 트럭 탑승
-                    totalW += truck_weights[index];
-                    index++;    // 다음 트럭
+                if(nowWeight + truck_weights[index] <= weight) {
+                    queue.offer(new Car(truck_weights[index], index));
+                    nowWeight += truck_weights[index];
+                    index++;
                 }
-                else {  // 다음 트럭을 무게 초과로 인해 못지나감
-                    queue.offer(0);
+                else {
+                    queue.offer(new Car(0, -1));
                 }
             }
-        }      
+            else {
+                queue.offer(new Car(0, -1));
+            }
+
+            time++;
+        }
         
+
+        // 모든 트럭이 다리를 건너려면 최소 몇 초
         return time;
+    }
+    static class Car {
+        int weight, idx;
+        
+        public Car(int weight, int idx) {
+            this.weight=weight;
+            this.idx=idx;
+        }
     }
 }
