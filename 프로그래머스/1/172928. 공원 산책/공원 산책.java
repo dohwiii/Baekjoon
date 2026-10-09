@@ -1,56 +1,86 @@
 import java.util.*;
 
 class Solution {
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
-    static Map<Character, Integer> directionMap = Map.of(
-        'E', 2,
-        'N', 1,
-        'S', 0,
-        'W', 3
-    );
-
+    static char[][] map;
+    static int N, M;
+    
     public int[] solution(String[] park, String[] routes) {
-        int x = 0, y = 0;
-        int n = park.length;
-        int m = park[0].length();
-
-        // 시작 위치 찾기
-        for (int i = 0; i < n; i++) {
-            if (park[i].contains("S")) {
-                x = i;
-                y = park[i].indexOf('S');
-                break;
-            }
-        }
-
-        // 경로 처리
-        for (String route : routes) {
-            char direction = route.charAt(0);
-            int move = route.charAt(2) - '0';
-            int dIndex = directionMap.get(direction);
-
-            int nx = x, ny = y;
-
-            // 이동 가능 여부 확인
-            for (int i = 1; i <= move; i++) {
-                int tx = x + dx[dIndex] * i;
-                int ty = y + dy[dIndex] * i;
-
-                if (tx < 0 || tx >= n || ty < 0 || ty >= m || park[tx].charAt(ty) == 'X') {
-                    nx = x; // 이동 취소
-                    ny = y;
-                    break;
+        int[] answer = {};
+        Pos start = null;
+        N = park.length;
+        M = park[0].length();
+        map = new char[N][M];
+        
+        for(int i=0; i<park.length; i++) {
+            for(int j=0; j<park[i].length(); j++) {
+                map[i][j] = park[i].charAt(j);
+                if(map[i][j] == 'S') {
+                    start = new Pos(i, j);
                 }
-
-                nx = tx;
-                ny = ty;
             }
-
-            x = nx;
-            y = ny;
         }
 
-        return new int[]{x, y};
+        // 로봇 강아지가 모든 명령을 수행 후 놓인 위치
+        return moveRobot(start, routes);
+    }
+    private static int[] moveRobot(Pos start, String[] routes) {
+        int nx = start.x;
+        int ny = start.y;
+        
+        for(String r : routes) {
+            Pos newPos = getDirection(nx, ny, r);
+            nx = newPos.x;
+            ny = newPos.y;
+        }
+        return new int[]{nx, ny};
+    }
+    private static Pos getDirection(int x, int y, String route) {
+        String[] r = route.split(" ");
+        char dir = r[0].charAt(0);
+        int dist = Integer.parseInt(r[1]);   // 움직일 거리
+        int dirX = 0;
+        int dirY = 0;
+        
+        switch(dir) {
+            case 'N': 
+                dirX = -1;
+                dirY = 0;
+                break;
+            case 'S':
+                dirX = 1;
+                dirY = 0;
+                break;
+            case 'E':
+                dirX = 0;
+                dirY = 1;
+                break;
+            case 'W':
+                dirX = 0;
+                dirY = -1;
+                break;
+        }
+
+        int nx = x;
+        int ny = y;
+        while(dist-- > 0) {
+            int nnx = nx + dirX;
+            int nny = ny + dirY;
+            if(nnx>=0 && nnx<N && nny>=0 && nny<M && map[nnx][nny] != 'X') {            
+                nx = nnx;
+                ny = nny;
+            }
+            else {
+                return new Pos(x, y);   // 해당 명령 무시
+            }
+        }
+        return new Pos(nx, ny);
+    }
+    static class Pos {
+        int x, y;
+        
+        public Pos(int x, int y) {
+            this.x=x;
+            this.y=y;
+        } 
     }
 }
