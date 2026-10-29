@@ -1,38 +1,66 @@
 import java.util.*;
 
 class Solution {
-    static boolean[] visited;
-    static int box;
-    
+    static int[] parent;
+    static int[] temp;
+    static int cnt = 0;
     public int solution(int[] cards) {
         int answer = 1;
-        visited = new boolean[cards.length];
-        List<Integer> list = new ArrayList<>();
-        int group = 0;
+        parent = new int[cards.length + 1];
+        temp = new int[cards.length+1];
+        for(int i=1; i<=cards.length; i++) {
+            temp[i] = cards[i-1];
+        }
         
-        for(int i=0; i<cards.length; i++) {
-            if(!visited[i]) {
-                box = 0;
-                solve(i, cards);
-                group++;
-                list.add(box);
+        for(int i=1; i<=cards.length; i++) {
+            parent[i] = i;
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for(int i=1; i<=cards.length; i++) {
+            if(i == parent[i]) {
+                cnt = 0;
+                dfs(i);
+                pq.offer(cnt);
             }
         }
-        if(group == 1) {
+        int count = 0;
+        while(!pq.isEmpty()) {
+            answer *= pq.poll();
+            count++;
+            
+            if(count == 2) {
+                break;
+            }
+        }
+        if(count < 2) {
             return 0;
         }
-        Collections.sort(list, Collections.reverseOrder());
-        answer = list.get(0) * list.get(1);
-        
         return answer;
     }
-    public void solve(int index, int[] cards) {
-        if(visited[index]) {
+    private static void dfs(int box) {
+        int cardNum = temp[box];
+        cnt++;
+        
+        if(!union(box, cardNum)) {
             return;
         }
-        box++;
-        visited[index] = true;
-        int next = cards[index];
-        solve(next - 1, cards);
+        
+        dfs(cardNum);
+    }
+    private static boolean union(int a, int b) {
+        int pa = find(a);
+        int pb = find(b);
+        
+        if(pa != pb) {
+            parent[pb] = pa;
+            return true;
+        }
+        return false;
+    }
+    private static int find(int x) {
+        if(x == parent[x]) {
+            return x;
+        }
+        return parent[x] = find(parent[x]);
     }
 }
