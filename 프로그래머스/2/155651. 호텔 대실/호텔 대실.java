@@ -3,23 +3,33 @@ import java.util.*;
 class Solution {
     public int solution(String[][] book_time) {
         int answer = 0;
-        //10분 청소
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-        Arrays.sort(book_time, (a, b) -> a[0].compareTo(b[0]));
+        int[] inTime = new int[book_time.length];
+        int[] available = new int[book_time.length];
         
         for(int i=0; i<book_time.length; i++) {
-            String[] b = book_time[i];
-            int start = makeMinute(b[0]);
-            int end = makeMinute(b[1]);
-            
-            if(!pq.isEmpty() && pq.peek() <= start) {
-                pq.poll();
-            }
-            pq.offer(end + 10);
+            int start = makeMinute(book_time[i][0]);
+            int end = makeMinute(book_time[i][1]);
+            inTime[i] = start;
+            available[i] = end + 10;
         }
-
-        // 최소한의 객실 수
-        return pq.size();
+        Arrays.sort(inTime);
+        Arrays.sort(available);
+        int i=0, j=0;
+        
+        while(i<book_time.length && j<book_time.length) {
+            if(inTime[i]  >= available[j]) {
+                i++;
+                j++;
+            }
+            else {
+                i++;
+                answer++;
+            }
+        }
+        
+        
+        
+        return answer;
     }
     private static int makeMinute(String time) {
         String[] start = time.split(":");
