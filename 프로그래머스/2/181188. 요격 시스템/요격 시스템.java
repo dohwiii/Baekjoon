@@ -1,80 +1,29 @@
-
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 class Solution {
     public int solution(int[][] targets) {
-        PriorityQueue<Missile> inQ = new PriorityQueue<>(new Comparator<Missile>(){
-            public int compare(Missile o1, Missile o2) {
-                return o1.in - o2.in;
+        int answer = 0;
+        Arrays.sort(targets, (a, b) -> a[0] - b[0]);    // s를 기준으로 오름차순
+        
+        int fx = targets[0][0];
+        int fy = targets[0][1];
+        answer++;
+        
+        for(int i=1; i<targets.length; i++) {
+            int[] t = targets[i];
+            if(t[0] < fy) {
+                fx = Math.max(fx, t[0]);
+                fy = Math.min(fy, t[1]);
             }
-        });
-        PriorityQueue<Missile> outQ = new PriorityQueue<>(new Comparator<Missile>(){
-            public int compare(Missile o1, Missile o2) {
-                return o1.out - o2.out;
-            }
-        });
-
-        int id = 0;
-        for(int[] target : targets) {
-            target[0] = target[0] * 10 + 1;
-            target[1] = target[1] * 10 - 1;
-
-            inQ.add(new Missile(id, target[0], target[1]));
-            outQ.add(new Missile(id, target[0], target[1]));
-            id++;
-        }
-
-        return interceptMissile(inQ, outQ);
-    }
-
-    public int interceptMissile(PriorityQueue<Missile> inQ, PriorityQueue<Missile> outQ) {
-        HashMap<Integer, Integer> missileIdCheckMap = new HashMap<>();
-        int count = 0;
-
-        while(inQ.size() > 0 || outQ.size() > 0) {
-            if(outQ.size() > 0) {
-                Missile end = null;
-                while(outQ.size() > 0) {
-                    if(missileIdCheckMap.containsKey(outQ.peek().id)) {
-                        outQ.poll();     
-                    } else {
-                        end = outQ.poll();
-                        missileIdCheckMap.put(end.id, 0);
-                        break;
-                    }
-                }
-
-                if(end == null) {
-                    break;
-                }
-
-                while(inQ.size() > 0) {
-                    if(missileIdCheckMap.containsKey(inQ.peek().id)) {
-                        inQ.poll();
-                    } else if(inQ.peek().in <= end.out && inQ.peek().out >= end.out) {
-                        Missile get = inQ.poll();
-                        missileIdCheckMap.put(get.id, 0);
-                    } else {
-                        break;
-                    }
-                }
-                count++;
+            else {  // 새로운 축
+                fx = t[0];
+                fy = t[1];
+                answer++;
+                // System.out.println(i+" "+fx+" "+fy);
             }
         }
-        return count;
-    }
-
-    class Missile {
-        int id;
-        int in;
-        int out;
-
-        public Missile(int id, int in, int out) {
-            this.id = id;
-            this.in = in;
-            this.out = out;
-        }
+        
+        
+        return answer;
     }
 }
