@@ -11,7 +11,7 @@ class Solution {
         
         for(int i=1; i<targets.length; i++) {
             int[] t = targets[i];
-            if(t[0] >= fx && t[0] < fy) {
+            if(t[0] < fy) {
                 fx = Math.max(fx, t[0]);
                 fy = Math.min(fy, t[1]);
             }
